@@ -56,6 +56,28 @@
     .card.decider .tag { background: var(--pso-gold, #E8B330); color: #1a1400; }
     .card.current { border-color: #fff; animation: pulse 1.1s infinite; }
     @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(255,255,255,.5);} 50%{ box-shadow: 0 0 0 6px rgba(255,255,255,0);} }
+
+    /* ── Vue finale : seules les maps jouées, agrandies au maximum ── */
+    .pool.final { gap: 30px; max-width: 1880px; }
+    .pool.final .card { transform: none; animation: reveal .55s cubic-bezier(.2,.8,.25,1) both; box-shadow: 0 16px 70px rgba(0,0,0,.75); }
+    .pool.final .card.picked { border-color: var(--pc, #fff); }
+    .pool.final .card .shade { background: linear-gradient(180deg, rgba(8,10,15,0) 30%, rgba(8,10,15,.95)); }
+    .pool.final .card .mapno {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 4; text-align: center;
+      font-family: var(--head); font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+      padding: 12px 8px; color: #fff; background: linear-gradient(180deg, rgba(8,10,15,.92), transparent);
+    }
+    .pool.final .card .tag { top: auto; bottom: 132px; left: 50%; font-size: 16px; padding: 6px 16px; }
+    .pool.final .card .mname { bottom: 172px; font-size: 32px; letter-spacing: 3px; }
+    .pool.final .card .sides {
+      flex-direction: column; align-items: stretch; gap: 8px; bottom: 24px;
+      left: 18px; right: 18px; font-size: 17px;
+    }
+    .pool.final .card .sides span {
+      justify-content: center; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,.62);
+      border-radius: 6px; font-family: var(--head); letter-spacing: 1px;
+    }
+    @keyframes reveal { from { opacity: 0; transform: scale(.88) translateY(28px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -91,10 +113,15 @@
         statusEl.innerHTML = '<span class="who" style="background:' + col + '">' + teamName(s, c.team) + '</span><span class="act">' + actLabel + '</span>';
       } else { statusEl.innerHTML = ''; }
 
+      if (s.status === 'done') { renderFinal(s); return; }
+
+      poolEl.classList.remove('final');
+      poolEl.style.gap = ''; poolEl.style.maxWidth = '';
       poolEl.innerHTML = '';
       for (const m of s.maps) {
         const card = document.createElement('div');
         card.className = 'card ' + m.status;
+        card.style.width = ''; card.style.height = '';
         const bg = m.splash || m.minimap;
         if (bg) card.style.backgroundImage = "url('" + bg + "')";
         const isCurrent = s.current && s.current.action !== 'side' && m.status === 'available';
@@ -105,18 +132,54 @@
         if (m.status === 'picked')  { card.style.setProperty('--pc', teamColor(s, m.by)); inner += '<div class="tag">PICK · ' + teamName(s, m.by) + '</div>'; }
         if (m.status === 'decider') inner += '<div class="tag">DÉCIDEUR</div>';
 
-        if ((m.status === 'picked' || m.status === 'decider') && m.side) {
-          const atkTeam = m.sideBy, defTeam = atkTeam === 1 ? 2 : 1;
-          // sideBy a choisi m.side ; affiche les deux côtés
-          const owner = m.sideBy, choice = m.side, opp = owner === 1 ? 2 : 1;
-          const ownerSide = SIDE_FR[choice], oppSide = SIDE_FR[choice === 'attack' ? 'defense' : 'attack'];
-          inner += '<div class="sides"><span style="color:' + teamColor(s, owner) + '">' + teamName(s, owner) + ' ' + ownerSide + '</span>'
-                 + '<span style="color:' + teamColor(s, opp) + '">' + teamName(s, opp) + ' ' + oppSide + '</span></div>';
-        }
+        inner += sidesHtml(s, m);
         inner += '<div class="mname">' + m.name + '</div>';
         card.innerHTML = inner;
         poolEl.appendChild(card);
       }
+    }
+
+    // Côtés ATQ/DEF des deux équipes pour une map jouée.
+    function sidesHtml(s, m) {
+      if ((m.status !== 'picked' && m.status !== 'decider') || !m.side) return '';
+      const owner = m.sideBy, opp = owner === 1 ? 2 : 1;
+      const ownerSide = SIDE_FR[m.side], oppSide = SIDE_FR[m.side === 'attack' ? 'defense' : 'attack'];
+      return '<div class="sides"><span style="color:' + teamColor(s, owner) + '">' + teamName(s, owner) + ' ' + ownerSide + '</span>'
+           + '<span style="color:' + teamColor(s, opp) + '">' + teamName(s, opp) + ' ' + oppSide + '</span></div>';
+    }
+
+    // Vue finale : uniquement les maps jouées, dans l'ordre de jeu, agrandies au maximum.
+    function renderFinal(s) {
+      // Ordre de jeu : ordre des picks dans le log, décideur en dernier.
+      const kept = s.maps.filter(m => m.status === 'picked' || m.status === 'decider');
+      const rank = {}; let i = 0;
+      (s.log || []).forEach(l => { if (rank[l.map] === undefined && kept.some(m => m.slug === l.map)) rank[l.map] = i++; });
+      kept.sort((a, b) => (rank[a.slug] ?? 99) - (rank[b.slug] ?? 99));
+
+      // Dimensionnement adaptatif pour remplir l'écran.
+      const n = kept.length, gap = 30, rowW = 1840;
+      const cw = Math.min(Math.floor((rowW - gap * (n - 1)) / n), 460);
+      const ch = Math.min(Math.round(cw * 1.62), 820);
+
+      poolEl.classList.add('final');
+      poolEl.innerHTML = '';
+      kept.forEach((m, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card ' + m.status;
+        card.style.width = cw + 'px'; card.style.height = ch + 'px';
+        card.style.animationDelay = (idx * 0.08) + 's';
+        const bg = m.splash || m.minimap;
+        if (bg) card.style.backgroundImage = "url('" + bg + "')";
+
+        let inner = '<div class="shade"></div>';
+        inner += '<div class="mapno">MAP ' + (idx + 1) + '</div>';
+        if (m.status === 'picked') { card.style.setProperty('--pc', teamColor(s, m.by)); inner += '<div class="tag">PICK · ' + teamName(s, m.by) + '</div>'; }
+        else inner += '<div class="tag">DÉCIDEUR</div>';
+        inner += sidesHtml(s, m);
+        inner += '<div class="mname">' + m.name + '</div>';
+        card.innerHTML = inner;
+        poolEl.appendChild(card);
+      });
     }
 
     fetch('/api/veto').then(r => r.json()).then(render).catch(() => {});

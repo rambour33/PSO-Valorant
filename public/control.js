@@ -106,6 +106,44 @@ sb.visible.addEventListener('click', () => {
     .then((r) => r.json()).then(sbFill);
 });
 
+// ── Liens overlay scoreboard (3 sources OBS) ──────────────────────────────────
+const sbLinks = document.getElementById('sb-links');
+const sbBaseSelect = document.getElementById('sb-base-select');
+let sbBases = [];
+
+function sbCurrentBase() {
+  const i = parseInt(sbBaseSelect && sbBaseSelect.value, 10) || 0;
+  return (sbBases[i] && sbBases[i].url) || location.origin;
+}
+
+function sbRenderLinks() {
+  if (!sbLinks) return;
+  const base = sbCurrentBase();
+  const rows = [
+    ['Team 1', base + '/scoreboard-overlay?part=team1'],
+    ['Team 2', base + '/scoreboard-overlay?part=team2'],
+    ['Score',  base + '/scoreboard-overlay?part=score'],
+  ];
+  sbLinks.innerHTML = rows.map(([label, url]) =>
+    '<div class="sb-linkrow"><span class="lbl">' + label + '</span>' +
+    '<input readonly value="' + url + '" onclick="this.select()" />' +
+    '<button onclick="navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'Copié\';setTimeout(()=>this.textContent=\'Copier\',1200)">Copier</button>' +
+    '<a href="' + url + '" target="_blank"><button>Ouvrir</button></a></div>'
+  ).join('');
+}
+
+fetch('/api/server-info').then((r) => r.json()).then((info) => {
+  const port = info.port || location.port || 3003;
+  sbBases = (info.ips || []).map((ip) => ({ label: 'Réseau · ' + ip, url: 'http://' + ip + ':' + port }));
+  if (sbBases.length === 0) sbBases = [{ label: location.host, url: location.origin }];
+  if (sbBaseSelect) {
+    sbBaseSelect.innerHTML = sbBases.map((b, i) => '<option value="' + i + '">' + b.label + '</option>').join('');
+    sbBaseSelect.value = '0';
+    sbBaseSelect.addEventListener('change', sbRenderLinks);
+  }
+  sbRenderLinks();
+}).catch(() => { sbBases = [{ label: location.origin, url: location.origin }]; sbRenderLinks(); });
+
 fetch('/api/scoreboard').then((r) => r.json()).then(sbFill).catch(() => {});
 socket.on('scoreboardUpdate', (s) => {
   // ne pas écraser les champs texte en cours d'édition : maj ciblée

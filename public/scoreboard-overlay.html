@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Overlay Scoreboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; overflow: hidden; }
+    body { font-family: var(--pso-font-body, 'Inter', sans-serif); padding: 24px; }
+    :root { --head: var(--pso-font-head, 'Oswald', sans-serif); }
+
+    /* Conteneur ancré en haut à gauche : chaque overlay est une source OBS séparée. */
+    #root { display: inline-flex; transition: opacity .3s ease; }
+    #root.hidden { opacity: 0; }
+    body[data-part="team2"] #root { justify-content: flex-end; }
+
+    /* ── Plaque d'équipe ── */
+    .team {
+      display: inline-flex; align-items: center; gap: 26px; padding: 18px 30px;
+      border-radius: 12px; background: var(--tc, #FF4655); position: relative; overflow: hidden;
+      box-shadow: 0 12px 44px rgba(0,0,0,.55);
+    }
+    .team::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(0,0,0,.28)); pointer-events: none; }
+    body[data-part="team2"] .team { flex-direction: row-reverse; }
+    .team .name {
+      font-family: var(--head); font-weight: 700; font-size: 50px; letter-spacing: 3px;
+      text-transform: uppercase; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.5); white-space: nowrap; z-index: 1;
+    }
+    .team .score {
+      font-family: var(--head); font-weight: 700; font-size: 58px; line-height: 1; color: #fff;
+      background: rgba(0,0,0,.32); border-radius: 10px; padding: 8px 22px; min-width: 78px; text-align: center;
+      font-variant-numeric: tabular-nums; z-index: 1;
+    }
+
+    /* ── Ligne de rectangles (score) ── */
+    .rects { display: inline-flex; gap: 14px; padding: 16px 20px; background: rgba(14,16,22,.82); border-radius: 14px; box-shadow: 0 12px 44px rgba(0,0,0,.55); }
+    .rect {
+      width: 72px; height: 50px; border-radius: 8px; background: rgba(255,255,255,.06);
+      border: 2px solid rgba(255,255,255,.16); transition: background .35s ease, box-shadow .35s ease, border-color .35s ease;
+    }
+    .rect.filled { border-color: rgba(255,255,255,.35); box-shadow: 0 0 18px var(--rc), inset 0 0 0 100px var(--rc); }
+    .rect.pop { animation: pop .45s cubic-bezier(.2,.9,.3,1.2); }
+    @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const PART = ['team1', 'team2', 'score'].includes(params.get('part')) ? params.get('part') : 'score';
+    document.body.dataset.part = PART;
+
+    const root = document.getElementById('root');
+    const teamColor = (s, t) => (s['team' + t] && s['team' + t].color) || (t === 1 ? '#FF4655' : '#00C8C8');
+    const teamName  = (s, t) => (s['team' + t] && s['team' + t].name)  || ('TEAM ' + t);
+
+    let prevFilled = 0;
+
+    function render(s) {
+      if (!s) return;
+      root.classList.toggle('hidden', s.visible === false);
+
+      if (PART === 'team1' || PART === 'team2') {
+        const t = PART === 'team1' ? 1 : 2;
+        root.innerHTML =
+          '<div class="team" style="--tc:' + teamColor(s, t) + '">' +
+            '<span class="name">' + teamName(s, t) + '</span>' +
+            '<span class="score">' + (s['team' + t] ? s['team' + t].score : 0) + '</span>' +
+          '</div>';
+        return;
+      }
+
+      // PART === 'score' : une ligne de rectangles, un par map du BO.
+      const seq = Array.isArray(s.sequence) ? s.sequence : [];
+      const total = s.mapsCount || 3;
+      let html = '<div class="rects">';
+      for (let i = 0; i < total; i++) {
+        const winner = seq[i];                       // 1, 2 ou undefined
+        if (winner) {
+          const isNew = i >= prevFilled;             // anime uniquement les rectangles nouvellement remplis
+          html += '<div class="rect filled' + (isNew ? ' pop' : '') + '" style="--rc:' + teamColor(s, winner) + '"></div>';
+        } else {
+          html += '<div class="rect"></div>';
+        }
+      }
+      html += '</div>';
+      root.innerHTML = html;
+      prevFilled = seq.length;
+    }
+
+    fetch('/api/scoreboard').then(r => r.json()).then(render).catch(() => {});
+    io().on('scoreboardUpdate', render);
+  </script>
+</body>
+</html>

@@ -42,21 +42,25 @@ app.post('/api/theme', (req, res) => {
 });
 
 // ── Scoreboard ────────────────────────────────────────────────────────────────
-function emitScore() { io.emit('scoreboardUpdate', scoreboard.get()); }
+function emitScore() { io.emit('scoreboardUpdate', scorePayload()); }
 
-app.get('/api/scoreboard', (req, res) => res.json({ ...scoreboard.get(), formats: scoreboard.FORMATS, maxWins: scoreboard.maxWins() }));
+app.get('/scoreboard-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-overlay.html')));
+
+function scorePayload() { return { ...scoreboard.get(), formats: scoreboard.FORMATS, maxWins: scoreboard.maxWins(), mapsCount: scoreboard.mapsCount() }; }
+
+app.get('/api/scoreboard', (req, res) => res.json(scorePayload()));
 
 app.post('/api/scoreboard', (req, res) => {
   scoreboard.set(req.body || {});
   emitScore();
-  res.json({ ...scoreboard.get(), maxWins: scoreboard.maxWins() });
+  res.json(scorePayload());
 });
 
 app.post('/api/scoreboard/score/:team/:delta', (req, res) => {
   try {
     scoreboard.score(req.params.team, req.params.delta);
     emitScore();
-    res.json({ ...scoreboard.get(), maxWins: scoreboard.maxWins() });
+    res.json(scorePayload());
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
@@ -65,7 +69,7 @@ app.post('/api/scoreboard/score/:team/:delta', (req, res) => {
 app.post('/api/scoreboard/reset', (req, res) => {
   scoreboard.resetScore();
   emitScore();
-  res.json({ ...scoreboard.get(), maxWins: scoreboard.maxWins() });
+  res.json(scorePayload());
 });
 
 // ── Assets Valorant (agents + maps) ───────────────────────────────────────────

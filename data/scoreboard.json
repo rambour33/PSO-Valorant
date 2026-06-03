@@ -1,0 +1,19 @@
+{
+  "visible": true,
+  "format": "BO3",
+  "team1": {
+    "name": "les bannis",
+    "color": "#955b60",
+    "score": 2
+  },
+  "team2": {
+    "name": "chinois",
+    "color": "#00c8c8",
+    "score": 1
+  },
+  "sequence": [
+    1,
+    2,
+    1
+  ]
+}
