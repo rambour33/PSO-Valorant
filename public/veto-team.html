@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSO Valorant — Veto équipe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: var(--pso-bg, #0e1016); --surface: var(--pso-surface, #161a22); --surface2: var(--pso-surface-2, #1d2230);
+      --border: var(--pso-border, #2a3142); --text: var(--pso-text, #e8ebf2); --muted: var(--pso-muted, #8a93a6);
+      --red: var(--pso-accent, #FF4655); --gold: var(--pso-gold, #E8B330);
+      --head: var(--pso-font-head, 'Oswald', sans-serif);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 18px; max-width: 760px; margin: 0 auto; }
+    .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    h1 { font-family: var(--head); font-size: 18px; letter-spacing: 1px; }
+    .me { font-weight: 700; padding: 4px 12px; border-radius: 6px; color: #fff; font-size: 13px; }
+    .turn { text-align: center; font-family: var(--head); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; padding: 14px; border-radius: 10px; margin: 12px 0; }
+    .turn.mine { background: rgba(255,70,85,.15); border: 1px solid var(--red); color: #fff; }
+    .turn.wait { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .turn.done { background: rgba(232,179,48,.12); border: 1px solid var(--gold); color: var(--gold); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .map { position: relative; height: 110px; border-radius: 9px; overflow: hidden; background: #0b0d12 center/cover no-repeat; border: 2px solid var(--border); cursor: default; }
+    .map .nm { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font-family: var(--head); font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 2px 6px #000; z-index: 2; }
+    .map .ov { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(8,10,15,.9)); }
+    .map.clickable { cursor: pointer; border-color: var(--red); }
+    .map.clickable:hover { transform: scale(1.03); }
+    .map.banned { filter: grayscale(1) brightness(.4); }
+    .map.picked, .map.decider { border-color: var(--gold); }
+    .map .badge { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,.6); z-index: 3; }
+    .sidebtns { display: flex; gap: 12px; justify-content: center; margin: 14px 0; }
+    .sidebtns button { flex: 1; max-width: 220px; padding: 18px; border: none; border-radius: 10px; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+    .sidebtns .atk { background: var(--red); color: #fff; }
+    .sidebtns .def { background: #00C8C8; color: #04222a; }
+    .msg { text-align: center; font-size: 13px; color: var(--muted); min-height: 18px; margin-top: 6px; }
+    .err { color: var(--red); }
+    .pickside-info { text-align:center; font-size:13px; color:var(--muted); margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <h1>🔫 Map Veto</h1>
+    <span class="me" id="me">—</span>
+  </div>
+  <div class="turn wait" id="turn">Chargement…</div>
+  <div class="pickside-info" id="sideinfo" style="display:none"></div>
+  <div class="sidebtns" id="sidebtns" style="display:none">
+    <button class="atk" data-side="attack">Attaque</button>
+    <button class="def" data-side="defense">Défense</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="msg" id="msg"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const token = location.pathname.split('/').pop();
+    const $ = id => document.getElementById(id);
+    let myTeam = null, S = null;
+
+    const SIDE_FR = { attack: 'Attaque', defense: 'Défense' };
+    const teamName = (s, t) => (s.teams[t] && s.teams[t].name) || ('TEAM ' + t);
+    const teamColor = (s, t) => (s.teams[t] && s.teams[t].color) || (t === 1 ? '#FF4655' : '#00C8C8');
+
+    function act(body) {
+      $('msg').textContent = ''; $('msg').className = 'msg';
+      return fetch('/api/veto/action', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ token }, body)) })
+        .then(r => r.json()).then(d => { if (d.error) throw new Error(d.error); })
+        .catch(e => { $('msg').textContent = e.message; $('msg').className = 'msg err'; });
+    }
+
+    function render(s) {
+      S = s;
+      if (myTeam) { $('me').textContent = teamName(s, myTeam); $('me').style.background = teamColor(s, myTeam); }
+
+      const cur = s.current;
+      const myTurn = s.status === 'running' && cur && cur.team === myTeam;
+      const turn = $('turn');
+      if (s.status === 'idle') { turn.className = 'turn wait'; turn.textContent = 'En attente de la configuration du veto…'; }
+      else if (s.status === 'done') { turn.className = 'turn done'; turn.textContent = 'Veto terminé ✓'; }
+      else if (myTurn) {
+        turn.className = 'turn mine';
+        turn.textContent = cur.action === 'ban' ? 'À toi de BANNIR une map' : cur.action === 'pick' ? 'À toi de CHOISIR une map' : 'À toi de CHOISIR le côté';
+      } else {
+        turn.className = 'turn wait';
+        const who = cur ? teamName(s, cur.team) : '';
+        turn.textContent = 'En attente de ' + who + '…';
+      }
+
+      // Boutons de côté
+      const needSide = myTurn && cur.action === 'side';
+      $('sidebtns').style.display = needSide ? 'flex' : 'none';
+      $('sideinfo').style.display = needSide ? 'block' : 'none';
+      if (needSide) {
+        const m = cur.map ? s.maps.find(x => x.slug === cur.map) : (s.maps.filter(x => x.status === 'available')[0]);
+        $('sideinfo').textContent = 'Choisis ton côté sur ' + (m ? m.name : 'le décideur');
+      }
+
+      // Grille de maps
+      $('grid').innerHTML = '';
+      for (const m of s.maps) {
+        const d = document.createElement('div');
+        const canClick = myTurn && (cur.action === 'ban' || cur.action === 'pick') && m.status === 'available';
+        d.className = 'map ' + m.status + (canClick ? ' clickable' : '');
+        const bg = m.minimap || m.splash;
+        if (bg) d.style.backgroundImage = "url('" + bg + "')";
+        let badge = '';
+        if (m.status === 'banned') badge = '<div class="badge" style="color:#FF6672">BAN</div>';
+        if (m.status === 'picked') badge = '<div class="badge" style="color:#fff">PICK</div>';
+        if (m.status === 'decider') badge = '<div class="badge" style="color:#E8B330">DÉCIDEUR</div>';
+        d.innerHTML = '<div class="ov"></div>' + badge + '<div class="nm">' + m.name + '</div>';
+        if (canClick) d.addEventListener('click', () => act({ map: m.slug }));
+        $('grid').appendChild(d);
+      }
+    }
+
+    $('sidebtns').querySelectorAll('button').forEach(b =>
+      b.addEventListener('click', () => act({ side: b.dataset.side }))
+    );
+
+    fetch('/api/veto/whoami?token=' + encodeURIComponent(token))
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('Lien invalide ou veto réinitialisé')))
+      .then(d => { myTeam = d.team; render(d.state); })
+      .catch(e => { $('turn').className = 'turn wait'; $('turn').textContent = e.message; });
+
+    io().on('vetoUpdate', s => render(s));
+  </script>
+</body>
+</html>

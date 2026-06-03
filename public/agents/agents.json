@@ -1,0 +1,147 @@
+[
+  {
+    "name": "Astra",
+    "slug": "astra",
+    "icon": "/agents/astra.png"
+  },
+  {
+    "name": "Breach",
+    "slug": "breach",
+    "icon": "/agents/breach.png"
+  },
+  {
+    "name": "Brimstone",
+    "slug": "brimstone",
+    "icon": "/agents/brimstone.png"
+  },
+  {
+    "name": "Chamber",
+    "slug": "chamber",
+    "icon": "/agents/chamber.png"
+  },
+  {
+    "name": "Clove",
+    "slug": "clove",
+    "icon": "/agents/clove.png"
+  },
+  {
+    "name": "Cypher",
+    "slug": "cypher",
+    "icon": "/agents/cypher.png"
+  },
+  {
+    "name": "Deadlock",
+    "slug": "deadlock",
+    "icon": "/agents/deadlock.png"
+  },
+  {
+    "name": "Fade",
+    "slug": "fade",
+    "icon": "/agents/fade.png"
+  },
+  {
+    "name": "Gekko",
+    "slug": "gekko",
+    "icon": "/agents/gekko.png"
+  },
+  {
+    "name": "Harbor",
+    "slug": "harbor",
+    "icon": "/agents/harbor.png"
+  },
+  {
+    "name": "Iso",
+    "slug": "iso",
+    "icon": "/agents/iso.png"
+  },
+  {
+    "name": "Jett",
+    "slug": "jett",
+    "icon": "/agents/jett.png"
+  },
+  {
+    "name": "KAY/O",
+    "slug": "kay-o",
+    "icon": "/agents/kay-o.png"
+  },
+  {
+    "name": "Killjoy",
+    "slug": "killjoy",
+    "icon": "/agents/killjoy.png"
+  },
+  {
+    "name": "Miks",
+    "slug": "miks",
+    "icon": "/agents/miks.png"
+  },
+  {
+    "name": "Neon",
+    "slug": "neon",
+    "icon": "/agents/neon.png"
+  },
+  {
+    "name": "Omen",
+    "slug": "omen",
+    "icon": "/agents/omen.png"
+  },
+  {
+    "name": "Phoenix",
+    "slug": "phoenix",
+    "icon": "/agents/phoenix.png"
+  },
+  {
+    "name": "Raze",
+    "slug": "raze",
+    "icon": "/agents/raze.png"
+  },
+  {
+    "name": "Reyna",
+    "slug": "reyna",
+    "icon": "/agents/reyna.png"
+  },
+  {
+    "name": "Sage",
+    "slug": "sage",
+    "icon": "/agents/sage.png"
+  },
+  {
+    "name": "Skye",
+    "slug": "skye",
+    "icon": "/agents/skye.png"
+  },
+  {
+    "name": "Sova",
+    "slug": "sova",
+    "icon": "/agents/sova.png"
+  },
+  {
+    "name": "Tejo",
+    "slug": "tejo",
+    "icon": "/agents/tejo.png"
+  },
+  {
+    "name": "Veto",
+    "slug": "veto",
+    "icon": "/agents/veto.png"
+  },
+  {
+    "name": "Viper",
+    "slug": "viper",
+    "icon": "/agents/viper.png"
+  },
+  {
+    "name": "Vyse",
+    "slug": "vyse",
+    "icon": "/agents/vyse.png"
+  },
+  {
+    "name": "Waylay",
+    "slug": "waylay",
+    "icon": "/agents/waylay.png"
+  },
+  {
+    "name": "Yoru",
+    "slug": "yoru",
+    "icon": "/agents/yoru.png"
+  }
+]

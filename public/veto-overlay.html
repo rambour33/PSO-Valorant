@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Overlay Veto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; font-family: var(--pso-font-body, 'Inter', sans-serif); }
+    :root { --head: var(--pso-font-head, 'Oswald', sans-serif); }
+
+    #wrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+    #wrap.hidden { opacity: 0; }
+
+    .status {
+      font-family: var(--head); font-weight: 700; font-size: 34px; letter-spacing: 3px;
+      text-transform: uppercase; color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,.7);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .status .who { padding: 4px 18px; border-radius: 6px; color: #fff; }
+    .status .act { color: #c8cede; }
+
+    .pool { display: flex; flex-wrap: wrap; gap: 16px 16px; justify-content: center; align-content: center; max-width: 1660px; }
+    .card {
+      width: 184px; height: 300px; border-radius: 12px; overflow: hidden; position: relative;
+      background: var(--pso-bg, #0e1016) center/cover no-repeat; border: 3px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 40px rgba(0,0,0,.6); transition: all .3s ease; flex: 0 0 auto;
+    }
+    .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,10,15,.1) 40%, rgba(8,10,15,.92)); }
+    .card .mname {
+      position: absolute; bottom: 14px; left: 0; right: 0; text-align: center;
+      font-family: var(--head); font-weight: 700; font-size: 22px; letter-spacing: 2px;
+      text-transform: uppercase; color: #fff; z-index: 2;
+    }
+    .card .tag {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 3;
+      font-family: var(--head); font-weight: 700; font-size: 13px; letter-spacing: 2px;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 5px; white-space: nowrap;
+    }
+    .card .sides {
+      position: absolute; bottom: 44px; left: 0; right: 0; z-index: 3; display: flex; justify-content: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    }
+    .card .sides span { padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,.55); }
+
+    /* États */
+    .card.banned { filter: grayscale(1) brightness(.4); border-color: rgba(255,70,85,.5); }
+    .card.banned .tag { background: var(--pso-accent, #FF4655); }
+    .card.banned::after {
+      content: '✕'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 90px; color: rgba(255,70,85,.85); z-index: 2; font-weight: 700;
+    }
+    .card.picked { border-color: var(--pc, #fff); transform: translateY(-10px); }
+    .card.picked .tag { background: var(--pc, #333); }
+    .card.decider { border-color: var(--pso-gold, #E8B330); transform: translateY(-10px); }
+    .card.decider .tag { background: var(--pso-gold, #E8B330); color: #1a1400; }
+    .card.current { border-color: #fff; animation: pulse 1.1s infinite; }
+    @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(255,255,255,.5);} 50%{ box-shadow: 0 0 0 6px rgba(255,255,255,0);} }
+  </style>
+</head>
+<body>
+  <div id="wrap" class="hidden">
+    <div class="status" id="status"></div>
+    <div class="pool" id="pool"></div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const wrap = document.getElementById('wrap');
+    const poolEl = document.getElementById('pool');
+    const statusEl = document.getElementById('status');
+    let S = null;
+
+    function teamColor(s, t) { return (s.teams[t] && s.teams[t].color) || (t === 1 ? '#FF4655' : '#00C8C8'); }
+    function teamName(s, t) { return (s.teams[t] && s.teams[t].name) || ('TEAM ' + t); }
+    const SIDE_FR = { attack: 'ATQ', defense: 'DEF' };
+
+    function render(s) {
+      S = s;
+      if (!s || s.status === 'idle') { wrap.classList.add('hidden'); return; }
+      wrap.classList.remove('hidden');
+
+      // Statut courant
+      if (s.status === 'done') {
+        statusEl.innerHTML = '<span class="act">VETO TERMINÉ</span>';
+      } else if (s.current) {
+        const c = s.current, col = teamColor(s, c.team);
+        const actLabel = c.action === 'ban' ? 'BANNIT' : c.action === 'pick' ? 'CHOISIT' : 'CHOISIT LE CÔTÉ';
+        statusEl.innerHTML = '<span class="who" style="background:' + col + '">' + teamName(s, c.team) + '</span><span class="act">' + actLabel + '</span>';
+      } else { statusEl.innerHTML = ''; }
+
+      poolEl.innerHTML = '';
+      for (const m of s.maps) {
+        const card = document.createElement('div');
+        card.className = 'card ' + m.status;
+        const bg = m.splash || m.minimap;
+        if (bg) card.style.backgroundImage = "url('" + bg + "')";
+        const isCurrent = s.current && s.current.action !== 'side' && m.status === 'available';
+        if (isCurrent) card.classList.add('current');
+
+        let inner = '<div class="shade"></div>';
+        if (m.status === 'banned')  inner += '<div class="tag">BAN · ' + teamName(s, m.by) + '</div>';
+        if (m.status === 'picked')  { card.style.setProperty('--pc', teamColor(s, m.by)); inner += '<div class="tag">PICK · ' + teamName(s, m.by) + '</div>'; }
+        if (m.status === 'decider') inner += '<div class="tag">DÉCIDEUR</div>';
+
+        if ((m.status === 'picked' || m.status === 'decider') && m.side) {
+          const atkTeam = m.sideBy, defTeam = atkTeam === 1 ? 2 : 1;
+          // sideBy a choisi m.side ; affiche les deux côtés
+          const owner = m.sideBy, choice = m.side, opp = owner === 1 ? 2 : 1;
+          const ownerSide = SIDE_FR[choice], oppSide = SIDE_FR[choice === 'attack' ? 'defense' : 'attack'];
+          inner += '<div class="sides"><span style="color:' + teamColor(s, owner) + '">' + teamName(s, owner) + ' ' + ownerSide + '</span>'
+                 + '<span style="color:' + teamColor(s, opp) + '">' + teamName(s, opp) + ' ' + oppSide + '</span></div>';
+        }
+        inner += '<div class="mname">' + m.name + '</div>';
+        card.innerHTML = inner;
+        poolEl.appendChild(card);
+      }
+    }
+
+    fetch('/api/veto').then(r => r.json()).then(render).catch(() => {});
+    io().on('vetoUpdate', render);
+  </script>
+</body>
+</html>

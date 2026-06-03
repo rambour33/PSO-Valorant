@@ -1,0 +1,13 @@
+{
+  "name": "pso-valorant",
+  "version": "0.1.0",
+  "description": "PSO Valorant — overlays de tournoi (squelette)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSO Valorant — Régie Map Veto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: var(--pso-bg, #0e1016); --surface: var(--pso-surface, #161a22); --surface2: var(--pso-surface-2, #1d2230);
+      --border: var(--pso-border, #2a3142); --text: var(--pso-text, #e8ebf2); --muted: var(--pso-muted, #8a93a6);
+      --red: var(--pso-accent, #FF4655); --cyan: var(--pso-accent-2, #00C8C8); --gold: var(--pso-gold, #E8B330);
+      --head: var(--pso-font-head, 'Oswald', sans-serif);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 22px; }
+    h1 { font-family: var(--head); font-size: 20px; letter-spacing: 1px; margin-bottom: 14px; }
+    h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: var(--muted); }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    label { display:block; font-size: 11px; color: var(--muted); margin: 8px 0 3px; text-transform: uppercase; letter-spacing:.5px; }
+    input, select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-size: 13px; }
+    input[type=color] { padding: 2px; height: 34px; }
+    .row { display: flex; gap: 8px; }
+    .row > * { flex: 1; }
+    .fmt { display: flex; gap: 8px; }
+    .fmt button { flex: 1; padding: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 7px; font-weight: 700; cursor: pointer; }
+    .fmt button.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .maps { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 8px; margin-top: 6px; }
+    .mtoggle { position: relative; height: 64px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid var(--border); background: #0b0d12 center/cover no-repeat; }
+    .mtoggle .nm { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-family:'Oswald',sans-serif; font-weight:700; font-size: 12px; letter-spacing:1px; text-transform: uppercase; text-shadow: 0 2px 6px #000; }
+    .mtoggle .ov { position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(8,10,15,.85)); }
+    .mtoggle.on { border-color: var(--red); }
+    .mtoggle.on::after { content:'✓'; position:absolute; top:4px; right:6px; color: var(--red); font-weight: 800; z-index:2; }
+    .mtoggle:not(.on) { filter: grayscale(.7) brightness(.6); }
+    .btn { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; letter-spacing:1px; text-transform: uppercase; cursor: pointer; background: var(--red); color: #fff; margin-top: 12px; }
+    .btn.ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .links a { display: block; }
+    .linkrow { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .linkrow .lbl { width: 90px; font-size: 12px; font-weight: 700; }
+    .linkrow input { font-family: monospace; font-size: 12px; }
+    .linkrow button { white-space: nowrap; padding: 8px 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .status { font-size: 13px; color: var(--muted); margin: 8px 0; }
+    .mini { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .mini .c { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; background: var(--surface2); border:1px solid var(--border); }
+    .err { color: var(--red); }
+  </style>
+</head>
+<body>
+  <h1>🔫 Régie — Map Veto</h1>
+  <div class="cols">
+    <!-- Config -->
+    <div>
+      <div class="card">
+        <h2>Configuration</h2>
+        <div class="row">
+          <div><label>Équipe 1</label><input id="t1-name" value="TEAM A" maxlength="30" /></div>
+          <div style="flex:0 0 56px"><label>Coul.</label><input type="color" id="t1-color" value="#FF4655" /></div>
+        </div>
+        <div class="row">
+          <div><label>Équipe 2</label><input id="t2-name" value="TEAM B" maxlength="30" /></div>
+          <div style="flex:0 0 56px"><label>Coul.</label><input type="color" id="t2-color" value="#00C8C8" /></div>
+        </div>
+        <label>Format</label>
+        <div class="fmt" id="fmt">
+          <button data-f="BO1">BO1</button>
+          <button data-f="BO3" class="active">BO3</button>
+          <button data-f="BO5">BO5</button>
+        </div>
+        <label>Première équipe à agir</label>
+        <select id="first"><option value="1">Équipe 1</option><option value="2">Équipe 2</option></select>
+      </div>
+
+      <div class="card">
+        <h2>Pool de maps <span id="poolcount" style="color:var(--text)"></span></h2>
+        <div class="maps" id="maps"></div>
+        <button class="btn" id="btn-start">▶ Lancer le veto</button>
+        <button class="btn ghost" id="btn-reset">Réinitialiser</button>
+        <div class="status err" id="cfg-msg"></div>
+      </div>
+    </div>
+
+    <!-- Liens + suivi -->
+    <div>
+      <div class="card">
+        <h2>Liens à partager</h2>
+        <div id="base-bar" style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:11px;color:var(--muted)">Adresse :</span>
+          <select id="base-select" style="flex:1"></select>
+        </div>
+        <div class="links" id="links"><div class="status">Lance un veto pour générer les liens.</div></div>
+      </div>
+      <div class="card">
+        <h2>Suivi en direct</h2>
+        <div class="status" id="live-status">—</div>
+        <div class="mini" id="live-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    let MAPS = [], selected = new Set(), format = 'BO3';
+    let lastTokens = null, bases = [];
+
+    // ── Bases d'URL (Ce PC / Réseau local) ──
+    fetch('/api/server-info').then(r => r.json()).then(info => {
+      const port = info.port || location.port || 3003;
+      bases = (info.ips || []).map(ip => ({ label: 'Réseau · ' + ip, url: 'http://' + ip + ':' + port }));
+      // Repli si aucune IP réseau détectée (PC hors-ligne)
+      if (bases.length === 0) bases = [{ label: location.host, url: location.origin }];
+      const sel = $('base-select');
+      sel.innerHTML = bases.map((b, i) => '<option value="' + i + '">' + b.label + '</option>').join('');
+      sel.value = '0';
+      sel.addEventListener('change', () => { if (lastTokens) showLinks(lastTokens); });
+    }).catch(() => { bases = [{ label: location.origin, url: location.origin }]; $('base-select').innerHTML = '<option>' + location.origin + '</option>'; });
+
+    function currentBase() {
+      const i = parseInt($('base-select').value, 10) || 0;
+      return (bases[i] && bases[i].url) || location.origin;
+    }
+
+    const teamName = (s,t) => (s.teams[t]&&s.teams[t].name)||('TEAM '+t);
+
+    // Format
+    $('fmt').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      format = b.dataset.f;
+      $('fmt').querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    }));
+
+    // Pool
+    function renderMaps() {
+      $('maps').innerHTML = '';
+      MAPS.forEach(m => {
+        const d = document.createElement('div');
+        d.className = 'mtoggle' + (selected.has(m.slug) ? ' on' : '');
+        if (m.minimap || m.splash) d.style.backgroundImage = "url('" + (m.minimap || m.splash) + "')";
+        d.innerHTML = '<div class="ov"></div><div class="nm">' + m.name + '</div>';
+        d.addEventListener('click', () => { selected.has(m.slug) ? selected.delete(m.slug) : selected.add(m.slug); renderMaps(); });
+        $('maps').appendChild(d);
+      });
+      $('poolcount').textContent = '(' + selected.size + ')';
+    }
+
+    fetch('/api/maps').then(r => r.json()).then(ms => {
+      MAPS = ms; ms.forEach(m => selected.add(m.slug)); renderMaps();
+    });
+
+    // Lancer
+    $('btn-start').addEventListener('click', () => {
+      $('cfg-msg').textContent = '';
+      const body = {
+        format,
+        firstTeam: parseInt($('first').value, 10),
+        teams: { 1: { name: $('t1-name').value, color: $('t1-color').value }, 2: { name: $('t2-name').value, color: $('t2-color').value } },
+        pool: [...selected],
+      };
+      fetch('/api/veto/setup', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+        .then(r => r.json()).then(d => {
+          if (d.error) throw new Error(d.error);
+          showLinks(d.tokens);
+        }).catch(e => { $('cfg-msg').textContent = e.message; });
+    });
+
+    $('btn-reset').addEventListener('click', () => {
+      fetch('/api/veto/reset', { method:'POST' }).then(() => { $('links').innerHTML = '<div class="status">Veto réinitialisé.</div>'; });
+    });
+
+    function linkRow(label, url) {
+      return '<div class="linkrow"><span class="lbl">' + label + '</span>'
+        + '<input readonly value="' + url + '" onclick="this.select()" />'
+        + '<button onclick="navigator.clipboard.writeText(\'' + url + '\');this.textContent=\'Copié\';setTimeout(()=>this.textContent=\'Copier\',1200)">Copier</button>'
+        + '<a href="' + url + '" target="_blank"><button>Ouvrir</button></a></div>';
+    }
+
+    function showLinks(tokens) {
+      lastTokens = tokens;
+      const base = currentBase();
+      $('links').innerHTML =
+        linkRow($('t1-name').value, base + '/veto/team/' + tokens[1]) +
+        linkRow($('t2-name').value, base + '/veto/team/' + tokens[2]) +
+        linkRow('Overlay', base + '/veto-overlay');
+    }
+
+    function renderLive(s) {
+      if (!s || s.status === 'idle') { $('live-status').textContent = '—'; $('live-log').innerHTML = ''; return; }
+      if (s.status === 'done') $('live-status').textContent = '✓ Veto terminé';
+      else if (s.current) {
+        const act = s.current.action === 'ban' ? 'bannit' : s.current.action === 'pick' ? 'choisit' : 'choisit le côté';
+        $('live-status').textContent = '→ ' + teamName(s, s.current.team) + ' ' + act + '…';
+      }
+      $('live-log').innerHTML = (s.log || []).map(l => {
+        const verb = l.action === 'ban' ? '⛔' : l.action === 'side' ? '🧭' : '✅';
+        return '<span class="c">' + verb + ' ' + teamName(s, l.team) + ' · ' + l.name + (l.side ? ' (' + l.side + ')' : '') + '</span>';
+      }).join('');
+    }
+
+    fetch('/api/veto').then(r => r.json()).then(renderLive);
+    io().on('vetoUpdate', renderLive);
+  </script>
+</body>
+</html>

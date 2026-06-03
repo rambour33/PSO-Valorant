@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Abyss",
+    "slug": "abyss",
+    "splash": "/maps/abyss-splash.png",
+    "minimap": "/maps/abyss-minimap.png"
+  },
+  {
+    "name": "Ascent",
+    "slug": "ascent",
+    "splash": "/maps/ascent-splash.png",
+    "minimap": "/maps/ascent-minimap.png"
+  },
+  {
+    "name": "Bind",
+    "slug": "bind",
+    "splash": "/maps/bind-splash.png",
+    "minimap": "/maps/bind-minimap.png"
+  },
+  {
+    "name": "Breeze",
+    "slug": "breeze",
+    "splash": "/maps/breeze-splash.png",
+    "minimap": "/maps/breeze-minimap.png"
+  },
+  {
+    "name": "Corrode",
+    "slug": "corrode",
+    "splash": "/maps/corrode-splash.png",
+    "minimap": "/maps/corrode-minimap.png"
+  },
+  {
+    "name": "Fracture",
+    "slug": "fracture",
+    "splash": "/maps/fracture-splash.png",
+    "minimap": "/maps/fracture-minimap.png"
+  },
+  {
+    "name": "Haven",
+    "slug": "haven",
+    "splash": "/maps/haven-splash.png",
+    "minimap": "/maps/haven-minimap.png"
+  },
+  {
+    "name": "Icebox",
+    "slug": "icebox",
+    "splash": "/maps/icebox-splash.png",
+    "minimap": "/maps/icebox-minimap.png"
+  },
+  {
+    "name": "Lotus",
+    "slug": "lotus",
+    "splash": "/maps/lotus-splash.png",
+    "minimap": "/maps/lotus-minimap.png"
+  },
+  {
+    "name": "Pearl",
+    "slug": "pearl",
+    "splash": "/maps/pearl-splash.png",
+    "minimap": "/maps/pearl-minimap.png"
+  },
+  {
+    "name": "Split",
+    "slug": "split",
+    "splash": "/maps/split-splash.png",
+    "minimap": "/maps/split-minimap.png"
+  },
+  {
+    "name": "Sunset",
+    "slug": "sunset",
+    "splash": "/maps/sunset-splash.png",
+    "minimap": "/maps/sunset-minimap.png"
+  }
+]

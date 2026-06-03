@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSO Valorant — Contrôle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="control.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <h1>PSO <span>VALORANT</span></h1>
+      </div>
+      <div class="header-right">
+        <button class="btn-assets" id="btn-assets" title="Re-synchroniser agents + maps depuis valorant-api.com">🔄 Mettre à jour les assets</button>
+        <span class="assets-info" id="assets-info"></span>
+        <div class="conn" id="conn">
+          <span class="dot"></span>
+          <span class="label" id="conn-label">Connexion…</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAV -->
+    <nav class="tab-nav" id="tab-nav">
+      <button class="tab-btn active" data-tab="scoreboard">Scoreboard</button>
+      <button class="tab-btn" data-tab="veto">Map Veto</button>
+      <button class="tab-btn" data-tab="theme">Theme</button>
+    </nav>
+
+    <!-- CONTENU -->
+    <main class="content">
+      <div class="tab-content active" id="tab-scoreboard">
+        <div class="sb-cols">
+          <!-- Équipe 1 -->
+          <div class="sb-card" id="sb-card-1">
+            <h2 class="section-title">Équipe 1</h2>
+            <label class="fld">Nom
+              <input id="sb-t1-name" maxlength="40" placeholder="TEAM A" />
+            </label>
+            <label class="fld">Couleur
+              <input type="color" id="sb-t1-color" value="#FF4655" />
+            </label>
+            <div class="sb-score">
+              <button class="sb-btn" data-team="1" data-d="dec">−</button>
+              <span class="sb-val" id="sb-t1-score">0</span>
+              <button class="sb-btn" data-team="1" data-d="inc">+</button>
+            </div>
+          </div>
+
+          <!-- Centre : format -->
+          <div class="sb-card sb-center">
+            <h2 class="section-title">Match</h2>
+            <label class="fld">Format</label>
+            <div class="sb-fmt" id="sb-fmt">
+              <button data-f="BO1">BO1</button>
+              <button data-f="BO3" class="active">BO3</button>
+              <button data-f="BO5">BO5</button>
+            </div>
+            <div class="sb-actions">
+              <button class="sb-action" id="sb-reset">Reset score</button>
+              <button class="sb-action primary" id="sb-visible">Masquer</button>
+            </div>
+          </div>
+
+          <!-- Équipe 2 -->
+          <div class="sb-card" id="sb-card-2">
+            <h2 class="section-title">Équipe 2</h2>
+            <label class="fld">Nom
+              <input id="sb-t2-name" maxlength="40" placeholder="TEAM B" />
+            </label>
+            <label class="fld">Couleur
+              <input type="color" id="sb-t2-color" value="#00C8C8" />
+            </label>
+            <div class="sb-score">
+              <button class="sb-btn" data-team="2" data-d="dec">−</button>
+              <span class="sb-val" id="sb-t2-score">0</span>
+              <button class="sb-btn" data-team="2" data-d="inc">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-veto">
+        <iframe id="veto-frame" title="Régie Map Veto"></iframe>
+      </div>
+      <div class="tab-content" id="tab-theme">
+        <h2 class="section-title">Thème global</h2>
+        <p class="section-hint">S'applique en direct à tous les overlays et pages (présents et futurs).</p>
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script src="control.js"></script>
+</body>
+</html>
