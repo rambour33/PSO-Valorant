@@ -30,6 +30,9 @@
     <nav class="tab-nav" id="tab-nav">
       <button class="tab-btn active" data-tab="scoreboard">Scoreboard</button>
       <button class="tab-btn" data-tab="veto">Map Veto</button>
+      <button class="tab-btn" data-tab="casters">Casters</button>
+      <button class="tab-btn" data-tab="timer">Timer</button>
+      <button class="tab-btn" data-tab="chat">Chat</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
     </nav>
 
@@ -43,14 +46,19 @@
             <label class="fld">Nom
               <input id="sb-t1-name" maxlength="40" placeholder="TEAM A" />
             </label>
-            <label class="fld">Couleur
+            <label class="fld">Couleur</label>
+            <div class="sb-color">
               <input type="color" id="sb-t1-color" value="#FF4655" />
-            </label>
+              <input type="text" id="sb-t1-hex" class="hexin" maxlength="7" spellcheck="false" value="#FF4655" />
+            </div>
+            <label class="fld">Joueurs</label>
+            <div class="sb-players" id="sb-t1-players" data-team="1"></div>
             <div class="sb-score">
               <button class="sb-btn" data-team="1" data-d="dec">−</button>
               <span class="sb-val" id="sb-t1-score">0</span>
               <button class="sb-btn" data-team="1" data-d="inc">+</button>
             </div>
+            <button class="sb-action" data-save="1">💾 Sauvegarder l'équipe</button>
           </div>
 
           <!-- Centre : format -->
@@ -63,6 +71,7 @@
               <button data-f="BO5">BO5</button>
             </div>
             <div class="sb-actions">
+              <button class="sb-action" id="sb-swap">⇄ Inverser G/D</button>
               <button class="sb-action" id="sb-reset">Reset score</button>
               <button class="sb-action primary" id="sb-visible">Masquer</button>
             </div>
@@ -74,15 +83,27 @@
             <label class="fld">Nom
               <input id="sb-t2-name" maxlength="40" placeholder="TEAM B" />
             </label>
-            <label class="fld">Couleur
+            <label class="fld">Couleur</label>
+            <div class="sb-color">
               <input type="color" id="sb-t2-color" value="#00C8C8" />
-            </label>
+              <input type="text" id="sb-t2-hex" class="hexin" maxlength="7" spellcheck="false" value="#00C8C8" />
+            </div>
+            <label class="fld">Joueurs</label>
+            <div class="sb-players" id="sb-t2-players" data-team="2"></div>
             <div class="sb-score">
               <button class="sb-btn" data-team="2" data-d="dec">−</button>
               <span class="sb-val" id="sb-t2-score">0</span>
               <button class="sb-btn" data-team="2" data-d="inc">+</button>
             </div>
+            <button class="sb-action" data-save="2">💾 Sauvegarder l'équipe</button>
           </div>
+        </div>
+
+        <!-- Équipes sauvegardées -->
+        <div class="sb-saved-card">
+          <h2 class="section-title">Équipes sauvegardées</h2>
+          <p class="section-hint">Clique sur « Gauche » ou « Droite » pour placer une équipe sur le scoreboard.</p>
+          <div class="sb-saved" id="sb-saved"></div>
         </div>
 
         <!-- Liens overlay -->
@@ -98,10 +119,93 @@
       <div class="tab-content" id="tab-veto">
         <iframe id="veto-frame" title="Régie Map Veto"></iframe>
       </div>
+      <div class="tab-content" id="tab-casters">
+        <div class="ca-head">
+          <h2 class="section-title">Casters à l'antenne</h2>
+          <button class="sb-action" id="ca-visible">Masquer</button>
+        </div>
+        <p class="section-hint">Active « À l'antenne » pour afficher un caster dans l'overlay.</p>
+        <div class="ca-add">
+          <input id="ca-name" placeholder="Nom" maxlength="40" />
+          <input id="ca-role" placeholder="Rôle (ex. Caster, Analyste)" maxlength="40" />
+          <input id="ca-handle" placeholder="@pseudo" maxlength="40" />
+          <button class="sb-action primary" id="ca-add">+ Ajouter</button>
+        </div>
+        <div class="ca-list" id="ca-list"></div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="ca-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-timer">
+        <div class="ca-head">
+          <h2 class="section-title">Timer</h2>
+          <button class="sb-action" id="tm-visible">Masquer</button>
+        </div>
+        <div class="tm-grid">
+          <div class="sb-card">
+            <label class="fld">Mode</label>
+            <div class="sb-fmt" id="tm-mode">
+              <button data-m="down" class="active">Décompte</button>
+              <button data-m="up">Chrono</button>
+            </div>
+            <label class="fld">Durée du décompte</label>
+            <div class="tm-dur">
+              <input id="tm-min" type="number" min="0" max="999" value="5" /><span>min</span>
+              <input id="tm-sec" type="number" min="0" max="59" value="0" /><span>sec</span>
+            </div>
+            <label class="fld">Libellé (optionnel)</label>
+            <input id="tm-label" maxlength="40" placeholder="ex. PAUSE · DÉBUT DANS…" />
+          </div>
+          <div class="sb-card tm-side">
+            <div class="tm-preview" id="tm-preview">05:00</div>
+            <div class="tm-actions">
+              <button class="sb-action primary" id="tm-toggle">▶ Démarrer</button>
+              <button class="sb-action" id="tm-reset">Reset</button>
+            </div>
+            <div class="tm-adjust" id="tm-adjust">
+              <button data-d="-60000">−1:00</button>
+              <button data-d="-10000">−0:10</button>
+              <button data-d="10000">+0:10</button>
+              <button data-d="60000">+1:00</button>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="tm-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-chat">
+        <div class="ca-head">
+          <h2 class="section-title">Chat Twitch</h2>
+          <button class="sb-action" id="chat-visible">Masquer</button>
+        </div>
+        <p class="section-hint">Lecture anonyme du chat (aucune clé requise). L'overlay suit le thème actif.</p>
+        <div class="ca-add">
+          <input id="chat-channel" placeholder="Chaîne Twitch (ex. tealsb)" maxlength="25" />
+          <button class="sb-action primary" id="chat-save">Connecter</button>
+        </div>
+        <label class="fld" style="max-width:900px">Taille du texte <span id="chat-size-val" style="color:var(--text)">100%</span></label>
+        <input type="range" id="chat-size" min="0.7" max="2.5" step="0.05" value="1" style="max-width:900px;width:100%" />
+        <label class="fld" style="max-width:900px">Caractères par ligne <span id="chat-line-val" style="color:var(--text)">40</span></label>
+        <input type="range" id="chat-line" min="15" max="100" step="1" value="40" style="max-width:900px;width:100%" />
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="chat-links"></div>
+        </div>
+      </div>
       <div class="tab-content" id="tab-theme">
         <h2 class="section-title">Thème global</h2>
         <p class="section-hint">S'applique en direct à tous les overlays et pages (présents et futurs).</p>
         <div class="theme-grid" id="theme-grid"></div>
+
+        <div class="sb-links-card">
+          <h2 class="section-title">Stinger</h2>
+          <p class="section-hint">Transition plein écran aux couleurs du thème actif. Ajoute le lien comme source OBS, puis déclenche-la.</p>
+          <button class="sb-action primary" id="stinger-play" style="max-width:260px">▶ Lancer le stinger</button>
+          <div class="sb-links" id="stinger-links" style="margin-top:12px"></div>
+        </div>
       </div>
     </main>
 

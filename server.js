@@ -1,6 +1,8 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const os = require('os');
 const express = require('express');
 const http = require('http');
@@ -9,6 +11,10 @@ const assets = require('./lib/assets');
 const veto = require('./lib/veto');
 const theme = require('./lib/theme');
 const scoreboard = require('./lib/scoreboard');
+const teams = require('./lib/teams');
+const casters = require('./lib/casters');
+const timer = require('./lib/timer');
+const chat = require('./lib/chat');
 
 const PORT = process.env.PORT || 3003;
 
@@ -16,7 +22,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '15mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Routes ────────────────────────────────────────────────────────────────────
@@ -30,6 +36,29 @@ app.get('/api/server-info', (req, res) => {
 
 // ── Thème global ──────────────────────────────────────────────────────────────
 app.get('/api/theme', (req, res) => res.json({ ...theme.get(), themes: theme.list() }));
+
+// ── Stinger (transition aux couleurs du thème actif) ──────────────────────────
+app.get('/stinger', (req, res) => res.sendFile(path.join(__dirname, 'public', 'stinger.html')));
+app.post('/api/stinger/play', (req, res) => { io.emit('stingerPlay'); res.json({ ok: true }); });
+
+// ── Upload d'images (photos de joueurs) ───────────────────────────────────────
+// Reçoit une data URL base64, écrit un fichier dans public/uploads, renvoie l'URL.
+const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
+app.post('/api/upload', (req, res) => {
+  try {
+    const m = /^data:image\/(png|jpe?g|gif|webp);base64,(.+)$/i.exec((req.body || {}).dataUrl || '');
+    if (!m) return res.status(400).json({ error: 'Image invalide' });
+    const ext = m[1].toLowerCase() === 'jpeg' ? 'jpg' : m[1].toLowerCase();
+    const buf = Buffer.from(m[2], 'base64');
+    if (buf.length > 8 * 1024 * 1024) return res.status(413).json({ error: 'Image trop lourde (8 Mo max)' });
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    const fname = crypto.randomBytes(8).toString('hex') + '.' + ext;
+    fs.writeFileSync(path.join(UPLOAD_DIR, fname), buf);
+    res.json({ url: '/uploads/' + fname });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.post('/api/theme', (req, res) => {
   try {
@@ -45,6 +74,7 @@ app.post('/api/theme', (req, res) => {
 function emitScore() { io.emit('scoreboardUpdate', scorePayload()); }
 
 app.get('/scoreboard-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-overlay.html')));
+app.get('/lineup-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lineup-overlay.html')));
 
 function scorePayload() { return { ...scoreboard.get(), formats: scoreboard.FORMATS, maxWins: scoreboard.maxWins(), mapsCount: scoreboard.mapsCount() }; }
 
@@ -68,6 +98,91 @@ app.post('/api/scoreboard/score/:team/:delta', (req, res) => {
 
 app.post('/api/scoreboard/reset', (req, res) => {
   scoreboard.resetScore();
+  emitScore();
+  res.json(scorePayload());
+});
+
+app.post('/api/scoreboard/swap', (req, res) => {
+  scoreboard.swap();
+  emitScore();
+  res.json(scorePayload());
+});
+
+// ── Bibliothèque d'équipes sauvegardées ───────────────────────────────────────
+function emitTeams() { io.emit('teamsUpdate', teams.list()); }
+
+app.get('/api/teams', (req, res) => res.json(teams.list()));
+
+app.post('/api/teams', (req, res) => {
+  try {
+    const t = teams.saveTeam(req.body || {});
+    emitTeams();
+    res.json(t);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.delete('/api/teams/:id', (req, res) => {
+  teams.remove(req.params.id);
+  emitTeams();
+  res.json({ ok: true });
+});
+
+// ── Casters (commentateurs à l'antenne) ───────────────────────────────────────
+function emitCasters() { io.emit('castersUpdate', casters.get()); }
+
+app.get('/casters-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'casters-overlay.html')));
+
+app.get('/api/casters', (req, res) => res.json(casters.get()));
+
+app.post('/api/casters', (req, res) => { casters.add(req.body || {}); emitCasters(); res.json(casters.get()); });
+
+app.patch('/api/casters/:id', (req, res) => {
+  if (!casters.update(req.params.id, req.body || {})) return res.status(404).json({ error: 'Caster introuvable' });
+  emitCasters();
+  res.json(casters.get());
+});
+
+app.delete('/api/casters/:id', (req, res) => { casters.remove(req.params.id); emitCasters(); res.json(casters.get()); });
+
+app.post('/api/casters/:id/live', (req, res) => {
+  const b = req.body || {};
+  const cur = casters.get().casters.find(c => c.id === req.params.id);
+  const next = b.live !== undefined ? !!b.live : !(cur && cur.live);
+  if (!casters.setLive(req.params.id, next)) return res.status(404).json({ error: 'Caster introuvable' });
+  emitCasters();
+  res.json(casters.get());
+});
+
+app.post('/api/casters/visible', (req, res) => { casters.setVisible(!!(req.body || {}).visible); emitCasters(); res.json(casters.get()); });
+
+// ── Chat Twitch (config) ──────────────────────────────────────────────────────
+app.get('/chat-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chat-overlay.html')));
+app.get('/api/chat', (req, res) => res.json(chat.get()));
+app.post('/api/chat', (req, res) => { const s = chat.set(req.body || {}); io.emit('chatUpdate', s); res.json(s); });
+
+// ── Timer (minuteur pilotable) ────────────────────────────────────────────────
+function emitTimer() { io.emit('timerUpdate', timer.get()); }
+
+app.get('/timer-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'timer-overlay.html')));
+
+app.get('/api/timer', (req, res) => res.json(timer.get()));
+app.post('/api/timer', (req, res) => { emitTimer_(timer.set(req.body || {}), res); });
+app.post('/api/timer/start', (req, res) => { emitTimer_(timer.start(), res); });
+app.post('/api/timer/pause', (req, res) => { emitTimer_(timer.pause(), res); });
+app.post('/api/timer/toggle', (req, res) => { emitTimer_(timer.toggle(), res); });
+app.post('/api/timer/reset', (req, res) => { emitTimer_(timer.reset(), res); });
+app.post('/api/timer/adjust', (req, res) => { emitTimer_(timer.adjust((req.body || {}).deltaMs), res); });
+app.post('/api/timer/visible', (req, res) => { emitTimer_(timer.setVisible(!!(req.body || {}).visible), res); });
+function emitTimer_(snap, res) { emitTimer(); res.json(snap); }
+
+// Place une équipe sauvegardée sur un côté du scoreboard (left → team1, right → team2).
+app.post('/api/scoreboard/assign/:side', (req, res) => {
+  const side = req.params.side === 'right' ? 'team2' : req.params.side === 'left' ? 'team1' : null;
+  if (!side) return res.status(400).json({ error: 'Côté invalide (left/right)' });
+  const b = req.body || {};
+  scoreboard.set({ [side]: { name: b.name, color: b.color, players: b.players } });
   emitScore();
   res.json(scorePayload());
 });

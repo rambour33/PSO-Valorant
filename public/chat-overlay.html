@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Overlay Chat Twitch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/typo/typo.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; overflow: hidden; }
+    body { font-family: var(--pso-font-body, 'Inter', sans-serif); padding: 18px; height: 100vh; }
+    :root { --head: var(--pso-font-head, 'Oswald', sans-serif); }
+
+    #chat { position: absolute; inset: 18px; display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; transition: opacity .3s ease; font-size: calc(18px * var(--chat-scale, 1)); }
+    #chat.hidden { opacity: 0; }
+
+    .msg {
+      background: color-mix(in srgb, var(--pso-surface, #161a22) 92%, transparent);
+      border-left: 4px solid var(--uc, var(--pso-accent, #FF4655));
+      border-radius: 0; padding: .45em .7em;
+      width: fit-content; max-width: min(100%, calc(var(--chat-line, 40) * 1ch + 1.4em));
+      box-shadow: 0 6px 20px rgba(0,0,0,.35); animation: pop .25s ease both; word-wrap: break-word; overflow-wrap: anywhere;
+    }
+    @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .msg.out { animation: fadeout .45s ease forwards; }
+    @keyframes fadeout { to { opacity: 0; transform: translateX(-14px); } }
+    .msg .user { font-family: var(--head); font-weight: 700; font-size: 1.12em; letter-spacing: .5px; color: var(--uc, var(--pso-accent, #FF4655)); }
+    .msg .text { font-size: 1em; line-height: 1.35; color: var(--pso-text, #e8ebf2); }
+    .msg .sep { color: var(--pso-muted, #8a93a6); margin: 0 6px; }
+    .msg .emote { height: 1.5em; vertical-align: middle; margin: 0 1px; }
+
+    .notice { font-family: var(--head); letter-spacing: 1px; color: var(--pso-muted, #8a93a6); font-size: .85em; text-align: center; padding: 10px; }
+
+    /* ── Habillage « Quartier Général » (grain papier) ── */
+    [data-pso-theme^="qg"] {
+      --graf-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    [data-pso-theme^="qg"] .msg { position: relative; }
+    [data-pso-theme^="qg"] .msg::after {
+      content: ''; position: absolute; inset: 0; border-radius: 0; pointer-events: none;
+      mix-blend-mode: overlay; opacity: .18; background: var(--graf-grain);
+    }
+  </style>
+</head>
+<body>
+  <div id="chat" class="hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const chatEl = document.getElementById('chat');
+    const MAX = 40;
+    const LIFETIME = 30000;   // un message disparaît 30 s après son affichage
+    let ws = null, channel = '', reconnectT = null, visible = true;
+
+    const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // Couleur de repli stable à partir du pseudo (si Twitch n'en fournit pas).
+    const PALETTE = ['#FF4655', '#00C8C8', '#E8B330', '#7CFF6B', '#B68CFF', '#FF8A3D', '#4FA3FF', '#FF6FB5'];
+    function fallbackColor(name) {
+      let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+      return PALETTE[Math.abs(h) % PALETTE.length];
+    }
+
+    function notice(txt) { chatEl.innerHTML = '<div class="notice">' + escapeHtml(txt) + '</div>'; }
+
+    // ── Parsing IRC Twitch ──
+    function parseLine(line) {
+      let tags = {}, rest = line;
+      if (rest[0] === '@') { const sp = rest.indexOf(' '); rest.slice(1, sp).split(';').forEach((kv) => { const i = kv.indexOf('='); tags[kv.slice(0, i)] = kv.slice(i + 1); }); rest = rest.slice(sp + 1); }
+      let prefix = ''; if (rest[0] === ':') { const sp = rest.indexOf(' '); prefix = rest.slice(1, sp); rest = rest.slice(sp + 1); }
+      const sp = rest.indexOf(' ');
+      const command = sp < 0 ? rest : rest.slice(0, sp);
+      const params = sp < 0 ? '' : rest.slice(sp + 1);
+      const ci = params.indexOf(':');
+      const text = ci >= 0 ? params.slice(ci + 1) : '';
+      return { tags, command, nick: prefix.split('!')[0], text };
+    }
+
+    // Construit le HTML du message en remplaçant les emotes Twitch.
+    function renderText(text, emotesTag) {
+      const chars = Array.from(text);
+      const map = {};
+      if (emotesTag) emotesTag.split('/').forEach((part) => {
+        const idx = part.indexOf(':'); if (idx < 0) return;
+        const id = part.slice(0, idx);
+        part.slice(idx + 1).split(',').forEach((r) => { const [a, b] = r.split('-').map(Number); if (!isNaN(a)) map[a] = { id, end: b }; });
+      });
+      let html = '';
+      for (let i = 0; i < chars.length;) {
+        const e = map[i];
+        if (e) { html += '<img class="emote" src="https://static-cdn.jtvnw.net/emoticons/v2/' + e.id + '/default/dark/2.0" alt="" />'; i = e.end + 1; }
+        else { html += escapeHtml(chars[i]); i++; }
+      }
+      return html;
+    }
+
+    function addMessage(m) {
+      const name = m.tags['display-name'] || m.nick;
+      const color = m.tags.color || fallbackColor(name);
+      const div = document.createElement('div');
+      div.className = 'msg';
+      div.style.setProperty('--uc', color);
+      div.innerHTML = '<span class="user">' + escapeHtml(name) + '</span><span class="sep">›</span>' +
+        '<span class="text">' + renderText(m.text, m.tags.emotes) + '</span>';
+      chatEl.appendChild(div);
+      while (chatEl.children.length > MAX) chatEl.removeChild(chatEl.firstChild);
+      chatEl.scrollTop = chatEl.scrollHeight;
+      // Disparition automatique après LIFETIME
+      setTimeout(() => { div.classList.add('out'); setTimeout(() => div.remove(), 450); }, LIFETIME);
+    }
+
+    // ── Connexion IRC anonyme ──
+    function connect() {
+      if (ws) { try { ws.close(); } catch (e) {} ws = null; }
+      clearTimeout(reconnectT);
+      if (!channel) { notice('Aucune chaîne Twitch configurée.'); return; }
+      notice('Connexion à #' + channel + '…');
+      ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+      ws.onopen = () => {
+        ws.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
+        ws.send('NICK justinfan' + Math.floor(Math.random() * 99999));
+        ws.send('JOIN #' + channel);
+      };
+      ws.onmessage = (ev) => {
+        ev.data.split('\r\n').forEach((line) => {
+          if (!line) return;
+          if (line.startsWith('PING')) { ws.send('PONG :tmi.twitch.tv'); return; }
+          const m = parseLine(line);
+          if (m.command === 'PRIVMSG') {
+            if (chatEl.querySelector('.notice')) chatEl.innerHTML = '';
+            addMessage(m);
+          }
+        });
+      };
+      ws.onclose = () => { reconnectT = setTimeout(connect, 3000); };
+      ws.onerror = () => { try { ws.close(); } catch (e) {} };
+    }
+
+    function applyConfig(s) {
+      if (!s) return;
+      visible = s.visible !== false;
+      chatEl.classList.toggle('hidden', !visible);
+      chatEl.style.setProperty('--chat-scale', s.fontScale || 1);
+      chatEl.style.setProperty('--chat-line', s.lineLength || 40);
+      if ((s.channel || '') !== channel) { channel = s.channel || ''; chatEl.innerHTML = ''; connect(); }
+    }
+
+    fetch('/api/chat').then((r) => r.json()).then(applyConfig).catch(() => {});
+    io().on('chatUpdate', applyConfig);
+  </script>
+</body>
+</html>

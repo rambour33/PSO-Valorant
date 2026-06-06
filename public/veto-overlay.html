@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>PSO Valorant — Overlay Veto</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/typo/typo.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; font-family: var(--pso-font-body, 'Inter', sans-serif); }
@@ -17,12 +18,12 @@
       text-transform: uppercase; color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,.7);
       display: flex; align-items: center; gap: 16px;
     }
-    .status .who { padding: 4px 18px; border-radius: 6px; color: #fff; }
-    .status .act { color: #c8cede; }
+    .status .who { padding: 4px 18px; border-radius: 0; color: #fff; }
+    .status .act { color: #fff; -webkit-text-stroke: 3px #000; paint-order: stroke fill; }
 
     .pool { display: flex; flex-wrap: wrap; gap: 16px 16px; justify-content: center; align-content: center; max-width: 1660px; }
     .card {
-      width: 184px; height: 300px; border-radius: 12px; overflow: hidden; position: relative;
+      width: 184px; height: 300px; border-radius: 0; overflow: hidden; position: relative;
       background: var(--pso-bg, #0e1016) center/cover no-repeat; border: 3px solid rgba(255,255,255,.08);
       box-shadow: 0 10px 40px rgba(0,0,0,.6); transition: all .3s ease; flex: 0 0 auto;
     }
@@ -35,13 +36,13 @@
     .card .tag {
       position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 3;
       font-family: var(--head); font-weight: 700; font-size: 13px; letter-spacing: 2px;
-      text-transform: uppercase; padding: 4px 12px; border-radius: 5px; white-space: nowrap;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 0; white-space: nowrap;
     }
     .card .sides {
       position: absolute; bottom: 44px; left: 0; right: 0; z-index: 3; display: flex; justify-content: center; gap: 6px;
       font-size: 11px; font-weight: 700; letter-spacing: .5px;
     }
-    .card .sides span { padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,.55); }
+    .card .sides span { padding: 2px 8px; border-radius: 0; background: rgba(0,0,0,.55); }
 
     /* États */
     .card.banned { filter: grayscale(1) brightness(.4); border-color: rgba(255,70,85,.5); }
@@ -75,9 +76,25 @@
     }
     .pool.final .card .sides span {
       justify-content: center; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,.62);
-      border-radius: 6px; font-family: var(--head); letter-spacing: 1px;
+      border-radius: 0; font-family: var(--head); letter-spacing: 1px;
     }
     @keyframes reveal { from { opacity: 0; transform: scale(.88) translateY(28px); } to { opacity: 1; transform: none; } }
+
+    /* ── Habillage « Quartier Général » : graffiti / grunge (actif seulement sous ce thème) ── */
+    [data-pso-theme^="qg"] .status,
+    [data-pso-theme^="qg"] .card .tag,
+    [data-pso-theme^="qg"] .card .mname,
+    [data-pso-theme^="qg"] .pool.final .card .mapno { font-family: var(--pso-font-head); letter-spacing: 1px; }
+    [data-pso-theme^="qg"] .status .who { transform: rotate(-1.5deg); }
+
+    /* Grain papier projeté sur chaque carte */
+    [data-pso-theme^="qg"] .card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+      mix-blend-mode: overlay; opacity: .22;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    /* Croix de ban tracée à la main */
+    [data-pso-theme^="qg"] .card.banned::after { font-family: var(--pso-font-head); transform: rotate(-8deg); }
   </style>
 </head>
 <body>

@@ -2,146 +2,175 @@
   {
     "name": "Astra",
     "slug": "astra",
-    "icon": "/agents/astra.png"
+    "icon": "/agents/astra.png",
+    "portrait": "/agents/astra-portrait.png"
   },
   {
     "name": "Breach",
     "slug": "breach",
-    "icon": "/agents/breach.png"
+    "icon": "/agents/breach.png",
+    "portrait": "/agents/breach-portrait.png"
   },
   {
     "name": "Brimstone",
     "slug": "brimstone",
-    "icon": "/agents/brimstone.png"
+    "icon": "/agents/brimstone.png",
+    "portrait": "/agents/brimstone-portrait.png"
   },
   {
     "name": "Chamber",
     "slug": "chamber",
-    "icon": "/agents/chamber.png"
+    "icon": "/agents/chamber.png",
+    "portrait": "/agents/chamber-portrait.png"
   },
   {
     "name": "Clove",
     "slug": "clove",
-    "icon": "/agents/clove.png"
+    "icon": "/agents/clove.png",
+    "portrait": "/agents/clove-portrait.png"
   },
   {
     "name": "Cypher",
     "slug": "cypher",
-    "icon": "/agents/cypher.png"
+    "icon": "/agents/cypher.png",
+    "portrait": "/agents/cypher-portrait.png"
   },
   {
     "name": "Deadlock",
     "slug": "deadlock",
-    "icon": "/agents/deadlock.png"
+    "icon": "/agents/deadlock.png",
+    "portrait": "/agents/deadlock-portrait.png"
   },
   {
     "name": "Fade",
     "slug": "fade",
-    "icon": "/agents/fade.png"
+    "icon": "/agents/fade.png",
+    "portrait": "/agents/fade-portrait.png"
   },
   {
     "name": "Gekko",
     "slug": "gekko",
-    "icon": "/agents/gekko.png"
+    "icon": "/agents/gekko.png",
+    "portrait": "/agents/gekko-portrait.png"
   },
   {
     "name": "Harbor",
     "slug": "harbor",
-    "icon": "/agents/harbor.png"
+    "icon": "/agents/harbor.png",
+    "portrait": "/agents/harbor-portrait.png"
   },
   {
     "name": "Iso",
     "slug": "iso",
-    "icon": "/agents/iso.png"
+    "icon": "/agents/iso.png",
+    "portrait": "/agents/iso-portrait.png"
   },
   {
     "name": "Jett",
     "slug": "jett",
-    "icon": "/agents/jett.png"
+    "icon": "/agents/jett.png",
+    "portrait": "/agents/jett-portrait.png"
   },
   {
     "name": "KAY/O",
     "slug": "kay-o",
-    "icon": "/agents/kay-o.png"
+    "icon": "/agents/kay-o.png",
+    "portrait": "/agents/kay-o-portrait.png"
   },
   {
     "name": "Killjoy",
     "slug": "killjoy",
-    "icon": "/agents/killjoy.png"
+    "icon": "/agents/killjoy.png",
+    "portrait": "/agents/killjoy-portrait.png"
   },
   {
     "name": "Miks",
     "slug": "miks",
-    "icon": "/agents/miks.png"
+    "icon": "/agents/miks.png",
+    "portrait": "/agents/miks-portrait.png"
   },
   {
     "name": "Neon",
     "slug": "neon",
-    "icon": "/agents/neon.png"
+    "icon": "/agents/neon.png",
+    "portrait": "/agents/neon-portrait.png"
   },
   {
     "name": "Omen",
     "slug": "omen",
-    "icon": "/agents/omen.png"
+    "icon": "/agents/omen.png",
+    "portrait": "/agents/omen-portrait.png"
   },
   {
     "name": "Phoenix",
     "slug": "phoenix",
-    "icon": "/agents/phoenix.png"
+    "icon": "/agents/phoenix.png",
+    "portrait": "/agents/phoenix-portrait.png"
   },
   {
     "name": "Raze",
     "slug": "raze",
-    "icon": "/agents/raze.png"
+    "icon": "/agents/raze.png",
+    "portrait": "/agents/raze-portrait.png"
   },
   {
     "name": "Reyna",
     "slug": "reyna",
-    "icon": "/agents/reyna.png"
+    "icon": "/agents/reyna.png",
+    "portrait": "/agents/reyna-portrait.png"
   },
   {
     "name": "Sage",
     "slug": "sage",
-    "icon": "/agents/sage.png"
+    "icon": "/agents/sage.png",
+    "portrait": "/agents/sage-portrait.png"
   },
   {
     "name": "Skye",
     "slug": "skye",
-    "icon": "/agents/skye.png"
+    "icon": "/agents/skye.png",
+    "portrait": "/agents/skye-portrait.png"
   },
   {
     "name": "Sova",
     "slug": "sova",
-    "icon": "/agents/sova.png"
+    "icon": "/agents/sova.png",
+    "portrait": "/agents/sova-portrait.png"
   },
   {
     "name": "Tejo",
     "slug": "tejo",
-    "icon": "/agents/tejo.png"
+    "icon": "/agents/tejo.png",
+    "portrait": "/agents/tejo-portrait.png"
   },
   {
     "name": "Veto",
     "slug": "veto",
-    "icon": "/agents/veto.png"
+    "icon": "/agents/veto.png",
+    "portrait": "/agents/veto-portrait.png"
   },
   {
     "name": "Viper",
     "slug": "viper",
-    "icon": "/agents/viper.png"
+    "icon": "/agents/viper.png",
+    "portrait": "/agents/viper-portrait.png"
   },
   {
     "name": "Vyse",
     "slug": "vyse",
-    "icon": "/agents/vyse.png"
+    "icon": "/agents/vyse.png",
+    "portrait": "/agents/vyse-portrait.png"
   },
   {
     "name": "Waylay",
     "slug": "waylay",
-    "icon": "/agents/waylay.png"
+    "icon": "/agents/waylay.png",
+    "portrait": "/agents/waylay-portrait.png"
   },
   {
     "name": "Yoru",
     "slug": "yoru",
-    "icon": "/agents/yoru.png"
+    "icon": "/agents/yoru.png",
+    "portrait": "/agents/yoru-portrait.png"
   }
 ]

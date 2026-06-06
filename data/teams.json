@@ -1,0 +1,130 @@
+[
+  {
+    "id": "ee7e2221b408",
+    "name": "REED",
+    "color": "#ea6401",
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  },
+  {
+    "id": "62d829080a1d",
+    "name": "Peek",
+    "color": "#234ca3",
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  },
+  {
+    "id": "85c2d187de48",
+    "name": "Lurk",
+    "color": "#8b1a8b",
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  },
+  {
+    "id": "3d2464b74d5e",
+    "name": "Drop",
+    "color": "#1a8b4a",
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  }
+]

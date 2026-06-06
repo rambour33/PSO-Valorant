@@ -126,6 +126,10 @@ body {
 .fld { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
 .fld input { display: block; width: 100%; margin-top: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-size: 14px; }
 .fld input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
+.sb-color { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.sb-color input[type=color] { flex: 0 0 46px; height: 36px; padding: 2px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); cursor: pointer; }
+.sb-color .hexin { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-family: monospace; font-size: 14px; text-transform: uppercase; }
+.sb-color .hexin:focus { outline: none; border-color: var(--red); }
 .sb-score { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 14px; }
 .sb-btn { width: 46px; height: 46px; border: none; border-radius: 9px; background: var(--surface2); color: var(--text); font-size: 26px; font-weight: 700; cursor: pointer; transition: background .15s; }
 .sb-btn:hover { background: var(--red); color: #fff; }
@@ -138,6 +142,70 @@ body {
 .sb-action { padding: 11px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 7px; font-weight: 600; cursor: pointer; }
 .sb-action:hover { border-color: var(--red); }
 .sb-action.primary { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* ── Joueurs ── */
+.sb-players { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
+.pl-row { display: flex; align-items: center; gap: 8px; }
+.pl-row .pl-name { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 7px 9px; font-size: 13px; }
+.pl-row .pl-name:focus { outline: none; border-color: var(--red); }
+.pl-photo { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 7px; border: 1px dashed var(--border); background: var(--surface2); cursor: pointer; overflow: hidden; padding: 0; position: relative; }
+.pl-photo::before { content: '📷'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; opacity: .5; }
+.pl-photo img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.pl-photo.has { border-style: solid; border-color: var(--red); }
+.pl-photo.has::before { display: none; }
+.pl-photo.has img { display: block; }
+.pl-photo.loading { opacity: .5; pointer-events: none; }
+.pl-row .pl-agent { flex: 0 0 110px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 7px 6px; font-size: 12px; }
+.pl-clear { flex: 0 0 auto; width: 26px; height: 26px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 15px; line-height: 1; }
+.pl-clear:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.sb-team .avatars { display: flex; gap: 4px; margin: 8px 0; }
+.sb-team .avatars .av { width: 34px; height: 34px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
+.sb-card .sb-action { width: 100%; margin-top: 12px; }
+
+/* ── Équipes sauvegardées ── */
+.sb-saved-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; max-width: 1100px; }
+.sb-saved { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+.sb-saved .empty { color: var(--muted); font-size: 13px; }
+.sb-team { border: 1px solid var(--border); border-left: 5px solid var(--tc, var(--red)); border-radius: 9px; padding: 12px; background: var(--surface2); }
+.sb-team .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.sb-team .tname { font-family: var(--font-head); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
+.sb-team .roster { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; min-height: 18px; }
+.sb-team .acts { display: flex; gap: 6px; }
+.sb-team .acts button { flex: 1; padding: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.sb-team .acts button:hover { border-color: var(--red); }
+.sb-team .acts .del { flex: 0 0 38px; }
+.sb-team .acts .del:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+/* ── Casters ── */
+.ca-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 900px; }
+.ca-head .sb-action { width: auto; padding: 9px 16px; }
+.ca-add { display: flex; gap: 8px; max-width: 900px; margin-bottom: 14px; }
+.ca-add input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 9px; font-size: 13px; }
+.ca-add .sb-action { width: auto; flex: 0 0 auto; padding: 9px 18px; margin: 0; }
+.ca-list { display: flex; flex-direction: column; gap: 8px; max-width: 900px; }
+.ca-list .empty { color: var(--muted); font-size: 13px; }
+.ca-row { display: flex; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.ca-row .ca-f { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-size: 13px; }
+.ca-row .ca-f[data-f="name"] { flex: 2; font-weight: 600; }
+.ca-row .ca-f[data-f="role"], .ca-row .ca-f[data-f="handle"] { flex: 1.4; }
+.ca-row .ca-live { flex: 0 0 auto; white-space: nowrap; padding: 8px 14px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.ca-row .ca-live.on { background: var(--red); border-color: var(--red); color: #fff; }
+.ca-row .ca-del { flex: 0 0 40px; padding: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 6px; cursor: pointer; }
+.ca-row .ca-del:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* ── Timer ── */
+.tm-grid { display: grid; grid-template-columns: 1fr 320px; gap: 16px; max-width: 900px; align-items: start; }
+.tm-dur { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.tm-dur input { width: 84px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 9px; font-size: 16px; text-align: center; }
+.tm-dur span { font-size: 12px; color: var(--muted); }
+#tab-timer #tm-label { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 9px; font-size: 13px; }
+.tm-side { text-align: center; }
+.tm-preview { font-family: var(--font-head); font-size: 56px; font-weight: 700; letter-spacing: 2px; font-variant-numeric: tabular-nums; margin-bottom: 14px; }
+.tm-actions { display: flex; gap: 8px; margin-bottom: 10px; }
+.tm-actions .sb-action { margin: 0; }
+.tm-adjust { display: flex; gap: 6px; }
+.tm-adjust button { flex: 1; padding: 9px 4px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.tm-adjust button:hover { border-color: var(--red); }
 
 /* ── Liens overlay scoreboard ── */
 .sb-links-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; max-width: 1100px; }

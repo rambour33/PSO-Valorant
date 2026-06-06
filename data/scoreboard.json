@@ -2,18 +2,68 @@
   "visible": true,
   "format": "BO3",
   "team1": {
-    "name": "les bannis",
-    "color": "#955b60",
-    "score": 2
+    "name": "Peek",
+    "color": "#234ca3",
+    "score": 0,
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
   },
   "team2": {
-    "name": "chinois",
-    "color": "#00c8c8",
-    "score": 1
+    "name": "REED",
+    "color": "#ea6401",
+    "score": 0,
+    "players": [
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "",
+        "photo": "",
+        "agent": ""
+      }
+    ]
   },
-  "sequence": [
-    1,
-    2,
-    1
-  ]
+  "sequence": []
 }
