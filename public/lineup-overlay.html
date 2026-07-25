@@ -105,7 +105,9 @@
         p = p || {};
         let cls = 'card', inner = '';
         if (p.photo) {
-          inner = '<img src="' + esc(p.photo) + '" alt="" />';
+          const fit = p.fit || { x: 0, y: 0, zoom: 1 };
+          const style = ' style="transform:translate(' + fit.x + '%,' + fit.y + '%) scale(' + fit.zoom + ')"';
+          inner = '<img src="' + esc(p.photo) + '"' + style + ' alt="" />';
         } else if (p.agent && AGENTS[p.agent]) {
           cls += ' agent'; inner = '<img src="' + esc(AGENTS[p.agent]) + '" alt="" />';
         } else {

@@ -1,6 +1,6 @@
 {
   "visible": true,
   "mode": "down",
-  "durationMs": 300000,
-  "label": "Pause"
+  "durationMs": 3600000,
+  "label": "PAUSE"
 }

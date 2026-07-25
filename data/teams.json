@@ -1,127 +1,127 @@
 [
   {
-    "id": "ee7e2221b408",
-    "name": "REED",
-    "color": "#ea6401",
-    "players": [
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      }
-    ]
-  },
-  {
-    "id": "62d829080a1d",
-    "name": "Peek",
-    "color": "#234ca3",
-    "players": [
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": ""
-      }
-    ]
-  },
-  {
-    "id": "85c2d187de48",
+    "id": "0749501f21d6",
     "name": "Lurk",
     "color": "#8b1a8b",
     "players": [
       {
-        "name": "",
+        "name": "CHILE",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "souhayl",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "toph ",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "kuket78",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "reyzou ",
         "photo": "",
         "agent": ""
       }
     ]
   },
   {
-    "id": "3d2464b74d5e",
+    "id": "214e696e8ddf",
     "name": "Drop",
     "color": "#1a8b4a",
     "players": [
       {
-        "name": "",
+        "name": "nagi",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "m1ru",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "grosbebetimide",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "Val",
         "photo": "",
         "agent": ""
       },
       {
-        "name": "",
+        "name": "aelter",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  },
+  {
+    "id": "878a76470c96",
+    "name": "REED",
+    "color": "#ea6401",
+    "players": [
+      {
+        "name": "cissejs ",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "wilost",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "imnetox ",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "axe",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "saym",
+        "photo": "",
+        "agent": ""
+      }
+    ]
+  },
+  {
+    "id": "c71a72d83151",
+    "name": "PEEK",
+    "color": "#234ca3",
+    "players": [
+      {
+        "name": "DAAN",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "XRT M8",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "framboise",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "nikko",
+        "photo": "",
+        "agent": ""
+      },
+      {
+        "name": "tedo",
         "photo": "",
         "agent": ""
       }

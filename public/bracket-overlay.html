@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Overlay Bracket</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/typo/typo.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { overflow: hidden; }
+    :root {
+      --head: var(--pso-font-head, 'Oswald', sans-serif);
+      --body: var(--pso-font-body, 'Inter', sans-serif);
+      --bg: var(--pso-bg, #0e1016);
+      --surface: var(--pso-surface, #161a22); --surface2: var(--pso-surface-2, #1d2230);
+      --border: var(--pso-border, #2a3142); --text: var(--pso-text, #e8ebf2); --muted: var(--pso-muted, #8a93a6);
+      --accent: var(--pso-accent, #FF4655); --gold: var(--pso-gold, #E8B330);
+      --radius: var(--pso-radius, 3px);
+    }
+    /* Fond plein cadre synchronisé avec le thème actif (piloté par /theme.js, en direct
+       depuis la régie) — cet overlay est une scène à part entière, pas une superposition
+       transparente sur du gameplay. */
+    body {
+      width: 1920px; height: 1080px; padding: 26px;
+      font-family: var(--body); color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--bg) 70%);
+      transition: background .4s ease;
+    }
+    /* Le contenu peut naturellement dépasser 1920x1080 (gros bracket) : on le réduit
+       (jamais agrandi) pour qu'il tienne toujours dans le canevas, toujours centré. */
+    #root { display: inline-flex; flex-direction: column; gap: 36px; transition: opacity .3s ease, transform .25s ease; transform-origin: center center; }
+    #root.hidden { opacity: 0; }
+
+    .section-title {
+      font-family: var(--head); font-weight: 700; font-size: 19px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text); background: var(--surface); border-left: 5px solid var(--accent); border-radius: var(--radius);
+      padding: 9px 20px; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px;
+      box-shadow: 0 8px 26px rgba(0,0,0,.45);
+    }
+    .section-title .n { color: var(--muted); font-size: 13px; letter-spacing: 1px; }
+
+    /* ── Bracket élimination ── */
+    .bracket-wrap { position: relative; }
+    .bracket { display: flex; align-items: stretch; gap: 60px; position: relative; z-index: 1; }
+    .round { display: flex; flex-direction: column; justify-content: space-around; gap: 20px; min-width: 250px; }
+    .round .rlabel { font-family: var(--head); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 4px; }
+
+    .match {
+      background: var(--surface); border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.5); border: 1px solid var(--border);
+    }
+    .match .side {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 14px 10px 12px; border-left: 5px solid var(--sc, transparent);
+      background: rgba(0,0,0,.08);
+    }
+    .match .side + .side { border-top: 1px solid var(--border); }
+    .match .side.win { background: rgba(255,255,255,.06); }
+    .match .side.win .nm, .match .side.win .sc { color: var(--gold); }
+    .match .side.win .nm::after { content: ' ✓'; font-size: 11px; }
+    .match .side .nm {
+      font-family: var(--head); font-weight: 700; font-size: 15px; letter-spacing: .5px; text-transform: uppercase;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 165px; color: var(--text);
+    }
+    .match .side .sc {
+      font-family: var(--head); font-weight: 700; font-size: 17px; min-width: 22px; text-align: right;
+      font-variant-numeric: tabular-nums; color: var(--text);
+    }
+    .match.skipped { opacity: .35; }
+    .match .bo {
+      font-size: 9px; letter-spacing: 1.5px; color: var(--muted); text-align: center; padding: 3px 0;
+      background: var(--surface2); text-transform: uppercase; border-bottom: 1px solid var(--border);
+    }
+    .maps-detail {
+      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 7px 10px;
+      background: rgba(0,0,0,.12); border-top: 1px solid var(--border);
+    }
+    .maps-detail .mapchip {
+      font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 2px 7px;
+    }
+    .maps-detail .mapchip b { color: var(--text); }
+    svg.connectors { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    svg.connectors path { fill: none; stroke: var(--border); stroke-width: 2; }
+
+    /* Grande finale / petite finale : mise en avant */
+    .feature .match { min-width: 280px; box-shadow: 0 14px 44px rgba(0,0,0,.6); }
+    .feature .match .side .nm { font-size: 17px; max-width: 210px; }
+    .feature .match .side .sc { font-size: 20px; }
+
+    /* Double élimination (vue complète) : gagnants+perdants à gauche, grande finale
+       (+ petite finale) dans une colonne à droite, centrée verticalement sur toute la hauteur. */
+    .double-layout { display: flex; align-items: stretch; gap: 56px; }
+    .double-col { display: flex; flex-direction: column; gap: 36px; }
+    .double-right { justify-content: center; }
+
+    /* ── Poules : écran plein cadre dédié à UNE poule (titre + classement + grille de matchs) ── */
+    .poule-screen { display: flex; flex-direction: column; align-items: center; }
+    .poule-sub { font-family: var(--head); font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .poule-title {
+      font-family: var(--head); font-weight: 700; font-size: 54px; letter-spacing: 5px; text-transform: uppercase;
+      color: var(--text); text-shadow: 0 4px 20px rgba(0,0,0,.5); position: relative; padding-bottom: 18px; margin-bottom: 30px;
+    }
+    .poule-title::after {
+      content: ''; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+      width: 140px; height: 4px; background: var(--accent); border-radius: 2px;
+    }
+    .poule-body { display: flex; align-items: flex-start; gap: 36px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table th, table td { padding: 8px 12px; text-align: left; }
+    table th { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    table td.num, table th.num { text-align: center; font-variant-numeric: tabular-nums; }
+    table tr + tr td { border-top: 1px solid var(--border); }
+    table td.tname { font-family: var(--head); font-weight: 700; text-transform: uppercase; display: flex; align-items: center; gap: 9px; }
+    table td.tname .chip { width: 12px; height: 12px; border-radius: 3px; background: var(--sc, var(--muted)); flex: 0 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,.35); }
+    table tr.rank1 td.rk { color: var(--gold); font-weight: 800; }
+    table tr.rank2 td.rk { color: #cfd6e3; font-weight: 800; }
+    table tr.rank3 td.rk { color: #c98a4b; font-weight: 800; }
+
+    .poule-standings {
+      flex: 0 0 400px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    }
+    .poule-matches { display: grid; gap: 16px; align-content: start; }
+    .gmatch { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; width: 340px; }
+    .gmatch .gbo {
+      font-size: 9px; letter-spacing: 1.5px; color: var(--muted); text-align: center; padding: 3px 0;
+      background: rgba(0,0,0,.18); text-transform: uppercase; border-bottom: 1px solid var(--border);
+    }
+    .gmatch .grow { display: flex; align-items: stretch; }
+    .gmatch .gside {
+      flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      border-left: 5px solid var(--sc, transparent); min-width: 0;
+    }
+    .gmatch .gside.right { flex-direction: row-reverse; border-left: none; border-right: 5px solid var(--sc, transparent); text-align: right; justify-content: flex-end; }
+    .gmatch .gside.win { background: rgba(255,255,255,.06); }
+    .gmatch .gside.win .nm { color: var(--gold); }
+    .gmatch .gside .nm {
+      font-family: var(--head); font-weight: 700; font-size: 14px; letter-spacing: .5px; text-transform: uppercase;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text);
+    }
+    .gmatch .gvs {
+      flex: 0 0 auto; align-self: center; font-family: var(--head); font-weight: 700; font-size: 14px;
+      color: var(--muted); padding: 0 12px; font-variant-numeric: tabular-nums; border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+    }
+
+    .empty {
+      font-size: 14px; color: var(--muted); background: var(--surface); border: 1px solid var(--border);
+      padding: 14px 20px; border-radius: var(--radius);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"><div class="empty">Chargement du bracket…</div></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const VIEW = params.get('view'); // winners | losers | groups | grand | null(=tout)
+    const GROUP = params.get('group'); // id de poule à afficher en plein cadre (défaut : la 1ère)
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const root = document.getElementById('root');
+
+    function teamName(t) { return t ? esc(t.name) : '—'; }
+    function teamColorStyle(t) { return t && t.color ? ' style="--sc:' + esc(t.color) + '"' : ''; }
+    function scoreCell(m, side) {
+      if (m.status !== 'done' || m.winner === null) return '';
+      return side === 'A' ? m.scoreA : m.scoreB;
+    }
+
+    function mapsDetailHTML(m) {
+      if (m.status !== 'done' || !m.maps || !m.maps.length) return '';
+      const chips = m.maps.map((mp, i) => {
+        const a = mp.winner === 'A' ? '<b>' + mp.scoreA + '</b>' : mp.scoreA;
+        const b = mp.winner === 'B' ? '<b>' + mp.scoreB + '</b>' : mp.scoreB;
+        return '<span class="mapchip" title="Map ' + (i + 1) + '">' + a + '–' + b + '</span>';
+      }).join('');
+      return '<div class="maps-detail">' + chips + '</div>';
+    }
+
+    function matchHTML(m) {
+      const nextAttr = m.next && m.next.slot !== null ? ' data-next="' + m.next.matchId + '"' : '';
+      return '<div class="match ' + m.status + '" data-id="' + m.id + '"' + nextAttr + '>' +
+        '<div class="bo">' + m.bo + '</div>' +
+        '<div class="side' + (m.winner === 'A' ? ' win' : '') + '"' + teamColorStyle(m.teamA) + '><span class="nm">' + teamName(m.teamA) + '</span><span class="sc">' + scoreCell(m, 'A') + '</span></div>' +
+        '<div class="side' + (m.winner === 'B' ? ' win' : '') + '"' + teamColorStyle(m.teamB) + '><span class="nm">' + teamName(m.teamB) + '</span><span class="sc">' + scoreCell(m, 'B') + '</span></div>' +
+        mapsDetailHTML(m) +
+        '</div>';
+    }
+
+    // Carte de match horizontale (équipe A — score — équipe B), utilisée pour les poules
+    // (pas de bracket-tree à aligner verticalement, donc pas besoin du format vertical).
+    function groupMatchHTML(m) {
+      const scoreMid = m.status === 'done' ? (m.scoreA + ' — ' + m.scoreB) : 'VS';
+      return '<div class="gmatch">' +
+        '<div class="gbo">' + m.bo + '</div>' +
+        '<div class="grow">' +
+        '<div class="gside' + (m.winner === 'A' ? ' win' : '') + '"' + teamColorStyle(m.teamA) + '><span class="nm">' + teamName(m.teamA) + '</span></div>' +
+        '<div class="gvs">' + scoreMid + '</div>' +
+        '<div class="gside right' + (m.winner === 'B' ? ' win' : '') + '"' + teamColorStyle(m.teamB) + '><span class="nm">' + teamName(m.teamB) + '</span></div>' +
+        '</div>' +
+        mapsDetailHTML(m) +
+        '</div>';
+    }
+
+    function roundLabel(bracket, round, totalRounds) {
+      if (bracket === 'grand') return 'Grande finale';
+      const fromEnd = totalRounds - 1 - round;
+      if (fromEnd === 0) return bracket === 'winners' ? 'Finale' : 'Finale (perdants)';
+      if (fromEnd === 1) return 'Demi-finales';
+      if (fromEnd === 2) return 'Quarts de finale';
+      return 'Round ' + (round + 1);
+    }
+
+    function renderElimSection(title, icon, matches) {
+      if (!matches.length) return '';
+      const rounds = [...new Set(matches.map(m => m.round))].sort((a, b) => a - b);
+      const cols = rounds.map(r => {
+        const ms = matches.filter(m => m.round === r).sort((a, b) => a.slot - b.slot);
+        return '<div class="round"><div class="rlabel">' + roundLabel(matches[0].bracket, r, rounds.length) + '</div>' + ms.map(matchHTML).join('') + '</div>';
+      }).join('');
+      return '<div><div class="section-title">' + icon + ' ' + title + '</div><div class="bracket-wrap"><svg class="connectors"></svg><div class="bracket">' + cols + '</div></div></div>';
+    }
+
+    function renderGrand(matches) {
+      const grand = matches.find(m => m.bracket === 'grand');
+      const reset = matches.find(m => m.bracket === 'grand-reset');
+      if (!grand) return '';
+      const show = [grand];
+      if (reset && reset.status !== 'skipped') show.push(reset);
+      return '<div class="feature"><div class="section-title">🏆 Grande finale</div><div class="bracket"><div class="round">' + show.map(matchHTML).join('') + '</div></div></div>';
+    }
+
+    function renderThirdPlace(matches) {
+      const tp = matches.find(m => m.bracket === 'third-place' || m.bracket === 'bonus');
+      if (!tp) return '';
+      const label = tp.bracket === 'third-place' ? '🥉 Petite finale' : '🥉 Petite finale (bonus)';
+      return '<div class="feature"><div class="section-title">' + label + '</div><div class="bracket"><div class="round">' + matchHTML(tp) + '</div></div></div>';
+    }
+
+    // Écran plein cadre dédié à une seule poule : titre centré, classement en haut à gauche,
+    // et tous ses matchs alignés dans une grille (colonnes calculées pour ne jamais dépasser 3 lignes).
+    function renderGroupScreen(s) {
+      const groups = s.groupsStandings || [];
+      if (!groups.length) return '';
+      const g = (GROUP && groups.find(x => x.id === GROUP)) || groups[0];
+      if (!g) return '';
+
+      const rows = g.standings.map((r, i) => {
+        const rankCls = i === 0 ? ' rank1' : i === 1 ? ' rank2' : i === 2 ? ' rank3' : '';
+        return '<tr class="' + rankCls.trim() + '"><td class="num rk">' + (i + 1) + '</td>' +
+          '<td class="tname"><span class="chip" style="--sc:' + esc(r.team.color) + '"></span>' + esc(r.team.name) + '</td>' +
+          '<td class="num">' + r.wins + '</td><td class="num">' + r.losses + '</td><td class="num">' + (r.diff > 0 ? '+' : '') + r.diff + '</td></tr>';
+      }).join('');
+
+      const matches = s.matches.filter(m => m.groupId === g.id);
+      const cols = Math.max(1, Math.ceil(matches.length / 3));
+      const matchCards = matches.map(groupMatchHTML).join('');
+
+      return '<div class="poule-screen">' +
+        '<div class="poule-sub">' + esc(s.name || 'Tournoi') + '</div>' +
+        '<div class="poule-title">' + esc(g.name) + '</div>' +
+        '<div class="poule-body">' +
+        '<div class="poule-standings"><table><thead><tr><th>#</th><th>Équipe</th><th class="num">V</th><th class="num">D</th><th class="num">Diff.</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+        '<div class="poule-matches" style="grid-template-columns:repeat(' + cols + ',1fr)">' + matchCards + '</div>' +
+        '</div></div>';
+    }
+
+    function drawConnectors(container) {
+      const svg = container.querySelector('svg.connectors');
+      if (!svg) return;
+      const rect = container.getBoundingClientRect();
+      svg.setAttribute('width', rect.width);
+      svg.setAttribute('height', rect.height);
+      let html = '';
+      container.querySelectorAll('.match[data-next]').forEach(el => {
+        const target = container.querySelector('.match[data-id="' + el.dataset.next + '"]');
+        if (!target) return;
+        const r1 = el.getBoundingClientRect(), r2 = target.getBoundingClientRect();
+        const x1 = r1.right - rect.left, y1 = r1.top + r1.height / 2 - rect.top;
+        const x2 = r2.left - rect.left, y2 = r2.top + r2.height / 2 - rect.top;
+        const midX = (x1 + x2) / 2;
+        html += '<path d="M ' + x1 + ' ' + y1 + ' H ' + midX + ' V ' + y2 + ' H ' + x2 + '" />';
+      });
+      svg.innerHTML = html;
+    }
+
+    // Réduit #root (jamais agrandi) pour qu'il tienne toujours dans le canevas 1920x1080 de l'overlay,
+    // quelle que soit la taille du bracket (nombre d'équipes, de rounds, de poules…).
+    // Important : toujours repartir de transform:none AVANT de mesurer/dessiner les connecteurs,
+    // sinon un facteur d'échelle précédent fausserait les mesures (et les lignes) du rendu suivant.
+    const CANVAS_W = 1920, CANVAS_H = 1080, CANVAS_PAD = 26;
+    function resetScale() { root.style.transform = 'none'; }
+    function fitToCanvas() {
+      const rect = root.getBoundingClientRect();
+      const scale = Math.min(1, (CANVAS_W - CANVAS_PAD * 2) / rect.width, (CANVAS_H - CANVAS_PAD * 2) / rect.height);
+      root.style.transform = scale < 1 ? 'scale(' + scale + ')' : 'none';
+    }
+
+    function render(s) {
+      if (!s || !s.format) { root.innerHTML = '<div class="empty">Aucun tournoi généré pour le moment.</div>'; resetScale(); fitToCanvas(); return; }
+      const winners = s.matches.filter(m => m.bracket === 'winners');
+      const losers = s.matches.filter(m => m.bracket === 'losers');
+      let html = '';
+
+      if (s.format === 'groups') {
+        if (!VIEW || VIEW === 'groups') html = renderGroupScreen(s);
+      } else if (s.format === 'double' && !VIEW) {
+        // Vue complète : gagnants + perdants empilés à gauche, grande finale (+ petite finale)
+        // à droite, centrée verticalement — pas en dessous du reste.
+        const left = [renderElimSection('Winner Bracket', '🏆', winners), renderElimSection('Loser Bracket', '💀', losers)].filter(Boolean).join('');
+        const right = [renderGrand(s.matches), renderThirdPlace(s.matches)].filter(Boolean).join('');
+        html = '<div class="double-layout"><div class="double-col">' + left + '</div><div class="double-col double-right">' + right + '</div></div>';
+      } else {
+        const sections = [];
+        if (!VIEW || VIEW === 'winners') sections.push(renderElimSection('Winner Bracket', '🏆', winners));
+        if (s.format === 'double' && VIEW === 'losers') sections.push(renderElimSection('Loser Bracket', '💀', losers));
+        if (s.format === 'double' && VIEW === 'grand') sections.push(renderGrand(s.matches));
+        if (!VIEW || VIEW === 'winners' || VIEW === 'grand') sections.push(renderThirdPlace(s.matches));
+        html = sections.filter(Boolean).join('');
+      }
+      root.innerHTML = html || '<div class="empty">Rien à afficher pour cette vue.</div>';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        resetScale();
+        root.querySelectorAll('.bracket-wrap').forEach(drawConnectors);
+        fitToCanvas();
+      }));
+    }
+
+    fetch('/api/bracket').then(r => r.json()).then(render).catch(() => {});
+    io().on('bracketUpdate', render);
+    window.addEventListener('resize', () => {
+      resetScale();
+      root.querySelectorAll('.bracket-wrap').forEach(drawConnectors);
+      fitToCanvas();
+    });
+  </script>
+</body>
+</html>

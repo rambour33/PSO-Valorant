@@ -15,6 +15,8 @@ const teams = require('./lib/teams');
 const casters = require('./lib/casters');
 const timer = require('./lib/timer');
 const chat = require('./lib/chat');
+const rulesets = require('./lib/rulesets');
+const bracket = require('./lib/bracket');
 
 const PORT = process.env.PORT || 3003;
 
@@ -211,6 +213,15 @@ app.get('/veto-control', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/veto-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'veto-overlay.html')));
 app.get('/veto/team/:token', (req, res) => res.sendFile(path.join(__dirname, 'public', 'veto-team.html')));
 
+// ── Rulesets de veto (pools de maps sauvegardés) ──────────────────────────────
+function emitRulesets() { io.emit('rulesetsUpdate', rulesets.list()); }
+app.get('/api/rulesets', (req, res) => res.json(rulesets.list()));
+app.post('/api/rulesets', (req, res) => {
+  try { const r = rulesets.saveRuleset(req.body || {}); emitRulesets(); res.json(r); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.delete('/api/rulesets/:id', (req, res) => { rulesets.remove(req.params.id); emitRulesets(); res.json({ ok: true }); });
+
 function emitVeto() { io.emit('vetoUpdate', veto.publicState()); }
 
 app.get('/api/veto', (req, res) => res.json(veto.publicState()));
@@ -245,6 +256,71 @@ app.post('/api/veto/action', (req, res) => {
 });
 
 app.post('/api/veto/reset', (req, res) => { veto.reset(); emitVeto(); res.json({ ok: true }); });
+
+// ── Bracket de tournoi (élim. simple/double, poules) ──────────────────────────
+app.get('/bracket-builder', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bracket-builder.html')));
+app.get('/bracket-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bracket-overlay.html')));
+app.get('/bracket/team/:token', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bracket-team.html')));
+
+function emitBracket() { io.emit('bracketUpdate', bracket.publicState()); }
+
+app.get('/api/bracket', (req, res) => res.json(bracket.publicState()));
+app.get('/api/bracket/tokens', (req, res) => res.json(bracket.getTokens()));
+
+app.post('/api/bracket/generate', (req, res) => {
+  try {
+    const s = bracket.generate(req.body || {}, teams.list());
+    emitBracket();
+    res.json({ ok: true, state: bracket.publicState(), tokens: bracket.getTokens() });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.post('/api/bracket/reset', (req, res) => { bracket.reset(); emitBracket(); res.json({ ok: true }); });
+
+app.post('/api/bracket/format', (req, res) => {
+  try { bracket.setFormat(req.body || {}); emitBracket(); res.json({ ok: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.post('/api/bracket/score/:matchId', (req, res) => {
+  try {
+    const b = req.body || {};
+    bracket.adminSetScore(req.params.matchId, b.maps, b.winner);
+    emitBracket();
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+app.post('/api/bracket/confirm/:matchId', (req, res) => {
+  try { bracket.confirm(req.params.matchId, (req.body || {}).winner); emitBracket(); res.json({ ok: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.post('/api/bracket/reject/:matchId', (req, res) => {
+  try { bracket.reject(req.params.matchId); emitBracket(); res.json({ ok: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+app.get('/api/bracket/whoami', (req, res) => {
+  const teamId = bracket.teamOfToken(req.query.token);
+  if (!teamId) return res.status(404).json({ error: 'Token invalide' });
+  res.json({ teamId, team: bracket.teamInfo(teamId), matches: bracket.teamMatches(teamId), state: bracket.publicState() });
+});
+
+app.post('/api/bracket/report', (req, res) => {
+  try {
+    const b = req.body || {};
+    bracket.report(b.token, b.matchId, b.maps);
+    emitBracket();
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
 
 // ── Socket.IO ─────────────────────────────────────────────────────────────────
 io.on('connection', (socket) => {

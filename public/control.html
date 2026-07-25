@@ -30,6 +30,7 @@
     <nav class="tab-nav" id="tab-nav">
       <button class="tab-btn active" data-tab="scoreboard">Scoreboard</button>
       <button class="tab-btn" data-tab="veto">Map Veto</button>
+      <button class="tab-btn" data-tab="bracket">Bracket</button>
       <button class="tab-btn" data-tab="casters">Casters</button>
       <button class="tab-btn" data-tab="timer">Timer</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
@@ -115,9 +116,60 @@
           <p class="section-hint">3 sources distinctes à ajouter dans OBS (navigateur).</p>
           <div class="sb-links" id="sb-links"></div>
         </div>
+
+        <!-- Aperçu overlay -->
+        <div class="sb-links-card">
+          <h2 class="section-title">Aperçu overlay</h2>
+          <p class="section-hint">Prévisualise l'overlay tel qu'il apparaît dans OBS.</p>
+          <div class="sb-fmt" id="sb-preview-tabs">
+            <button data-preview="team1" class="active">Team 1</button>
+            <button data-preview="team2">Team 2</button>
+            <button data-preview="score">Score</button>
+            <button data-preview="match">Prochain match</button>
+            <button data-preview="lineup1">Lineup équipe 1</button>
+            <button data-preview="lineup2">Lineup équipe 2</button>
+          </div>
+          <div class="sb-preview-wrap">
+            <iframe id="sb-preview-frame" width="1920" height="1080" title="Aperçu overlay"></iframe>
+          </div>
+        </div>
+
+        <!-- Ajustement des photos (cadrage dans le cadre lineup) -->
+        <div class="sb-links-card">
+          <h2 class="section-title">Ajustement des photos</h2>
+          <p class="section-hint" id="pf-hint">Sélectionne l'aperçu « Lineup équipe 1 » ou « Lineup équipe 2 » ci-dessus pour ajuster le cadrage des photos.</p>
+          <div id="pf-body" style="display:none">
+            <div class="sb-fmt" id="pf-players">
+              <button data-pf-player="0" class="active">Joueur 1</button>
+              <button data-pf-player="1">Joueur 2</button>
+              <button data-pf-player="2">Joueur 3</button>
+              <button data-pf-player="3">Joueur 4</button>
+              <button data-pf-player="4">Joueur 5</button>
+            </div>
+            <div class="pf-controls">
+              <div class="pf-pad">
+                <button class="pf-btn pf-up" data-pf-action="up" title="Monter">↑</button>
+                <div class="pf-midrow">
+                  <button class="pf-btn pf-left" data-pf-action="left" title="Gauche">←</button>
+                  <button class="pf-btn pf-reset" data-pf-action="reset" title="Réinitialiser">⟲</button>
+                  <button class="pf-btn pf-right" data-pf-action="right" title="Droite">→</button>
+                </div>
+                <button class="pf-btn pf-down" data-pf-action="down" title="Descendre">↓</button>
+              </div>
+              <div class="pf-zoom">
+                <button class="pf-btn" data-pf-action="zoomout" title="Dézoomer">−</button>
+                <span id="pf-zoomval">100%</span>
+                <button class="pf-btn" data-pf-action="zoomin" title="Zoomer">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="tab-content" id="tab-veto">
         <iframe id="veto-frame" title="Régie Map Veto"></iframe>
+      </div>
+      <div class="tab-content" id="tab-bracket">
+        <iframe id="bracket-frame" title="Builder Bracket"></iframe>
       </div>
       <div class="tab-content" id="tab-casters">
         <div class="ca-head">

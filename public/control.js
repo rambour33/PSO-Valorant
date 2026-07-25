@@ -33,6 +33,12 @@ document.querySelector('.tab-btn[data-tab="veto"]')?.addEventListener('click', (
   if (vetoFrame && !vetoFrame.src) vetoFrame.src = '/veto-control';
 });
 
+// Charge l'iframe Builder Bracket à la première ouverture de l'onglet
+const bracketFrame = document.getElementById('bracket-frame');
+document.querySelector('.tab-btn[data-tab="bracket"]')?.addEventListener('click', () => {
+  if (bracketFrame && !bracketFrame.src) bracketFrame.src = '/bracket-builder';
+});
+
 // ── Onglet Theme ──────────────────────────────────────────────────────────────
 const themeGrid = document.getElementById('theme-grid');
 
@@ -297,6 +303,80 @@ function sbRenderLinks() {
   const chatLinks = document.getElementById('chat-links');
   if (chatLinks) chatLinks.innerHTML = rowHtml(['Chat', base + '/chat-overlay']);
 }
+
+// ── Aperçu overlay (iframe 1280x720, toujours sur cette origine) ──────────────
+const sbPreviewFrame = document.getElementById('sb-preview-frame');
+const sbPreviewTabs = document.getElementById('sb-preview-tabs');
+const SB_PREVIEW_URLS = {
+  team1: '/scoreboard-overlay?part=team1',
+  team2: '/scoreboard-overlay?part=team2',
+  score: '/scoreboard-overlay?part=score',
+  match: '/scoreboard-overlay?part=match',
+  lineup1: '/lineup-overlay?team=1',
+  lineup2: '/lineup-overlay?team=2',
+};
+function sbSetPreview(key) {
+  if (!sbPreviewFrame || !SB_PREVIEW_URLS[key]) return;
+  sbPreviewFrame.src = location.origin + SB_PREVIEW_URLS[key];
+  if (sbPreviewTabs) sbPreviewTabs.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.preview === key));
+  pfSetTeam(key === 'lineup1' ? 'team1' : key === 'lineup2' ? 'team2' : null);
+}
+if (sbPreviewTabs) sbPreviewTabs.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-preview]');
+  if (btn) sbSetPreview(btn.dataset.preview);
+});
+
+// ── Ajustement des photos (cadrage x/y + zoom dans le cadre lineup) ───────────
+const pfHint = document.getElementById('pf-hint');
+const pfBody = document.getElementById('pf-body');
+const pfPlayersEl = document.getElementById('pf-players');
+const pfZoomVal = document.getElementById('pf-zoomval');
+let pfTeam = null;
+let pfPlayerIndex = 0;
+
+function pfSetTeam(team) {
+  pfTeam = team;
+  if (pfHint) pfHint.style.display = team ? 'none' : 'block';
+  if (pfBody) pfBody.style.display = team ? 'block' : 'none';
+  pfRenderZoom();
+}
+
+function pfCurrentFit() {
+  const p = pfTeam && sbState && sbState[pfTeam] && sbState[pfTeam].players[pfPlayerIndex];
+  return (p && p.fit) || { x: 0, y: 0, zoom: 1 };
+}
+
+function pfRenderZoom() {
+  if (pfZoomVal) pfZoomVal.textContent = Math.round(pfCurrentFit().zoom * 100) + '%';
+}
+
+if (pfPlayersEl) pfPlayersEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-pf-player]');
+  if (!btn) return;
+  pfPlayerIndex = parseInt(btn.dataset.pfPlayer, 10) || 0;
+  pfPlayersEl.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b === btn));
+  pfRenderZoom();
+});
+
+const clampPf = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+function pfAdjust(action) {
+  if (!pfTeam || !sbState) return;
+  const fit = pfCurrentFit();
+  let { x, y, zoom } = fit;
+  if (action === 'left') x = clampPf(x - 5, -50, 50);
+  else if (action === 'right') x = clampPf(x + 5, -50, 50);
+  else if (action === 'up') y = clampPf(y - 5, -50, 50);
+  else if (action === 'down') y = clampPf(y + 5, -50, 50);
+  else if (action === 'zoomin') zoom = clampPf(Math.round((zoom + 0.1) * 100) / 100, 1, 3);
+  else if (action === 'zoomout') zoom = clampPf(Math.round((zoom - 0.1) * 100) / 100, 1, 3);
+  else if (action === 'reset') { x = 0; y = 0; zoom = 1; }
+  const players = sbState[pfTeam].players.map((p, i) => (i === pfPlayerIndex ? { ...p, fit: { x, y, zoom } } : p));
+  fetch('/api/scoreboard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [pfTeam]: { players } }) })
+    .then((r) => r.json()).then((s) => { sbFill(s); pfRenderZoom(); }).catch(() => {});
+}
+document.querySelectorAll('.pf-controls [data-pf-action]').forEach((b) => b.addEventListener('click', () => pfAdjust(b.dataset.pfAction)));
+
+sbSetPreview('team1');
 
 const stingerPlayBtn = document.getElementById('stinger-play');
 if (stingerPlayBtn) stingerPlayBtn.addEventListener('click', () => {

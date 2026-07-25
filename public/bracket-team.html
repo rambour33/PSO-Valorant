@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSO Valorant — Mes matchs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: var(--pso-bg, #0e1016); --surface: var(--pso-surface, #161a22); --surface2: var(--pso-surface-2, #1d2230);
+      --border: var(--pso-border, #2a3142); --text: var(--pso-text, #e8ebf2); --muted: var(--pso-muted, #8a93a6);
+      --red: var(--pso-accent, #FF4655); --gold: var(--pso-gold, #E8B330);
+      --head: var(--pso-font-head, 'Oswald', sans-serif);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 18px; max-width: 720px; margin: 0 auto; }
+    .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    h1 { font-family: var(--head); font-size: 18px; letter-spacing: 1px; }
+    .me { font-weight: 700; padding: 4px 12px; border-radius: 6px; color: #fff; font-size: 13px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+    .card.current { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; }
+    .mrow { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 4px; }
+    .side { flex: 1; text-align: center; font-family: var(--head); font-weight: 700; font-size: 17px; letter-spacing: 1px; text-transform: uppercase; }
+    .side.me { color: var(--red); }
+    .vs { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .meta { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .tag { display: inline-block; padding: 2px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; margin-left: 6px; }
+    .tag.done { background: rgba(232,179,48,.15); color: var(--gold); }
+    .tag.pending { background: rgba(255,70,85,.15); color: var(--red); }
+    .tag.wait { background: var(--surface2); color: var(--muted); }
+    .score { text-align: center; font-family: var(--head); font-size: 26px; font-weight: 700; margin: 6px 0; }
+    .hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; }
+    .err { color: var(--red); text-align: center; font-size: 12px; margin-top: 6px; min-height: 16px; }
+    .empty { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0; }
+
+    /* ── Saisie manche par manche ── */
+    .mapsbuilder { margin-top: 10px; }
+    .maprow {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
+      padding: 7px 12px; margin-bottom: 6px; font-size: 13px;
+    }
+    .maprow .mlbl { color: var(--muted); font-weight: 700; }
+    .maprow .mscore { font-family: var(--head); font-weight: 700; font-size: 15px; }
+    .maprow button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 0 2px; }
+    form.addmap { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; }
+    form.addmap .mlbl { color: var(--muted); font-size: 12px; font-weight: 700; min-width: 46px; }
+    form.addmap input { width: 56px; text-align: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-size: 16px; }
+    form.addmap span { color: var(--muted); font-weight: 700; }
+    form.addmap button { padding: 9px 16px; border: none; border-radius: 7px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-weight: 700; cursor: pointer; font-size: 13px; }
+    .seriesnow { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .sendrow { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+    .sendrow button { padding: 10px 18px; border: none; border-radius: 7px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; cursor: pointer; font-size: 13px; }
+    .sendrow .send { background: var(--red); color: #fff; }
+    .sendrow .undo { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <h1>🔫 Mes matchs</h1>
+    <span class="me" id="me">—</span>
+  </div>
+  <div id="list"><div class="empty">Chargement…</div></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/particles.js"></script>
+  <script src="/theme.js"></script>
+  <script>
+    const token = location.pathname.split('/').pop();
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let myTeamId = null, myTeam = null;
+
+    const BO_GAMES = { BO1: 1, BO2: 2, BO3: 3, BO5: 5 };
+    const BO_WINS = { BO1: 1, BO2: null, BO3: 2, BO5: 3 };
+    const mapDrafts = {};   // matchId -> [{ scoreA, scoreB }, …] saisie locale avant envoi
+    let lastMatches = [];
+
+    function bracketLabel(m) {
+      if (m.bracket === 'winners') return 'Winner Bracket';
+      if (m.bracket === 'losers') return 'Loser Bracket';
+      if (m.bracket === 'grand') return 'Grande finale';
+      if (m.bracket === 'grand-reset') return 'Grande finale (reset)';
+      if (m.bracket === 'third-place') return 'Petite finale (3e place)';
+      if (m.bracket === 'bonus') return 'Petite finale (bonus)';
+      return 'Poule';
+    }
+
+    function statusTag(m) {
+      if (m.status === 'done') return '<span class="tag done">Terminé</span>';
+      if (m.status === 'reported') return '<span class="tag pending">En attente de validation</span>';
+      if (m.status === 'ready') return '<span class="tag pending" style="background:rgba(232,179,48,.15);color:var(--gold)">À jouer</span>';
+      return '<span class="tag wait">À déterminer</span>';
+    }
+
+    function seriesSoFar(draft) {
+      let a = 0, b = 0;
+      draft.forEach((mp) => { if (mp.scoreA > mp.scoreB) a++; else b++; });
+      return { a, b };
+    }
+
+    function mapsBuilderHTML(m) {
+      const draft = mapDrafts[m.id] || (mapDrafts[m.id] = []);
+      const games = BO_GAMES[m.bo] || 3;
+      const wins = BO_WINS[m.bo];
+      const { a, b } = seriesSoFar(draft);
+      const decided = wins ? (a === wins || b === wins) : draft.length === games;
+
+      const rows = draft.map((mp, i) =>
+        '<div class="maprow"><span class="mlbl">Map ' + (i + 1) + '</span><span class="mscore">' + mp.scoreA + ' — ' + mp.scoreB + '</span>' +
+        (i === draft.length - 1 ? '<button type="button" data-undo="' + m.id + '" title="Retirer cette map">✕</button>' : '<span></span>') +
+        '</div>'
+      ).join('');
+
+      let addRow = '';
+      if (!decided) {
+        addRow = '<form class="addmap" data-match="' + m.id + '">' +
+          '<span class="mlbl">Map ' + (draft.length + 1) + '</span>' +
+          '<input type="number" min="0" name="a" placeholder="0" required />' +
+          '<span>—</span>' +
+          '<input type="number" min="0" name="b" placeholder="0" required />' +
+          '<button type="submit">+ Ajouter</button></form>';
+      }
+
+      let sendRow = '';
+      if (decided) {
+        sendRow = '<div class="sendrow">' +
+          '<button type="button" class="undo" data-undo="' + m.id + '">↩ Modifier la dernière map</button>' +
+          '<button type="button" class="send" data-send="' + m.id + '">Envoyer ' + a + ' — ' + b + '</button>' +
+          '</div>';
+      }
+
+      const seriesLabel = wins ? ('Série actuelle : ' + a + ' — ' + b + ' (jusqu’à ' + wins + ' victoires)') : ('Série actuelle : ' + a + ' — ' + b + ' (' + games + ' maps)');
+      return '<div class="mapsbuilder">' + (rows || '<div class="hint">Aucune map saisie pour le moment.</div>') + addRow +
+        '<div class="seriesnow">' + seriesLabel + '</div>' + sendRow +
+        '<div class="err" data-err="' + m.id + '"></div></div>';
+    }
+
+    function matchCard(m) {
+      const aName = m.teamA ? esc(m.teamA.name) : '—';
+      const bName = m.teamB ? esc(m.teamB.name) : '—';
+      const aMe = m.teamA && m.teamA.id === myTeamId;
+      const bMe = m.teamB && m.teamB.id === myTeamId;
+      let body = '<div class="meta">' + bracketLabel(m) + ' · ' + m.bo + statusTag(m) + '</div>' +
+        '<div class="mrow"><span class="side' + (aMe ? ' me' : '') + '">' + aName + '</span><span class="vs">VS</span><span class="side' + (bMe ? ' me' : '') + '">' + bName + '</span></div>';
+
+      if (m.status === 'done') {
+        body += '<div class="score">' + m.scoreA + ' — ' + m.scoreB + '</div>';
+        if (m.maps && m.maps.length) body += '<div class="hint">' + m.maps.map((mp, i) => 'Map ' + (i + 1) + ' : ' + mp.scoreA + '–' + mp.scoreB).join(' · ') + '</div>';
+      } else if (m.status === 'reported') {
+        body += '<div class="score">' + m.reported.scoreA + ' — ' + m.reported.scoreB + '</div>';
+        if (m.reported.maps && m.reported.maps.length) body += '<div class="hint">' + m.reported.maps.map((mp, i) => 'Map ' + (i + 1) + ' : ' + mp.scoreA + '–' + mp.scoreB).join(' · ') + '</div>';
+        body += '<div class="hint">En attente de validation par la régie…</div>';
+      } else if (m.status === 'ready') {
+        body += mapsBuilderHTML(m);
+      } else {
+        body += '<div class="hint">En attente du résultat des matchs précédents…</div>';
+      }
+      return '<div class="card' + (m.status === 'ready' ? ' current' : '') + '">' + body + '</div>';
+    }
+
+    function renderList() {
+      if (!lastMatches.length) { $('list').innerHTML = '<div class="empty">Aucun match pour le moment.</div>'; return; }
+      const order = { ready: 0, reported: 1, pending: 2, done: 3, skipped: 4 };
+      const sorted = lastMatches.slice().sort((x, y) => (order[x.status] ?? 9) - (order[y.status] ?? 9));
+      $('list').innerHTML = sorted.map(matchCard).join('');
+    }
+
+    function render(matches) {
+      lastMatches = matches || [];
+      // Nettoie les brouillons des matchs qui ne sont plus en attente de score.
+      const readyIds = new Set(lastMatches.filter((m) => m.status === 'ready').map((m) => m.id));
+      Object.keys(mapDrafts).forEach((id) => { if (!readyIds.has(id)) delete mapDrafts[id]; });
+      renderList();
+    }
+
+    $('list').addEventListener('submit', (e) => {
+      const form = e.target.closest('form.addmap');
+      if (!form) return;
+      e.preventDefault();
+      const matchId = form.dataset.match;
+      const errEl = document.querySelector('[data-err="' + matchId + '"]');
+      if (errEl) errEl.textContent = '';
+      const a = parseInt(form.a.value, 10), b = parseInt(form.b.value, 10);
+      if (!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0) { if (errEl) errEl.textContent = 'Score invalide.'; return; }
+      if (a === b) { if (errEl) errEl.textContent = 'Une map ne peut pas se terminer à égalité.'; return; }
+      (mapDrafts[matchId] || (mapDrafts[matchId] = [])).push({ scoreA: a, scoreB: b });
+      renderList();
+    });
+
+    $('list').addEventListener('click', (e) => {
+      const undo = e.target.closest('[data-undo]');
+      if (undo) { const d = mapDrafts[undo.dataset.undo]; if (d && d.length) d.pop(); renderList(); return; }
+      const send = e.target.closest('[data-send]');
+      if (send) {
+        const matchId = send.dataset.send;
+        const errEl = document.querySelector('[data-err="' + matchId + '"]');
+        fetch('/api/bracket/report', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, matchId, maps: mapDrafts[matchId] || [] }),
+        }).then(r => r.json()).then(d => {
+          if (d.error) throw new Error(d.error);
+          delete mapDrafts[matchId];
+        }).catch(e => { if (errEl) errEl.textContent = e.message; });
+      }
+    });
+
+    function load() {
+      fetch('/api/bracket/whoami?token=' + encodeURIComponent(token))
+        .then(r => r.ok ? r.json() : Promise.reject(new Error('Lien invalide ou tournoi réinitialisé')))
+        .then(d => {
+          myTeamId = d.teamId; myTeam = d.team;
+          if (myTeam) { $('me').textContent = myTeam.name; $('me').style.background = myTeam.color; }
+          render(d.matches);
+        })
+        .catch(e => { $('list').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; });
+    }
+
+    load();
+    io().on('bracketUpdate', () => load());
+  </script>
+</body>
+</html>

@@ -2,68 +2,121 @@
   "visible": true,
   "format": "BO3",
   "team1": {
-    "name": "Peek",
-    "color": "#234ca3",
-    "score": 0,
+    "name": "TEAM A",
+    "color": "#FF4655",
+    "score": 1,
     "players": [
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       }
     ]
   },
   "team2": {
-    "name": "REED",
-    "color": "#ea6401",
-    "score": 0,
+    "name": "TEAM B",
+    "color": "#00C8C8",
+    "score": 1,
     "players": [
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       },
       {
         "name": "",
         "photo": "",
-        "agent": ""
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1
+        }
       }
     ]
   },
-  "sequence": []
+  "sequence": [
+    1,
+    2
+  ]
 }

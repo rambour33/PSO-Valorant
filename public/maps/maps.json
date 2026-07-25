@@ -66,6 +66,12 @@
     "minimap": "/maps/split-minimap.png"
   },
   {
+    "name": "Summit",
+    "slug": "summit",
+    "splash": "/maps/summit-splash.png",
+    "minimap": "/maps/summit-minimap.png"
+  },
+  {
     "name": "Sunset",
     "slug": "sunset",
     "splash": "/maps/sunset-splash.png",

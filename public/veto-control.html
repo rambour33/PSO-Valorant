@@ -78,6 +78,15 @@
         <button class="btn ghost" id="btn-reset">Réinitialiser</button>
         <div class="status err" id="cfg-msg"></div>
       </div>
+
+      <div class="card">
+        <h2>Rulesets <span style="font-size:11px;color:var(--muted)">(format + pool)</span></h2>
+        <div class="row" style="align-items:flex-end">
+          <div style="flex:1"><label>Nom du ruleset</label><input id="rs-name" maxlength="40" placeholder="ex. Pool officiel" /></div>
+          <button class="btn" id="rs-save" style="margin-top:0;flex:0 0 auto;width:auto;padding:0 18px">💾 Sauver</button>
+        </div>
+        <div class="links" id="rs-list" style="margin-top:10px"></div>
+      </div>
     </div>
 
     <!-- Liens + suivi -->
@@ -103,8 +112,9 @@
   <script src="/theme.js"></script>
   <script>
     const $ = id => document.getElementById(id);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let MAPS = [], selected = new Set(), format = 'BO3';
-    let lastTokens = null, bases = [];
+    let lastTokens = null, bases = [], RULESETS = [];
 
     // ── Bases d'URL (Ce PC / Réseau local) ──
     fetch('/api/server-info').then(r => r.json()).then(info => {
@@ -148,6 +158,41 @@
     fetch('/api/maps').then(r => r.json()).then(ms => {
       MAPS = ms; ms.forEach(m => selected.add(m.slug)); renderMaps();
     });
+
+    // ── Rulesets (format + pool sauvegardés) ──
+    function renderRulesets(list) {
+      RULESETS = list || [];
+      if (!RULESETS.length) { $('rs-list').innerHTML = '<div class="status">Aucun ruleset sauvegardé.</div>'; return; }
+      $('rs-list').innerHTML = RULESETS.map(r =>
+        '<div class="linkrow"><span class="lbl" style="flex:1;width:auto">' + esc(r.name) +
+        ' <small style="color:var(--muted)">' + r.format + ' · ' + r.pool.length + ' maps</small></span>' +
+        '<button data-load="' + r.id + '">Charger</button>' +
+        '<button data-del="' + r.id + '" title="Supprimer">✕</button></div>'
+      ).join('');
+    }
+
+    function applyRuleset(r) {
+      format = r.format;
+      $('fmt').querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.f === format));
+      selected = new Set((r.pool || []).filter(slug => MAPS.some(m => m.slug === slug)));
+      renderMaps();
+    }
+
+    $('rs-save').addEventListener('click', () => {
+      const name = $('rs-name').value.trim() || 'Ruleset';
+      fetch('/api/rulesets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, format, pool: [...selected] }) })
+        .then(r => r.json()).then(() => { $('rs-name').value = ''; }).catch(() => {});
+    });
+
+    $('rs-list').addEventListener('click', e => {
+      const load = e.target.closest('[data-load]');
+      if (load) { const r = RULESETS.find(x => x.id === load.dataset.load); if (r) applyRuleset(r); return; }
+      const del = e.target.closest('[data-del]');
+      if (del) fetch('/api/rulesets/' + del.dataset.del, { method: 'DELETE' }).catch(() => {});
+    });
+
+    fetch('/api/rulesets').then(r => r.json()).then(renderRulesets).catch(() => {});
+    io().on('rulesetsUpdate', renderRulesets);
 
     // Lancer
     $('btn-start').addEventListener('click', () => {

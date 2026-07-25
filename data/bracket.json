@@ -1,0 +1,113 @@
+{
+  "id": "b8b821edfb02",
+  "name": "Tournoi",
+  "format": "single",
+  "teams": [
+    {
+      "id": "0749501f21d6",
+      "name": "Lurk",
+      "color": "#8b1a8b"
+    },
+    {
+      "id": "214e696e8ddf",
+      "name": "Drop",
+      "color": "#1a8b4a"
+    },
+    {
+      "id": "878a76470c96",
+      "name": "REED",
+      "color": "#ea6401"
+    },
+    {
+      "id": "c71a72d83151",
+      "name": "PEEK",
+      "color": "#234ca3"
+    }
+  ],
+  "groups": [],
+  "matches": [
+    {
+      "id": "d797c697",
+      "bracket": "winners",
+      "round": 0,
+      "slot": 0,
+      "groupId": null,
+      "teamA": {
+        "id": "0749501f21d6",
+        "name": "Lurk",
+        "color": "#8b1a8b"
+      },
+      "teamB": {
+        "id": "c71a72d83151",
+        "name": "PEEK",
+        "color": "#234ca3"
+      },
+      "bo": "BO3",
+      "scoreA": 0,
+      "scoreB": 0,
+      "maps": [],
+      "status": "ready",
+      "winner": null,
+      "reported": null,
+      "next": {
+        "matchId": "65cfb1e8",
+        "slot": "A"
+      },
+      "loserNext": null,
+      "bonusNext": null
+    },
+    {
+      "id": "d2ebd17e",
+      "bracket": "winners",
+      "round": 0,
+      "slot": 1,
+      "groupId": null,
+      "teamA": {
+        "id": "214e696e8ddf",
+        "name": "Drop",
+        "color": "#1a8b4a"
+      },
+      "teamB": {
+        "id": "878a76470c96",
+        "name": "REED",
+        "color": "#ea6401"
+      },
+      "bo": "BO3",
+      "scoreA": 0,
+      "scoreB": 0,
+      "maps": [],
+      "status": "ready",
+      "winner": null,
+      "reported": null,
+      "next": {
+        "matchId": "65cfb1e8",
+        "slot": "B"
+      },
+      "loserNext": null,
+      "bonusNext": null
+    },
+    {
+      "id": "65cfb1e8",
+      "bracket": "winners",
+      "round": 1,
+      "slot": 0,
+      "groupId": null,
+      "bo": "BO3",
+      "scoreA": 0,
+      "scoreB": 0,
+      "maps": [],
+      "status": "pending",
+      "winner": null,
+      "reported": null,
+      "next": null,
+      "loserNext": null,
+      "bonusNext": null
+    }
+  ],
+  "tokens": {
+    "0749501f21d6": "eec4bcc5408ada39c1",
+    "214e696e8ddf": "e1cf45d396ee0b6c9b",
+    "878a76470c96": "63274076b5672f9f93",
+    "c71a72d83151": "11c8eac07d5e002464"
+  }
+}
