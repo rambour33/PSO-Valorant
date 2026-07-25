@@ -343,7 +343,7 @@ function pfSetTeam(team) {
 
 function pfCurrentFit() {
   const p = pfTeam && sbState && sbState[pfTeam] && sbState[pfTeam].players[pfPlayerIndex];
-  return (p && p.fit) || { x: 0, y: 0, zoom: 1 };
+  return (p && p.fit) || { x: 0, y: 0, zoom: 1.25 };
 }
 
 function pfRenderZoom() {
@@ -369,7 +369,7 @@ function pfAdjust(action) {
   else if (action === 'down') y = clampPf(y + 5, -50, 50);
   else if (action === 'zoomin') zoom = clampPf(Math.round((zoom + 0.1) * 100) / 100, 1, 3);
   else if (action === 'zoomout') zoom = clampPf(Math.round((zoom - 0.1) * 100) / 100, 1, 3);
-  else if (action === 'reset') { x = 0; y = 0; zoom = 1; }
+  else if (action === 'reset') { x = 0; y = 0; zoom = 1.25; }
   const players = sbState[pfTeam].players.map((p, i) => (i === pfPlayerIndex ? { ...p, fit: { x, y, zoom } } : p));
   fetch('/api/scoreboard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [pfTeam]: { players } }) })
     .then((r) => r.json()).then((s) => { sbFill(s); pfRenderZoom(); }).catch(() => {});

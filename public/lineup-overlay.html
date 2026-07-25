@@ -105,8 +105,12 @@
         p = p || {};
         let cls = 'card', inner = '';
         if (p.photo) {
-          const fit = p.fit || { x: 0, y: 0, zoom: 1 };
-          const style = ' style="transform:translate(' + fit.x + '%,' + fit.y + '%) scale(' + fit.zoom + ')"';
+          const fit = p.fit || { x: 0, y: 0, zoom: 1.25 };
+          // object-fit:cover laisse une marge de (zoom-1)/2 de chaque côté une fois zoomé.
+          // x/y (-50..50) représentent donc "jusqu'où aller vers ce bord" et non un % brut,
+          // sinon on dépasse la marge réelle disponible et ça révèle du vide derrière la photo.
+          const tx = fit.x * (fit.zoom - 1) * 0.9, ty = fit.y * (fit.zoom - 1) * 0.9;
+          const style = ' style="transform:translate(' + tx + '%,' + ty + '%) scale(' + fit.zoom + ')"';
           inner = '<img src="' + esc(p.photo) + '"' + style + ' alt="" />';
         } else if (p.agent && AGENTS[p.agent]) {
           cls += ' agent'; inner = '<img src="' + esc(AGENTS[p.agent]) + '" alt="" />';

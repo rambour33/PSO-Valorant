@@ -1,17 +1,17 @@
 {
   "visible": true,
-  "format": "BO3",
+  "format": "BO1",
   "team1": {
     "name": "TEAM A",
-    "color": "#FF4655",
-    "score": 1,
+    "color": "#ff4655",
+    "score": 0,
     "players": [
       {
         "name": "",
-        "photo": "",
+        "photo": "/uploads/426ff47e746260e4.png",
         "agent": "",
         "fit": {
-          "x": 0,
+          "x": -30,
           "y": 0,
           "zoom": 1
         }
@@ -23,7 +23,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -33,7 +33,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -43,7 +43,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -53,15 +53,15 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       }
     ]
   },
   "team2": {
     "name": "TEAM B",
-    "color": "#00C8C8",
-    "score": 1,
+    "color": "#00c8c8",
+    "score": 0,
     "players": [
       {
         "name": "",
@@ -70,7 +70,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -80,7 +80,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -90,7 +90,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -100,7 +100,7 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       },
       {
@@ -110,13 +110,10 @@
         "fit": {
           "x": 0,
           "y": 0,
-          "zoom": 1
+          "zoom": 1.25
         }
       }
     ]
   },
-  "sequence": [
-    1,
-    2
-  ]
+  "sequence": []
 }
