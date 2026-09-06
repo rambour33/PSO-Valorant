@@ -166,6 +166,33 @@ body {
 .sb-team .avatars .av { width: 34px; height: 34px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
 .sb-card .sb-action { width: 100%; margin-top: 12px; }
 
+/* ── Fenêtre de recadrage photo ── */
+.pcm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(6,7,10,.82);
+  align-items: center; justify-content: center;
+}
+.pcm-overlay.open { display: flex; }
+.pcm-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; width: 340px; max-width: 92vw; }
+.pcm-title { font-family: var(--font-head); font-size: 16px; letter-spacing: 1px; margin-bottom: 12px; }
+.pcm-frame {
+  width: 240px; height: 516px; max-width: 100%; margin: 0 auto; position: relative; overflow: hidden;
+  border-radius: 6px; border: 1px solid var(--border); background: #0e1016; cursor: grab; touch-action: none;
+}
+.pcm-frame.dragging { cursor: grabbing; }
+/* Pas d'object-fit:cover ici : la taille/position sont entièrement pilotées par JS (transform),
+   pour pouvoir dézoomer sous le niveau "cover" et montrer la photo entière avant de cadrer. */
+.pcm-frame img { position: absolute; top: 50%; left: 50%; user-select: none; -webkit-user-drag: none; box-shadow: 0 0 0 1px rgba(255,255,255,.15); }
+.pcm-actions .sb-action:disabled { opacity: .4; cursor: not-allowed; }
+.pcm-hint { font-size: 11px; color: var(--muted); text-align: center; margin: 10px 0 4px; }
+.pcm-zoom-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.pcm-zoom-btn {
+  flex: 0 0 auto; width: 30px; height: 30px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+  border-radius: 6px; font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.pcm-zoom-row input[type=range] { flex: 1; }
+.pcm-actions { display: flex; gap: 8px; margin-top: 16px; }
+.pcm-actions .sb-action { margin-top: 0; }
+
 /* ── Équipes sauvegardées ── */
 .sb-saved-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; max-width: 1100px; }
 .sb-saved { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
@@ -233,17 +260,6 @@ body {
 
 /* ── Ajustement des photos (cadrage lineup) ── */
 #pf-players { margin: 10px 0 16px; max-width: 620px; }
-.pf-controls { display: flex; align-items: center; gap: 40px; }
-.pf-pad { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.pf-midrow { display: flex; align-items: center; gap: 6px; }
-.pf-btn {
-  width: 44px; height: 44px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
-  border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.pf-btn:hover { border-color: var(--red); color: var(--red); }
-.pf-btn.pf-reset { font-size: 15px; color: var(--muted); }
-.pf-zoom { display: flex; align-items: center; gap: 12px; }
-.pf-zoom span { font-family: var(--font-head); font-size: 15px; min-width: 52px; text-align: center; }
 
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
 .theme-card {

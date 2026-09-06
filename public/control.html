@@ -146,22 +146,8 @@
               <button data-pf-player="3">Joueur 4</button>
               <button data-pf-player="4">Joueur 5</button>
             </div>
-            <div class="pf-controls">
-              <div class="pf-pad">
-                <button class="pf-btn pf-up" data-pf-action="up" title="Monter">↑</button>
-                <div class="pf-midrow">
-                  <button class="pf-btn pf-left" data-pf-action="left" title="Gauche">←</button>
-                  <button class="pf-btn pf-reset" data-pf-action="reset" title="Réinitialiser">⟲</button>
-                  <button class="pf-btn pf-right" data-pf-action="right" title="Droite">→</button>
-                </div>
-                <button class="pf-btn pf-down" data-pf-action="down" title="Descendre">↓</button>
-              </div>
-              <div class="pf-zoom">
-                <button class="pf-btn" data-pf-action="zoomout" title="Dézoomer">−</button>
-                <span id="pf-zoomval">125%</span>
-                <button class="pf-btn" data-pf-action="zoomin" title="Zoomer">+</button>
-              </div>
-            </div>
+            <button type="button" class="sb-action primary" id="pf-recrop" style="max-width:260px">🖼️ Recadrer cette photo</button>
+            <p class="section-hint" id="pf-nophoto" style="display:none">Ce joueur n'a pas encore de photo — ajoute-en une depuis sa vignette dans « Équipe ».</p>
           </div>
         </div>
       </div>
@@ -261,6 +247,25 @@
       </div>
     </main>
 
+    <!-- Fenêtre de recadrage photo (avant enregistrement) -->
+    <div class="pcm-overlay" id="pcm-overlay">
+      <div class="pcm-box">
+        <h3 class="pcm-title">Cadrer la photo</h3>
+        <div class="pcm-frame" id="pcm-frame">
+          <img id="pcm-img" alt="" draggable="false" />
+        </div>
+        <p class="pcm-hint" id="pcm-hint">Glisse la photo pour la repositionner · molette ou curseur pour zoomer.</p>
+        <div class="pcm-zoom-row">
+          <button type="button" class="pcm-zoom-btn" id="pcm-zoom-out">−</button>
+          <input type="range" id="pcm-zoom-slider" min="1" max="3" step="0.01" value="1.25" />
+          <button type="button" class="pcm-zoom-btn" id="pcm-zoom-in">+</button>
+        </div>
+        <div class="pcm-actions">
+          <button type="button" class="sb-action" id="pcm-cancel">Annuler</button>
+          <button type="button" class="sb-action primary" id="pcm-confirm">Valider</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

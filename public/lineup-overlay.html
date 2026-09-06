@@ -32,6 +32,10 @@
       border: 2px solid rgba(255,255,255,.10);
     }
     .card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    /* Photo réglable (cadrage x/y/zoom) : taille/position entièrement pilotées en JS une fois
+       les dimensions naturelles connues (mêmes calculs que la fenêtre de recadrage du control panel),
+       donc pas d'object-fit ici — il casserait le calcul du zoom de couverture. */
+    .card img.fit-photo { inset: auto; top: 50%; left: 50%; width: auto; height: auto; object-fit: none; }
     /* Carte « champion » (portrait d'agent) : fond accent + ajustement */
     .card.agent { background: linear-gradient(180deg, color-mix(in srgb, var(--pso-accent, #FF4655) 35%, #0e1016), #0e1016); }
     .card.agent img { object-fit: cover; object-position: top center; }
@@ -106,12 +110,7 @@
         let cls = 'card', inner = '';
         if (p.photo) {
           const fit = p.fit || { x: 0, y: 0, zoom: 1.25 };
-          // object-fit:cover laisse une marge de (zoom-1)/2 de chaque côté une fois zoomé.
-          // x/y (-50..50) représentent donc "jusqu'où aller vers ce bord" et non un % brut,
-          // sinon on dépasse la marge réelle disponible et ça révèle du vide derrière la photo.
-          const tx = fit.x * (fit.zoom - 1) * 0.9, ty = fit.y * (fit.zoom - 1) * 0.9;
-          const style = ' style="transform:translate(' + tx + '%,' + ty + '%) scale(' + fit.zoom + ')"';
-          inner = '<img src="' + esc(p.photo) + '"' + style + ' alt="" />';
+          inner = '<img class="fit-photo" src="' + esc(p.photo) + '" data-fit=\'' + JSON.stringify(fit) + '\' alt="" />';
         } else if (p.agent && AGENTS[p.agent]) {
           cls += ' agent'; inner = '<img src="' + esc(AGENTS[p.agent]) + '" alt="" />';
         } else {
@@ -119,6 +118,27 @@
         }
         return '<div class="' + cls + '">' + inner + '<div class="shade"></div><div class="nm">' + esc(p.name || '') + '</div></div>';
       }).join('');
+
+      // Applique le cadrage une fois les dimensions naturelles de chaque photo connues
+      // (même calcul que la fenêtre de recadrage du control panel : "zoom" = multiplicateur
+      // au-dessus du zoom qui remplit tout juste le cadre, x/y = % du cadre à décaler).
+      cardsEl.querySelectorAll('img.fit-photo').forEach((img) => {
+        const apply = () => {
+          const naturalW = img.naturalWidth, naturalH = img.naturalHeight;
+          if (!naturalW || !naturalH) return;
+          const fit = JSON.parse(img.dataset.fit || '{}');
+          const zoom = fit.zoom || 1.25, x = fit.x || 0, y = fit.y || 0;
+          const frame = img.parentElement.getBoundingClientRect();
+          const coverScale = Math.max(frame.width / naturalW, frame.height / naturalH);
+          const scale = coverScale * zoom;
+          img.style.width = naturalW + 'px';
+          img.style.height = naturalH + 'px';
+          img.style.marginLeft = (-naturalW / 2) + 'px';
+          img.style.marginTop = (-naturalH / 2) + 'px';
+          img.style.transform = 'translate(' + (x / 100 * frame.width) + 'px,' + (y / 100 * frame.height) + 'px) scale(' + scale + ')';
+        };
+        if (img.complete) apply(); else img.onload = apply;
+      });
     }
 
     fetch('/api/scoreboard').then((r) => r.json()).then(render).catch(() => {});

@@ -2,22 +2,12 @@
   "visible": true,
   "format": "BO1",
   "team1": {
-    "name": "TEAM A",
-    "color": "#ff4655",
-    "score": 0,
+    "name": "Drop",
+    "color": "#1a8b4a",
+    "score": 1,
     "players": [
       {
-        "name": "",
-        "photo": "/uploads/426ff47e746260e4.png",
-        "agent": "",
-        "fit": {
-          "x": -30,
-          "y": 0,
-          "zoom": 1
-        }
-      },
-      {
-        "name": "",
+        "name": "wilost",
         "photo": "",
         "agent": "",
         "fit": {
@@ -27,7 +17,7 @@
         }
       },
       {
-        "name": "",
+        "name": "toph",
         "photo": "",
         "agent": "",
         "fit": {
@@ -37,7 +27,7 @@
         }
       },
       {
-        "name": "",
+        "name": "vador",
         "photo": "",
         "agent": "",
         "fit": {
@@ -47,7 +37,17 @@
         }
       },
       {
-        "name": "",
+        "name": "pepito",
+        "photo": "",
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.25
+        }
+      },
+      {
+        "name": "Kamila",
         "photo": "",
         "agent": "",
         "fit": {
@@ -59,12 +59,22 @@
     ]
   },
   "team2": {
-    "name": "TEAM B",
-    "color": "#00c8c8",
+    "name": "Lurk",
+    "color": "#8b1a8b",
     "score": 0,
     "players": [
       {
-        "name": "",
+        "name": "XRT M8",
+        "photo": "",
+        "agent": "waylay",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.25
+        }
+      },
+      {
+        "name": "nils",
         "photo": "",
         "agent": "",
         "fit": {
@@ -74,7 +84,7 @@
         }
       },
       {
-        "name": "",
+        "name": "romain",
         "photo": "",
         "agent": "",
         "fit": {
@@ -84,9 +94,9 @@
         }
       },
       {
-        "name": "",
+        "name": "Stouli",
         "photo": "",
-        "agent": "",
+        "agent": "raze",
         "fit": {
           "x": 0,
           "y": 0,
@@ -94,19 +104,9 @@
         }
       },
       {
-        "name": "",
+        "name": "kuket78",
         "photo": "",
-        "agent": "",
-        "fit": {
-          "x": 0,
-          "y": 0,
-          "zoom": 1.25
-        }
-      },
-      {
-        "name": "",
-        "photo": "",
-        "agent": "",
+        "agent": "brimstone",
         "fit": {
           "x": 0,
           "y": 0,
@@ -115,5 +115,7 @@
       }
     ]
   },
-  "sequence": []
+  "sequence": [
+    1
+  ]
 }

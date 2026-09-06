@@ -1,57 +1,46 @@
 {
-  "id": "0379d9976093",
+  "id": "2a6e04522628",
   "name": "Tournoi",
-  "format": "groups",
+  "format": "double",
   "teams": [
     {
-      "id": "0749501f21d6",
+      "id": "d59540ac4a1e",
+      "name": "PEEK",
+      "color": "#234ca3"
+    },
+    {
+      "id": "8b97265f7b50",
       "name": "Lurk",
       "color": "#8b1a8b"
     },
     {
-      "id": "214e696e8ddf",
+      "id": "2cf31ffb30e5",
       "name": "Drop",
       "color": "#1a8b4a"
     },
     {
-      "id": "878a76470c96",
+      "id": "2f25ccb61dc8",
       "name": "REED",
       "color": "#ea6401"
-    },
-    {
-      "id": "c71a72d83151",
-      "name": "PEEK",
-      "color": "#234ca3"
     }
   ],
-  "groups": [
-    {
-      "id": "G1",
-      "name": "Phase de poule",
-      "teamIds": [
-        "0749501f21d6",
-        "214e696e8ddf",
-        "878a76470c96",
-        "c71a72d83151"
-      ]
-    }
-  ],
+  "groups": [],
   "matches": [
     {
-      "id": "555e1a2c",
-      "bracket": "group",
+      "id": "d46d7611",
+      "bracket": "winners",
       "round": 0,
       "slot": 0,
-      "groupId": "G1",
+      "groupId": null,
       "teamA": {
-        "id": "0749501f21d6",
-        "name": "Lurk",
-        "color": "#8b1a8b"
+        "id": "d59540ac4a1e",
+        "name": "PEEK",
+        "color": "#234ca3"
       },
       "teamB": {
-        "id": "214e696e8ddf",
-        "name": "Drop",
-        "color": "#1a8b4a"
+        "id": "2f25ccb61dc8",
+        "name": "REED",
+        "color": "#ea6401"
       },
       "bo": "BO1",
       "scoreA": 1,
@@ -59,131 +48,38 @@
       "maps": [
         {
           "scoreA": 13,
-          "scoreB": 1,
+          "scoreB": 10,
           "winner": "A"
         }
       ],
       "status": "done",
       "winner": "A",
       "reported": null,
-      "next": null,
-      "loserNext": null,
+      "next": {
+        "matchId": "5321e016",
+        "slot": "A"
+      },
+      "loserNext": {
+        "matchId": "1f9ad7ab",
+        "slot": "A"
+      },
       "bonusNext": null
     },
     {
-      "id": "5f9a168d",
-      "bracket": "group",
+      "id": "5e11e860",
+      "bracket": "winners",
       "round": 0,
       "slot": 1,
-      "groupId": "G1",
+      "groupId": null,
       "teamA": {
-        "id": "0749501f21d6",
+        "id": "8b97265f7b50",
         "name": "Lurk",
         "color": "#8b1a8b"
       },
       "teamB": {
-        "id": "878a76470c96",
-        "name": "REED",
-        "color": "#ea6401"
-      },
-      "bo": "BO1",
-      "scoreA": 0,
-      "scoreB": 1,
-      "maps": [
-        {
-          "scoreA": 7,
-          "scoreB": 13,
-          "winner": "B"
-        }
-      ],
-      "status": "done",
-      "winner": "B",
-      "reported": null,
-      "next": null,
-      "loserNext": null,
-      "bonusNext": null
-    },
-    {
-      "id": "9be3d37a",
-      "bracket": "group",
-      "round": 0,
-      "slot": 2,
-      "groupId": "G1",
-      "teamA": {
-        "id": "0749501f21d6",
-        "name": "Lurk",
-        "color": "#8b1a8b"
-      },
-      "teamB": {
-        "id": "c71a72d83151",
-        "name": "PEEK",
-        "color": "#234ca3"
-      },
-      "bo": "BO1",
-      "scoreA": 0,
-      "scoreB": 1,
-      "maps": [
-        {
-          "scoreA": 5,
-          "scoreB": 13,
-          "winner": "B"
-        }
-      ],
-      "status": "done",
-      "winner": "B",
-      "reported": null,
-      "next": null,
-      "loserNext": null,
-      "bonusNext": null
-    },
-    {
-      "id": "f59df0b4",
-      "bracket": "group",
-      "round": 0,
-      "slot": 3,
-      "groupId": "G1",
-      "teamA": {
-        "id": "214e696e8ddf",
+        "id": "2cf31ffb30e5",
         "name": "Drop",
         "color": "#1a8b4a"
-      },
-      "teamB": {
-        "id": "878a76470c96",
-        "name": "REED",
-        "color": "#ea6401"
-      },
-      "bo": "BO1",
-      "scoreA": 0,
-      "scoreB": 1,
-      "maps": [
-        {
-          "scoreA": 2,
-          "scoreB": 13,
-          "winner": "B"
-        }
-      ],
-      "status": "done",
-      "winner": "B",
-      "reported": null,
-      "next": null,
-      "loserNext": null,
-      "bonusNext": null
-    },
-    {
-      "id": "922814d5",
-      "bracket": "group",
-      "round": 0,
-      "slot": 4,
-      "groupId": "G1",
-      "teamA": {
-        "id": "214e696e8ddf",
-        "name": "Drop",
-        "color": "#1a8b4a"
-      },
-      "teamB": {
-        "id": "c71a72d83151",
-        "name": "PEEK",
-        "color": "#234ca3"
       },
       "bo": "BO1",
       "scoreA": 0,
@@ -198,23 +94,104 @@
       "status": "done",
       "winner": "B",
       "reported": null,
-      "next": null,
-      "loserNext": null,
+      "next": {
+        "matchId": "5321e016",
+        "slot": "B"
+      },
+      "loserNext": {
+        "matchId": "1f9ad7ab",
+        "slot": "B"
+      },
       "bonusNext": null
     },
     {
-      "id": "3f7284f3",
-      "bracket": "group",
-      "round": 0,
-      "slot": 5,
-      "groupId": "G1",
+      "id": "5321e016",
+      "bracket": "winners",
+      "round": 1,
+      "slot": 0,
+      "groupId": null,
       "teamA": {
-        "id": "878a76470c96",
+        "id": "d59540ac4a1e",
+        "name": "PEEK",
+        "color": "#234ca3"
+      },
+      "teamB": {
+        "id": "2cf31ffb30e5",
+        "name": "Drop",
+        "color": "#1a8b4a"
+      },
+      "bo": "BO1",
+      "scoreA": 0,
+      "scoreB": 1,
+      "maps": [
+        {
+          "scoreA": 8,
+          "scoreB": 13,
+          "winner": "B"
+        }
+      ],
+      "status": "done",
+      "winner": "B",
+      "reported": null,
+      "next": {
+        "matchId": "8a9f5c63",
+        "slot": "A"
+      },
+      "loserNext": {
+        "matchId": "29118beb",
+        "slot": "B"
+      },
+      "bonusNext": null
+    },
+    {
+      "id": "1f9ad7ab",
+      "bracket": "losers",
+      "round": 0,
+      "slot": 0,
+      "groupId": null,
+      "teamA": {
+        "id": "2f25ccb61dc8",
         "name": "REED",
         "color": "#ea6401"
       },
       "teamB": {
-        "id": "c71a72d83151",
+        "id": "8b97265f7b50",
+        "name": "Lurk",
+        "color": "#8b1a8b"
+      },
+      "bo": "BO1",
+      "scoreA": 0,
+      "scoreB": 1,
+      "maps": [
+        {
+          "scoreA": 10,
+          "scoreB": 13,
+          "winner": "B"
+        }
+      ],
+      "status": "done",
+      "winner": "B",
+      "reported": null,
+      "next": {
+        "matchId": "29118beb",
+        "slot": "A"
+      },
+      "loserNext": null,
+      "bonusNext": null
+    },
+    {
+      "id": "29118beb",
+      "bracket": "losers",
+      "round": 1,
+      "slot": 0,
+      "groupId": null,
+      "teamA": {
+        "id": "8b97265f7b50",
+        "name": "Lurk",
+        "color": "#8b1a8b"
+      },
+      "teamB": {
+        "id": "d59540ac4a1e",
         "name": "PEEK",
         "color": "#234ca3"
       },
@@ -224,12 +201,73 @@
       "maps": [
         {
           "scoreA": 13,
-          "scoreB": 3,
+          "scoreB": 9,
           "winner": "A"
         }
       ],
       "status": "done",
       "winner": "A",
+      "reported": null,
+      "next": {
+        "matchId": "8a9f5c63",
+        "slot": "B"
+      },
+      "loserNext": null,
+      "bonusNext": null
+    },
+    {
+      "id": "8a9f5c63",
+      "bracket": "grand",
+      "round": 0,
+      "slot": 0,
+      "groupId": null,
+      "teamA": {
+        "id": "2cf31ffb30e5",
+        "name": "Drop",
+        "color": "#1a8b4a"
+      },
+      "teamB": {
+        "id": "8b97265f7b50",
+        "name": "Lurk",
+        "color": "#8b1a8b"
+      },
+      "bo": "BO3",
+      "scoreA": 2,
+      "scoreB": 0,
+      "maps": [
+        {
+          "scoreA": 13,
+          "scoreB": 9,
+          "winner": "A"
+        },
+        {
+          "scoreA": 13,
+          "scoreB": 10,
+          "winner": "A"
+        }
+      ],
+      "status": "done",
+      "winner": "A",
+      "reported": null,
+      "next": {
+        "matchId": "d378a7c7",
+        "slot": null
+      },
+      "loserNext": null,
+      "bonusNext": null
+    },
+    {
+      "id": "d378a7c7",
+      "bracket": "grand-reset",
+      "round": 0,
+      "slot": 0,
+      "groupId": null,
+      "bo": "BO3",
+      "scoreA": 0,
+      "scoreB": 0,
+      "maps": [],
+      "status": "skipped",
+      "winner": null,
       "reported": null,
       "next": null,
       "loserNext": null,
@@ -237,9 +275,9 @@
     }
   ],
   "tokens": {
-    "0749501f21d6": "a0ce4f820270bf2901",
-    "214e696e8ddf": "85ebbf9558f7611a81",
-    "878a76470c96": "5c36dffd8a281a4d76",
-    "c71a72d83151": "ae655336fb9daf2241"
+    "d59540ac4a1e": "bb1d102aa71f37bd73",
+    "8b97265f7b50": "4eb37f3e01024ea39f",
+    "2cf31ffb30e5": "109dd97b81b895abb8",
+    "2f25ccb61dc8": "e06889d5ab309cb6be"
   }
 }

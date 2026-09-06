@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "44094f6835b1",
+    "name": "pool officiel",
+    "format": "BO1",
+    "pool": [
+      "ascent",
+      "haven",
+      "lotus",
+      "split",
+      "summit",
+      "sunset",
+      "breeze"
+    ]
+  },
+  {
+    "id": "154360710a40",
+    "name": "Ruleset",
+    "format": "BO3",
+    "pool": [
+      "abyss",
+      "ascent",
+      "bind",
+      "breeze",
+      "corrode",
+      "fracture",
+      "haven",
+      "icebox",
+      "lotus",
+      "pearl",
+      "split",
+      "summit",
+      "sunset"
+    ]
+  }
+]

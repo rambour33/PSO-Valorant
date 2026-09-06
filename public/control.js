@@ -76,7 +76,7 @@ const sb = {
 };
 let sbState = null, _sbDebounce = null;
 
-// Réduit une image (fichier) à 512 px max et renvoie une data URL PNG.
+// Réduit une image (fichier) à `max` px et renvoie une data URL PNG.
 function resizeImage(file, max) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -102,16 +102,147 @@ function updateThumb(slot) {
   else { slot.img.removeAttribute('src'); slot.box.classList.remove('has'); slot.clear.style.display = 'none'; }
 }
 
+// ── Fenêtre de recadrage (avant enregistrement) ────────────────────────────────
+// La photo s'affiche d'abord ENTIÈRE (comme object-fit:contain, quitte à laisser des
+// bandes vides dans le cadre) pour que l'utilisateur voie toute l'image de départ,
+// puis zoome/glisse lui-même jusqu'à remplir le cadre exactement comme il veut.
+// zoom stocké : 1 = pile la taille qui remplit le cadre (équivalent object-fit:cover),
+// c'est ce que lineup-overlay.html attend (même formule x*(zoom-1)*0.9 pour le pan).
+const pcm = {
+  overlay: document.getElementById('pcm-overlay'), frame: document.getElementById('pcm-frame'), img: document.getElementById('pcm-img'),
+  zoomSlider: document.getElementById('pcm-zoom-slider'), zoomOut: document.getElementById('pcm-zoom-out'), zoomIn: document.getElementById('pcm-zoom-in'),
+  cancelBtn: document.getElementById('pcm-cancel'), confirmBtn: document.getElementById('pcm-confirm'), hint: document.getElementById('pcm-hint'),
+};
+
+function openPhotoCropper(dataUrl) {
+  if (!pcm.overlay) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const probe = new Image();
+    probe.onerror = () => resolve(null);
+    probe.onload = () => {
+      pcm.img.src = dataUrl;
+      pcm.overlay.classList.add('open');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const rect = pcm.frame.getBoundingClientRect();
+        const frameW = rect.width, frameH = rect.height;
+        const naturalW = probe.naturalWidth, naturalH = probe.naturalHeight;
+        const containScale = Math.min(frameW / naturalW, frameH / naturalH); // image entière visible
+        const coverScale = Math.max(frameW / naturalW, frameH / naturalH);   // remplit le cadre (= zoom stocké 1)
+        const minZoom = containScale / coverScale;                          // ≤ 1 sauf ratio déjà identique
+
+        pcm.img.style.width = naturalW + 'px';
+        pcm.img.style.height = naturalH + 'px';
+        pcm.img.style.marginLeft = (-naturalW / 2) + 'px';
+        pcm.img.style.marginTop = (-naturalH / 2) + 'px';
+        pcm.zoomSlider.min = minZoom;
+
+        let zoom = minZoom, px = 0, py = 0; // départ : photo entière visible, centrée
+
+        function clampPan(scale) {
+          const renderedW = naturalW * scale, renderedH = naturalH * scale;
+          const maxX = Math.max(0, (renderedW - frameW) / 2 * 0.9);
+          const maxY = Math.max(0, (renderedH - frameH) / 2 * 0.9);
+          px = Math.max(-maxX, Math.min(maxX, px));
+          py = Math.max(-maxY, Math.min(maxY, py));
+        }
+        function covers(scale) { return scale >= coverScale * 0.999; }
+        function render() {
+          const scale = coverScale * zoom;
+          clampPan(scale);
+          pcm.img.style.transform = 'translate(' + px + 'px,' + py + 'px) scale(' + scale + ')';
+          pcm.zoomSlider.value = zoom;
+          const ok = covers(scale);
+          pcm.confirmBtn.disabled = !ok;
+          pcm.hint.textContent = ok
+            ? 'Glisse la photo pour la repositionner · molette ou curseur pour zoomer.'
+            : 'Zoome jusqu’à remplir le cadre pour pouvoir valider.';
+        }
+        function setZoom(z) { zoom = Math.max(minZoom, Math.min(3, z)); render(); }
+        render();
+
+        let dragging = false, startX = 0, startY = 0, startPx = 0, startPy = 0;
+        const pointOf = (e) => (e.touches ? e.touches[0] : e);
+        function onDown(e) {
+          dragging = true;
+          const pt = pointOf(e);
+          startX = pt.clientX; startY = pt.clientY; startPx = px; startPy = py;
+          pcm.frame.classList.add('dragging');
+          e.preventDefault();
+        }
+        function onMove(e) {
+          if (!dragging) return;
+          const pt = pointOf(e);
+          px = startPx + (pt.clientX - startX);
+          py = startPy + (pt.clientY - startY);
+          render();
+          e.preventDefault();
+        }
+        function onUp() { dragging = false; pcm.frame.classList.remove('dragging'); }
+        function onWheel(e) { e.preventDefault(); setZoom(zoom - e.deltaY * 0.001); }
+        function onSlider() { setZoom(parseFloat(pcm.zoomSlider.value) || minZoom); }
+        function onZoomOut() { setZoom(Math.round((zoom - 0.1) * 100) / 100); }
+        function onZoomIn() { setZoom(Math.round((zoom + 0.1) * 100) / 100); }
+
+        pcm.frame.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        pcm.frame.addEventListener('touchstart', onDown, { passive: false });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        pcm.frame.addEventListener('wheel', onWheel, { passive: false });
+        pcm.zoomSlider.addEventListener('input', onSlider);
+        pcm.zoomOut.addEventListener('click', onZoomOut);
+        pcm.zoomIn.addEventListener('click', onZoomIn);
+
+        function cleanup() {
+          pcm.frame.removeEventListener('mousedown', onDown);
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+          pcm.frame.removeEventListener('touchstart', onDown);
+          window.removeEventListener('touchmove', onMove);
+          window.removeEventListener('touchend', onUp);
+          pcm.frame.removeEventListener('wheel', onWheel);
+          pcm.zoomSlider.removeEventListener('input', onSlider);
+          pcm.zoomOut.removeEventListener('click', onZoomOut);
+          pcm.zoomIn.removeEventListener('click', onZoomIn);
+          pcm.cancelBtn.removeEventListener('click', onCancel);
+          pcm.confirmBtn.removeEventListener('click', onConfirm);
+          pcm.confirmBtn.disabled = false;
+          pcm.overlay.classList.remove('open');
+        }
+        function onCancel() { cleanup(); resolve(null); }
+        function onConfirm() {
+          if (pcm.confirmBtn.disabled) return;
+          // x/y = décalage en % du cadre, directement ce qui a été affiché — pas de reconversion
+          // via (zoom-1) : cette formule supposait à tort une marge symétrique dans les deux sens,
+          // ce qui n'est vrai que si la photo a exactement le ratio du cadre. Ici clampPan() a déjà
+          // borné px/py aux vraies limites (asymétriques) de CETTE photo, donc on stocke tel quel.
+          const x = px / frameW * 100, y = py / frameH * 100;
+          cleanup();
+          resolve({ x, y, zoom });
+        }
+        pcm.cancelBtn.addEventListener('click', onCancel);
+        pcm.confirmBtn.addEventListener('click', onConfirm);
+      }));
+    };
+    probe.src = dataUrl;
+  });
+}
+
 function onPhotoPick(slot) {
   const f = slot.file.files && slot.file.files[0];
   slot.file.value = '';
   if (!f) return;
-  slot.box.classList.add('loading');
-  resizeImage(f, 512)
-    .then((dataUrl) => fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl }) }).then((r) => r.json()))
-    .then((d) => { if (d && d.url) { slot.photo = d.url; updateThumb(slot); sbPush(); } })
-    .catch(() => {})
-    .finally(() => slot.box.classList.remove('loading'));
+  resizeImage(f, 1024).then((dataUrl) => {
+    return openPhotoCropper(dataUrl).then((fit) => {
+      if (!fit) return; // annulé : on ne sauvegarde rien
+      slot.box.classList.add('loading');
+      return fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl }) })
+        .then((r) => r.json())
+        .then((d) => { if (d && d.url) { slot.photo = d.url; slot.fit = fit; updateThumb(slot); sbPush(); } })
+        .finally(() => slot.box.classList.remove('loading'));
+    });
+  }).catch(() => {});
 }
 
 // Génère les 5 joueurs d'une équipe : vignette (upload) + nom + agent de secours.
@@ -126,10 +257,10 @@ function buildPlayers(containerId, n) {
     const name = document.createElement('input'); name.maxLength = 30; name.placeholder = 'Joueur ' + (i + 1); name.className = 'pl-name';
     const agentSel = document.createElement('select'); agentSel.className = 'pl-agent'; agentSel.title = 'Champion de secours (si pas de photo)';
     const clear = document.createElement('button'); clear.type = 'button'; clear.className = 'pl-clear'; clear.textContent = '×'; clear.title = 'Retirer la photo';
-    const slot = { name, photo: '', agentSel, img, box, file, clear };
+    const slot = { name, photo: '', fit: { x: 0, y: 0, zoom: 1.25 }, agentSel, img, box, file, clear };
     box.addEventListener('click', () => file.click());
     file.addEventListener('change', () => onPhotoPick(slot));
-    clear.addEventListener('click', () => { slot.photo = ''; updateThumb(slot); sbPush(); });
+    clear.addEventListener('click', () => { slot.photo = ''; slot.fit = { x: 0, y: 0, zoom: 1.25 }; updateThumb(slot); sbPush(); });
     name.addEventListener('input', sbPush);
     agentSel.addEventListener('change', sbPush);
     row.append(box, name, agentSel, clear, file);
@@ -149,12 +280,12 @@ function populateAgents() {
 document.addEventListener('assets:loaded', populateAgents);
 
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const teamPlayers = (arr) => sb[arr].map((s) => ({ name: s.name.value, photo: s.photo, agent: s.agentSel.value }));
+const teamPlayers = (arr) => sb[arr].map((s) => ({ name: s.name.value, photo: s.photo, agent: s.agentSel.value, fit: s.fit }));
 
 function fillPlayers(slots, players) {
   slots.forEach((s, i) => {
     const p = (players && players[i]) || {};
-    s.name.value = p.name || ''; s.photo = p.photo || ''; s._agent = p.agent || ''; s.agentSel.value = s._agent;
+    s.name.value = p.name || ''; s.photo = p.photo || ''; s.fit = p.fit || { x: 0, y: 0, zoom: 1.25 }; s._agent = p.agent || ''; s.agentSel.value = s._agent;
     updateThumb(s);
   });
 }
@@ -326,28 +457,31 @@ if (sbPreviewTabs) sbPreviewTabs.addEventListener('click', (e) => {
   if (btn) sbSetPreview(btn.dataset.preview);
 });
 
-// ── Ajustement des photos (cadrage x/y + zoom dans le cadre lineup) ───────────
+// ── Ajustement des photos (rouvre la même fenêtre de recadrage que l'upload) ──
 const pfHint = document.getElementById('pf-hint');
 const pfBody = document.getElementById('pf-body');
 const pfPlayersEl = document.getElementById('pf-players');
-const pfZoomVal = document.getElementById('pf-zoomval');
+const pfRecropBtn = document.getElementById('pf-recrop');
+const pfNoPhoto = document.getElementById('pf-nophoto');
 let pfTeam = null;
 let pfPlayerIndex = 0;
+
+function pfCurrentPlayer() {
+  return pfTeam && sbState && sbState[pfTeam] && sbState[pfTeam].players[pfPlayerIndex];
+}
+
+function pfRenderState() {
+  const p = pfCurrentPlayer();
+  const hasPhoto = !!(p && p.photo);
+  if (pfRecropBtn) pfRecropBtn.style.display = hasPhoto ? '' : 'none';
+  if (pfNoPhoto) pfNoPhoto.style.display = hasPhoto ? 'none' : 'block';
+}
 
 function pfSetTeam(team) {
   pfTeam = team;
   if (pfHint) pfHint.style.display = team ? 'none' : 'block';
   if (pfBody) pfBody.style.display = team ? 'block' : 'none';
-  pfRenderZoom();
-}
-
-function pfCurrentFit() {
-  const p = pfTeam && sbState && sbState[pfTeam] && sbState[pfTeam].players[pfPlayerIndex];
-  return (p && p.fit) || { x: 0, y: 0, zoom: 1.25 };
-}
-
-function pfRenderZoom() {
-  if (pfZoomVal) pfZoomVal.textContent = Math.round(pfCurrentFit().zoom * 100) + '%';
+  pfRenderState();
 }
 
 if (pfPlayersEl) pfPlayersEl.addEventListener('click', (e) => {
@@ -355,26 +489,19 @@ if (pfPlayersEl) pfPlayersEl.addEventListener('click', (e) => {
   if (!btn) return;
   pfPlayerIndex = parseInt(btn.dataset.pfPlayer, 10) || 0;
   pfPlayersEl.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b === btn));
-  pfRenderZoom();
+  pfRenderState();
 });
 
-const clampPf = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
-function pfAdjust(action) {
-  if (!pfTeam || !sbState) return;
-  const fit = pfCurrentFit();
-  let { x, y, zoom } = fit;
-  if (action === 'left') x = clampPf(x - 5, -50, 50);
-  else if (action === 'right') x = clampPf(x + 5, -50, 50);
-  else if (action === 'up') y = clampPf(y - 5, -50, 50);
-  else if (action === 'down') y = clampPf(y + 5, -50, 50);
-  else if (action === 'zoomin') zoom = clampPf(Math.round((zoom + 0.1) * 100) / 100, 1, 3);
-  else if (action === 'zoomout') zoom = clampPf(Math.round((zoom - 0.1) * 100) / 100, 1, 3);
-  else if (action === 'reset') { x = 0; y = 0; zoom = 1.25; }
-  const players = sbState[pfTeam].players.map((p, i) => (i === pfPlayerIndex ? { ...p, fit: { x, y, zoom } } : p));
-  fetch('/api/scoreboard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [pfTeam]: { players } }) })
-    .then((r) => r.json()).then((s) => { sbFill(s); pfRenderZoom(); }).catch(() => {});
-}
-document.querySelectorAll('.pf-controls [data-pf-action]').forEach((b) => b.addEventListener('click', () => pfAdjust(b.dataset.pfAction)));
+if (pfRecropBtn) pfRecropBtn.addEventListener('click', () => {
+  const p = pfCurrentPlayer();
+  if (!p || !p.photo) return;
+  openPhotoCropper(p.photo).then((fit) => {
+    if (!fit) return;
+    const players = sbState[pfTeam].players.map((pl, i) => (i === pfPlayerIndex ? { ...pl, fit } : pl));
+    fetch('/api/scoreboard', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [pfTeam]: { players } }) })
+      .then((r) => r.json()).then(sbFill).catch(() => {});
+  });
+});
 
 sbSetPreview('team1');
 
@@ -412,6 +539,7 @@ socket.on('scoreboardUpdate', (s) => {
     fillPlayers(sb.t1players, s.team1.players);
     fillPlayers(sb.t2players, s.team2.players);
   }
+  pfRenderState();
 });
 
 // ── Onglet Casters ────────────────────────────────────────────────────────────
