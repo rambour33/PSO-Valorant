@@ -39,6 +39,41 @@ app.get('/api/server-info', (req, res) => {
 // ── Thème global ──────────────────────────────────────────────────────────────
 app.get('/api/theme', (req, res) => res.json({ ...theme.get(), themes: theme.list() }));
 
+// ── Redémarrage du serveur ────────────────────────────────────────────────────
+// On sort avec le code 0 : la boucle de start.bat relance aussitôt le process.
+// Lancé autrement (npm start, node server.js), le serveur ne redémarre pas seul.
+app.post('/api/restart', (req, res) => {
+  res.json({ ok: true });
+  io.emit('serverRestart');
+  console.log('  ♻️  Redémarrage demandé depuis la régie…');
+  setTimeout(() => process.exit(0), 300);
+});
+
+// ── Créateur de visuels ───────────────────────────────────────────────────────
+app.get('/visual-builder', (req, res) => res.sendFile(path.join(__dirname, 'public', 'visual-builder.html')));
+
+// Bibliothèque de fonds : un sous-dossier de public/backgrounds = un événement.
+// Déposer une image dedans suffit à la faire apparaître dans le créateur.
+const BG_DIR = path.join(__dirname, 'public', 'backgrounds');
+const BG_EXT = /\.(svg|png|jpe?g|webp|gif)$/i;
+app.get('/api/backgrounds', (req, res) => {
+  try {
+    const groups = fs.readdirSync(BG_DIR, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => ({
+        id: d.name,
+        files: fs.readdirSync(path.join(BG_DIR, d.name))
+          .filter((f) => BG_EXT.test(f))
+          .sort()
+          .map((f) => ({ name: path.parse(f).name, url: '/backgrounds/' + d.name + '/' + f })),
+      }))
+      .filter((g) => g.files.length > 0);
+    res.json(groups);
+  } catch (e) {
+    res.json([]); // dossier absent : la galerie reste simplement vide
+  }
+});
+
 // ── Stinger (transition aux couleurs du thème actif) ──────────────────────────
 app.get('/stinger', (req, res) => res.sendFile(path.join(__dirname, 'public', 'stinger.html')));
 app.post('/api/stinger/play', (req, res) => { io.emit('stingerPlay'); res.json({ ok: true }); });

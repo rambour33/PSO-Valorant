@@ -1,13 +1,13 @@
 {
   "visible": true,
-  "format": "BO1",
+  "format": "BO3",
   "team1": {
-    "name": "Drop",
-    "color": "#1a8b4a",
+    "name": "REED",
+    "color": "#ea6401",
     "score": 1,
     "players": [
       {
-        "name": "wilost",
+        "name": "nagi",
         "photo": "",
         "agent": "",
         "fit": {
@@ -17,7 +17,7 @@
         }
       },
       {
-        "name": "toph",
+        "name": "daan",
         "photo": "",
         "agent": "",
         "fit": {
@@ -27,7 +27,7 @@
         }
       },
       {
-        "name": "vador",
+        "name": "reyzou",
         "photo": "",
         "agent": "",
         "fit": {
@@ -37,7 +37,7 @@
         }
       },
       {
-        "name": "pepito",
+        "name": "saym",
         "photo": "",
         "agent": "",
         "fit": {
@@ -47,7 +47,7 @@
         }
       },
       {
-        "name": "Kamila",
+        "name": "nolan",
         "photo": "",
         "agent": "",
         "fit": {
@@ -59,22 +59,12 @@
     ]
   },
   "team2": {
-    "name": "Lurk",
-    "color": "#8b1a8b",
+    "name": "PEEK",
+    "color": "#234ca3",
     "score": 0,
     "players": [
       {
-        "name": "XRT M8",
-        "photo": "",
-        "agent": "waylay",
-        "fit": {
-          "x": 0,
-          "y": 0,
-          "zoom": 1.25
-        }
-      },
-      {
-        "name": "nils",
+        "name": "chile",
         "photo": "",
         "agent": "",
         "fit": {
@@ -84,7 +74,7 @@
         }
       },
       {
-        "name": "romain",
+        "name": "cissejs",
         "photo": "",
         "agent": "",
         "fit": {
@@ -94,9 +84,9 @@
         }
       },
       {
-        "name": "Stouli",
+        "name": "imnetox",
         "photo": "",
-        "agent": "raze",
+        "agent": "",
         "fit": {
           "x": 0,
           "y": 0,
@@ -104,9 +94,19 @@
         }
       },
       {
-        "name": "kuket78",
+        "name": "framboise",
         "photo": "",
-        "agent": "brimstone",
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.25
+        }
+      },
+      {
+        "name": "nikko",
+        "photo": "",
+        "agent": "",
         "fit": {
           "x": 0,
           "y": 0,

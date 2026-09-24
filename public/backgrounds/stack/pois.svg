@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <pattern id="p1" width="44" height="44" patternUnits="userSpaceOnUse">
+      <circle cx="22" cy="22" r="2.6" fill="#f0e6d3" opacity="0.15"/>
+    </pattern>
+    <pattern id="p2" width="176" height="176" patternUnits="userSpaceOnUse">
+      <circle cx="88" cy="88" r="4" fill="#e33bae" opacity="0.7"/>
+    </pattern>
+<radialGradient id="v" cx="50%" cy="44%" r="78%">
+      <stop offset="40%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.62"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#0c0a0a"/>
+  <rect width="1920" height="1080" fill="url(#p1)"/>
+  <rect width="1920" height="1080" fill="url(#p2)"/>
+  <rect width="1920" height="1080" fill="url(#v)"/>
+</svg>

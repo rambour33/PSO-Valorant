@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <radialGradient id="top" cx="50%" cy="0%" r="70%">
+      <stop offset="0%" stop-color="#8b0000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#8b0000" stop-opacity="0"/>
+    </radialGradient>
+<radialGradient id="v" cx="50%" cy="44%" r="78%">
+      <stop offset="40%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.66"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#0c0a0a"/>
+  <rect width="1920" height="1080" fill="url(#top)"/>
+  <polygon points="960,-140 -280.71226788545664,1120 -188.71226788545664,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 -5.335941125408908,1120 86.66405887459109,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 220.94354068784185,1120 312.94354068784185,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 416.1272222260648,1120 508.1272222260648,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 591.6620959371908,1120 683.6620959371908,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 755.5496650653579,1120 847.5496650653579,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 914,1120 1006,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 1072.4503349346421,1120 1164.4503349346421,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 1236.3379040628092,1120 1328.3379040628092,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 1411.8727777739352,1120 1503.8727777739352,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 1607.056459312158,1120 1699.056459312158,1120" fill="#8b0000" opacity="0.055"/>
+  <polygon points="960,-140 1833.335941125409,1120 1925.335941125409,1120" fill="#9c2b78" opacity="0.055"/>
+  <polygon points="960,-140 2108.7122678854566,1120 2200.7122678854566,1120" fill="#8b0000" opacity="0.055"/>
+  <rect width="1920" height="1080" fill="url(#v)"/>
+</svg>

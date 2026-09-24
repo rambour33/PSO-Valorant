@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSO Valorant — Créateur de visuels</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: var(--pso-bg, #0e1016); --surface: var(--pso-surface, #161a22); --surface2: var(--pso-surface-2, #1d2230);
+      --border: var(--pso-border, #2a3142); --text: var(--pso-text, #e8ebf2); --muted: var(--pso-muted, #8a93a6);
+      --red: var(--pso-accent, #FF4655); --gold: var(--pso-gold, #E8B330);
+      --head: var(--pso-font-head, 'Oswald', sans-serif);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; height: 100vh; overflow: hidden; }
+
+    .vb { display: grid; grid-template-columns: 290px 1fr 250px; height: 100vh; }
+    .pane { overflow-y: auto; padding: 16px; }
+    .pane.left { border-right: 1px solid var(--border); background: var(--surface); }
+    .pane.right { border-left: 1px solid var(--border); background: var(--surface); }
+    .pane.mid { display: flex; flex-direction: column; padding: 0; }
+
+    h1 { font-family: var(--head); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+    h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 0 0 8px; }
+    .card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    label { display: block; font-size: 10px; color: var(--muted); margin: 9px 0 3px; text-transform: uppercase; letter-spacing: .5px; }
+    label:first-child { margin-top: 0; }
+    input, select, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; color: var(--text); padding: 7px; font-size: 12px; font-family: inherit; }
+    textarea { resize: vertical; min-height: 56px; line-height: 1.4; }
+    input[type=color] { padding: 2px; height: 30px; cursor: pointer; }
+    input[type=range] { padding: 0; height: 20px; accent-color: var(--red); border: none; background: none; }
+    input[type=file] { display: none; }
+    .row { display: flex; gap: 7px; }
+    .row > * { flex: 1; min-width: 0; }
+    .val { font-size: 10px; color: var(--muted); float: right; font-variant-numeric: tabular-nums; }
+
+    .btn { width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: var(--text);
+           font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s; }
+    .btn:hover { border-color: var(--red); }
+    .btn.primary { background: var(--red); border-color: var(--red); color: #fff; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; padding: 12px; }
+    .btn.primary:hover { opacity: .9; }
+    .btn.danger:hover { border-color: var(--red); color: var(--red); }
+    .btn + .btn { margin-top: 7px; }
+    .btn-row { display: flex; gap: 7px; }
+    .btn-row .btn + .btn { margin-top: 0; }
+
+    .seg { display: flex; gap: 5px; flex-wrap: wrap; }
+    .seg button { flex: 1; min-width: 0; padding: 7px 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+                  border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .seg button.on { background: var(--red); border-color: var(--red); color: #fff; }
+
+    .swatches { display: flex; gap: 5px; margin-top: 5px; }
+    .swatches button { flex: 1; height: 22px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; padding: 0; }
+
+    /* ── Scène ── */
+    .stage-bar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .stage-bar .sp { flex: 1; }
+    .stage-bar .info { font-size: 11px; color: var(--muted); }
+    .stage-wrap { flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 24px;
+                  background: repeating-conic-gradient(#00000022 0% 25%, transparent 0% 50%) 50% / 22px 22px, var(--bg); }
+    .board-holder { position: relative; box-shadow: 0 10px 40px #0009;
+                    background: repeating-conic-gradient(#8c8c8c 0% 25%, #5e5e5e 0% 50%) 0 0 / 24px 24px; }
+    .board { position: relative; overflow: hidden; transform-origin: top left; }
+    .board * { user-select: none; }
+
+    .el { position: absolute; cursor: grab; outline: 1px dashed transparent; outline-offset: 3px; }
+    .el:hover { outline-color: #ffffff55; }
+    .el.sel { outline: 1px solid var(--red); outline-offset: 3px; }
+    .el.drag { cursor: grabbing; }
+    /* Verrouillé : le calque ne reçoit plus le pointeur, les clics atteignent
+       donc les calques du dessous comme s'il n'était pas là. */
+    .el.locked { pointer-events: none; }
+    .el img { display: block; width: 100%; height: auto; pointer-events: none; }
+    .el .txt { white-space: pre-wrap; word-break: break-word; }
+    .handle { position: absolute; right: -6px; bottom: -6px; width: 12px; height: 12px; background: var(--red); border: 2px solid #fff;
+              border-radius: 2px; cursor: nwse-resize; display: none; }
+    .el.sel .handle { display: block; }
+    /* Verrouillé : pas de poignée, et un liseré pointillé plutôt que plein,
+       pour qu'on voie au premier coup d'œil qu'il n'y a rien à saisir. */
+    .el.locked.sel { outline-style: dashed; }
+    .el.locked .handle { display: none; }
+
+    .guide { position: absolute; background: var(--gold); pointer-events: none; z-index: 999; display: none; }
+    .guide.v { width: 1px; top: 0; bottom: 0; }
+    .guide.h { height: 1px; left: 0; right: 0; }
+
+    /* ── Calques ── */
+    .layers { display: flex; flex-direction: column; gap: 5px; }
+    .layer { display: flex; align-items: center; gap: 7px; padding: 7px 8px; background: var(--surface2); border: 1px solid var(--border);
+             border-radius: 5px; cursor: pointer; font-size: 12px; }
+    .layer.sel { border-color: var(--red); }
+    .layer .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .layer .ic { font-size: 12px; opacity: .7; }
+    .layer .mini { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0 2px; line-height: 1; }
+    .layer .mini:hover { color: var(--text); }
+    .layer .mini.off { opacity: .3; cursor: default; }
+    .layer .mini.off:hover { color: var(--muted); }
+    .layer.locked .nm { opacity: .55; font-style: italic; }
+    .empty { font-size: 11px; color: var(--muted); text-align: center; padding: 14px 0; }
+    .hint { font-size: 10px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .thumb { width: 100%; height: 54px; object-fit: contain; background: #00000044; border: 1px solid var(--border); border-radius: 5px; margin-top: 6px; }
+
+    /* ── Galerie de fonds prêts à l'emploi ── */
+    .bg-group + .bg-group { margin-top: 12px; }
+    .bg-group > h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+    .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .bg-card { padding: 0; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; cursor: pointer;
+               background: none; display: block; transition: border-color .15s; }
+    .bg-card:hover { border-color: var(--red); }
+    .bg-card img { display: block; width: 100%; height: 48px; object-fit: cover; }
+    .bg-card span { display: block; font-size: 9px; color: var(--muted); padding: 3px 4px; text-transform: uppercase; letter-spacing: .5px;
+                    text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+
+    /* ── Fenêtre de détourage ── */
+    .cut-overlay { position: fixed; inset: 0; background: #000000cc; display: flex; align-items: center; justify-content: center; z-index: 50; }
+    /* display:flex ci-dessus battrait la règle [hidden] du navigateur : à réaffirmer. */
+    .cut-overlay[hidden] { display: none; }
+    .cut-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; width: 460px; max-width: 94vw; max-height: 94vh; overflow-y: auto; }
+    .cut-box h3 { font-family: var(--head); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .cut-preview { background: repeating-conic-gradient(#ffffff18 0% 25%, transparent 0% 50%) 50% / 16px 16px, #14141a;
+                   border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: flex; justify-content: center; min-height: 180px; align-items: center; }
+    .cut-preview canvas { max-width: 100%; max-height: 300px; cursor: crosshair; display: block; }
+    .cut-hint { font-size: 10px; color: var(--muted); margin: 7px 0 2px; line-height: 1.5; }
+    .cut-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .cut-actions .btn { margin-top: 0; }
+
+    /* ── Fenêtre de recadrage ── */
+    .crop-stage { position: relative; margin: 0 auto; user-select: none; touch-action: none;
+                  background: repeating-conic-gradient(#ffffff14 0% 25%, transparent 0% 50%) 50% / 16px 16px, #14141a; }
+    .crop-stage img { display: block; width: 100%; height: 100%; pointer-events: none; }
+    .crop-box { position: absolute; cursor: move; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .62); outline: 1px solid var(--red); }
+    /* Grille des tiers, repère de composition : deux traits verticaux (couche 1)
+       et deux horizontaux (couche 2), en bandes de 1 px répétées au tiers. */
+    .crop-box::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background:
+        repeating-linear-gradient(to right,  #ffffff59 0 1px, transparent 1px 33.333%),
+        repeating-linear-gradient(to bottom, #ffffff59 0 1px, transparent 1px 33.333%);
+      background-position: 33.333% 0, 0 33.333%;
+      background-size: 66.667% 100%, 100% 66.667%;
+      background-repeat: no-repeat;
+    }
+    .crop-h { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid #fff; border-radius: 2px; z-index: 2; }
+    .crop-h[data-c="nw"] { left: -7px; top: -7px; cursor: nwse-resize; }
+    .crop-h[data-c="ne"] { right: -7px; top: -7px; cursor: nesw-resize; }
+    .crop-h[data-c="sw"] { left: -7px; bottom: -7px; cursor: nesw-resize; }
+    .crop-h[data-c="se"] { right: -7px; bottom: -7px; cursor: nwse-resize; }
+  </style>
+</head>
+<body>
+  <div class="vb">
+
+    <!-- ─────────── Panneau gauche : document ─────────── -->
+    <div class="pane left">
+      <h1>Créateur de visuels</h1>
+
+      <div class="card">
+        <h2>Format</h2>
+        <select id="fmt"></select>
+        <div class="row" style="margin-top:8px; align-items:flex-end">
+          <div><label>Largeur</label><input type="number" id="fmt-w" min="80" max="8000" step="1" /></div>
+          <div><label>Hauteur</label><input type="number" id="fmt-h" min="80" max="8000" step="1" /></div>
+          <div style="flex:0 0 34px">
+            <button class="btn" id="fmt-swap" title="Échanger largeur et hauteur" style="padding:7px 0">⇄</button>
+          </div>
+        </div>
+        <label style="display:flex; align-items:center; gap:6px; text-transform:none; letter-spacing:0; font-size:11px; cursor:pointer">
+          <input type="checkbox" id="fmt-adapt" checked style="width:auto; margin:0" />
+          Adapter les éléments au nouveau format
+        </label>
+        <label>Fond <span class="val" id="bg-mode-val"></span></label>
+        <div class="seg" id="bg-mode">
+          <button data-v="none">Transparent</button>
+          <button data-v="solid">Uni</button>
+          <button data-v="gradient">Dégradé</button>
+        </div>
+        <div class="row" id="bg-colors" style="margin-top:8px">
+          <div><label>Couleur 1</label><input type="color" id="bg-c1" /></div>
+          <div id="bg-c2-wrap"><label>Couleur 2</label><input type="color" id="bg-c2" /></div>
+        </div>
+        <div class="swatches" id="bg-swatches"></div>
+      </div>
+
+      <div class="card">
+        <h2>Textures</h2>
+        <p class="hint" style="margin:0 0 8px">Ajoutées comme calque, sous les éléments existants : opacité, fusion, taille et position réglables comme n'importe quel autre calque.</p>
+        <div id="bg-gallery"></div>
+      </div>
+
+      <div class="card">
+        <h2>Image de fond</h2>
+        <button class="btn" id="bg-pick">📁 Choisir une image</button>
+        <input type="file" id="bg-file" accept="image/*" />
+        <img class="thumb" id="bg-thumb" hidden alt="" />
+        <div id="bg-img-opts" hidden>
+          <label>Cadrage</label>
+          <div class="seg" id="bg-fit">
+            <button data-v="cover">Remplir</button>
+            <button data-v="contain">Entier</button>
+            <button data-v="stretch">Étirer</button>
+          </div>
+          <label>Assombrir <span class="val" id="bg-dim-val"></span></label>
+          <input type="range" id="bg-dim" min="0" max="100" step="1" />
+          <label>Flou <span class="val" id="bg-blur-val"></span></label>
+          <input type="range" id="bg-blur" min="0" max="40" step="1" />
+          <label>Opacité <span class="val" id="bg-op-val"></span></label>
+          <input type="range" id="bg-op" min="0" max="100" step="1" />
+          <label>Fusion</label>
+          <select id="bg-blend"></select>
+          <button class="btn danger" id="bg-clear" style="margin-top:9px">Retirer l'image</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Texture répétée</h2>
+        <select id="tex-type"></select>
+        <button class="btn" id="tex-pick" style="margin-top:8px" hidden>📁 Choisir la tuile</button>
+        <input type="file" id="tex-file" accept="image/*" />
+        <img class="thumb" id="tex-thumb" hidden alt="" />
+        <div id="tex-opts" hidden>
+          <label>Taille du motif <span class="val" id="tex-size-val"></span></label>
+          <input type="range" id="tex-size" min="8" max="600" step="1" />
+          <label>Espacement <span class="val" id="tex-gap-val"></span></label>
+          <input type="range" id="tex-gap" min="0" max="600" step="1" />
+          <label>Orientation <span class="val" id="tex-angle-val"></span></label>
+          <input type="range" id="tex-angle" min="0" max="360" step="1" />
+          <div id="tex-draw-opts">
+            <label>Épaisseur <span class="val" id="tex-thick-val"></span></label>
+            <input type="range" id="tex-thick" min="3" max="90" step="1" />
+            <label>Couleur</label>
+            <input type="color" id="tex-color" />
+            <div class="swatches" id="tex-swatches"></div>
+          </div>
+          <label>Opacité <span class="val" id="tex-op-val"></span></label>
+          <input type="range" id="tex-op" min="0" max="100" step="1" />
+          <label>Fusion</label>
+          <select id="tex-blend"></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Ajouter</h2>
+        <div class="btn-row">
+          <button class="btn" id="add-title">Titre</button>
+          <button class="btn" id="add-sub">Sous-titre</button>
+        </div>
+        <div class="btn-row" style="margin-top:7px">
+          <button class="btn" id="add-text">Texte</button>
+          <button class="btn" id="add-bar">Barre</button>
+        </div>
+        <button class="btn" id="add-logo" style="margin-top:7px">🖼️ Logo / image</button>
+        <input type="file" id="logo-file" accept="image/*" />
+      </div>
+
+      <div class="card">
+        <h2>Export</h2>
+        <button class="btn primary" id="export">⬇ Télécharger le PNG</button>
+        <button class="btn danger" id="reset" style="margin-top:9px">Réinitialiser le visuel</button>
+        <p class="hint">Le visuel est enregistré automatiquement dans ce navigateur.</p>
+      </div>
+    </div>
+
+    <!-- ─────────── Scène ─────────── -->
+    <div class="pane mid">
+      <div class="stage-bar">
+        <span class="info" id="dims"></span>
+        <span class="sp"></span>
+        <span class="info">Zoom</span>
+        <input type="range" id="zoom" min="10" max="100" step="1" value="100" style="width:130px" />
+        <span class="info" id="zoom-val">—</span>
+      </div>
+      <div class="stage-wrap" id="stage-wrap">
+        <div class="board-holder" id="holder">
+          <div class="board" id="board">
+            <div class="guide v" id="guide-v"></div>
+            <div class="guide h" id="guide-h"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Panneau droit : calques + propriétés ─────────── -->
+    <div class="pane right">
+      <h2>Calques</h2>
+      <div class="layers" id="layers"></div>
+      <div id="props" style="margin-top:16px"></div>
+      <p class="hint">Glisse un élément dans l'aperçu pour le déplacer · poignée rouge pour le redimensionner · flèches du clavier pour ajuster au pixel (Maj = 10 px) · Suppr pour effacer.</p>
+    </div>
+
+    <!-- Fenêtre de recadrage d'une image -->
+    <div class="cut-overlay" id="crop-overlay" hidden>
+      <div class="cut-box" style="width:560px">
+        <h3>Recadrer l'image</h3>
+        <div class="cut-preview" style="overflow:hidden">
+          <div class="crop-stage" id="crop-stage">
+            <img id="crop-img" alt="" draggable="false" />
+            <div class="crop-box" id="crop-box">
+              <div class="crop-h" data-c="nw"></div><div class="crop-h" data-c="ne"></div>
+              <div class="crop-h" data-c="sw"></div><div class="crop-h" data-c="se"></div>
+            </div>
+          </div>
+        </div>
+        <p class="cut-hint">Glisse le cadre pour le déplacer · les coins pour le redimensionner.</p>
+        <label>Proportions</label>
+        <div class="seg" id="crop-ratio">
+          <button data-v="free">Libre</button>
+          <button data-v="canvas">Toile</button>
+          <button data-v="1">1:1</button>
+          <button data-v="1.7778">16:9</button>
+          <button data-v="0.5625">9:16</button>
+          <button data-v="0.8">4:5</button>
+        </div>
+        <p class="cut-hint" id="crop-info"></p>
+        <div class="cut-actions">
+          <button class="btn" id="crop-reset">Tout afficher</button>
+          <button class="btn" id="crop-cancel">Annuler</button>
+          <button class="btn primary" id="crop-apply">Appliquer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fenêtre de détourage du fond d'un logo -->
+    <div class="cut-overlay" id="cut-overlay" hidden>
+      <div class="cut-box">
+        <h3>Détourer le fond</h3>
+        <div class="cut-preview"><canvas id="cut-canvas"></canvas></div>
+        <p class="cut-hint">Clique dans l'aperçu pour désigner la couleur à effacer.</p>
+        <label>Méthode</label>
+        <div class="seg" id="cut-mode">
+          <button data-v="edges">Depuis les bords</button>
+          <button data-v="all">Toute l'image</button>
+        </div>
+        <p class="cut-hint">« Depuis les bords » ne mange que le fond qui touche le contour : les zones de même couleur à l'intérieur du logo sont conservées.</p>
+        <label>Couleur effacée</label>
+        <input type="color" id="cut-color" />
+        <label>Tolérance <span class="val" id="cut-tol-val"></span></label>
+        <input type="range" id="cut-tol" min="0" max="100" step="1" />
+        <label>Adoucissement des bords <span class="val" id="cut-soft-val"></span></label>
+        <input type="range" id="cut-soft" min="0" max="60" step="1" />
+        <div class="cut-actions">
+          <button class="btn" id="cut-cancel">Annuler</button>
+          <button class="btn primary" id="cut-apply">Appliquer</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/theme.js"></script>
+  <script src="visual-builder.js"></script>
+</body>
+</html>

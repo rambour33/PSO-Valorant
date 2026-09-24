@@ -340,5 +340,62 @@
         }
       }
     ]
+  },
+  {
+    "id": "c6e55d24af74",
+    "name": "Drop",
+    "color": "#1a8b4a",
+    "players": [
+      {
+        "name": "wilost",
+        "photo": "/uploads/68ab7961945ce29d.png",
+        "agent": "",
+        "fit": {
+          "x": 10,
+          "y": -1.806976744186049,
+          "zoom": 1.04015503875969
+        }
+      },
+      {
+        "name": "toph",
+        "photo": "/uploads/f6193ed9b99f2eab.png",
+        "agent": "",
+        "fit": {
+          "x": 11.666666666666666,
+          "y": -1.3565891472868217,
+          "zoom": 1.20015503875969
+        }
+      },
+      {
+        "name": "vador",
+        "photo": "/uploads/333a0f3789c8586d.png",
+        "agent": "",
+        "fit": {
+          "x": -132.91666666666666,
+          "y": 0.5813953488372093,
+          "zoom": 1.16162790697674
+        }
+      },
+      {
+        "name": "pepito",
+        "photo": "/uploads/d8ed2c0f939bbc6c.png",
+        "agent": "",
+        "fit": {
+          "x": 0,
+          "y": 0,
+          "zoom": 1.30687338501292
+        }
+      },
+      {
+        "name": "Kamila",
+        "photo": "/uploads/6e6beca9aa312367.png",
+        "agent": "",
+        "fit": {
+          "x": 72.08333333333333,
+          "y": -0.9689922480620154,
+          "zoom": 1.58162790697674
+        }
+      }
+    ]
   }
 ]

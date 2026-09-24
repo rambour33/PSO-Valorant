@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <pattern id="c" width="180" height="90" patternUnits="userSpaceOnUse">
+      <path d="M-10 80 L90 20 L190 80" stroke="#8b0000" stroke-width="11" fill="none" opacity="0.13"/>
+      <path d="M-10 170 L90 110 L190 170" stroke="#8b0000" stroke-width="11" fill="none" opacity="0.13"/>
+    </pattern>
+<radialGradient id="v" cx="50%" cy="44%" r="78%">
+      <stop offset="40%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.7"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#0c0a0a"/>
+  <rect width="1920" height="1080" fill="url(#c)"/>
+  <rect width="1920" height="1080" fill="url(#v)"/>
+</svg>

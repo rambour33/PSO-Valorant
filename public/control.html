@@ -19,6 +19,7 @@
       <div class="header-right">
         <button class="btn-assets" id="btn-assets" title="Re-synchroniser agents + maps depuis valorant-api.com">🔄 Mettre à jour les assets</button>
         <span class="assets-info" id="assets-info"></span>
+        <button class="btn-assets" id="btn-restart" title="Redémarrer le serveur (nécessite un lancement via start.bat)">♻️ Redémarrer le serveur</button>
         <div class="conn" id="conn">
           <span class="dot"></span>
           <span class="label" id="conn-label">Connexion…</span>
@@ -34,6 +35,7 @@
       <button class="tab-btn" data-tab="casters">Casters</button>
       <button class="tab-btn" data-tab="timer">Timer</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="visuals">Visuels</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
     </nav>
 
@@ -232,6 +234,9 @@
           <h2 class="section-title">Lien overlay</h2>
           <div class="sb-links" id="chat-links"></div>
         </div>
+      </div>
+      <div class="tab-content" id="tab-visuals">
+        <iframe id="visuals-frame" title="Créateur de visuels"></iframe>
       </div>
       <div class="tab-content" id="tab-theme">
         <h2 class="section-title">Thème global</h2>

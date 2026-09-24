@@ -13,6 +13,48 @@ function setConn(online) {
 socket.on('connect', () => setConn(true));
 socket.on('disconnect', () => setConn(false));
 
+// ── Redémarrage du serveur ────────────────────────────────────────────────────
+// Le serveur sort avec le code 0 ; c'est la boucle de start.bat qui le relance.
+// On attend ensuite qu'il réponde à nouveau avant de recharger la page.
+const btnRestart = document.getElementById('btn-restart');
+
+async function waitForServer(deadline) {
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 700));
+    try {
+      const res = await fetch('/api/server-info', { cache: 'no-store' });
+      if (res.ok) return true;
+    } catch { /* serveur encore éteint */ }
+  }
+  return false;
+}
+
+btnRestart?.addEventListener('click', async () => {
+  const msg = 'Redémarrer le serveur ?\n\n'
+    + 'Toutes les pages et overlays ouverts se reconnecteront tout seuls.\n'
+    + "Le serveur ne repart automatiquement que s'il a été lancé avec start.bat.";
+  if (!confirm(msg)) return;
+  btnRestart.disabled = true;
+  const label = btnRestart.textContent;
+  btnRestart.textContent = '♻️ Redémarrage…';
+  try {
+    await fetch('/api/restart', { method: 'POST' });
+  } catch { /* la coupure de connexion est attendue */ }
+  if (await waitForServer(Date.now() + 30000)) {
+    location.reload();
+  } else {
+    btnRestart.disabled = false;
+    btnRestart.textContent = label;
+    alert("Le serveur n'est pas revenu. Relance-le avec start.bat.");
+  }
+});
+
+// Un redémarrage lancé depuis un autre poste : on recharge aussi.
+socket.on('serverRestart', () => {
+  if (btnRestart && btnRestart.disabled) return; // déjà géré par ce poste
+  waitForServer(Date.now() + 30000).then((ok) => { if (ok) location.reload(); });
+});
+
 // ── Navigation par onglets ────────────────────────────────────────────────────
 function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach((b) =>
@@ -37,6 +79,12 @@ document.querySelector('.tab-btn[data-tab="veto"]')?.addEventListener('click', (
 const bracketFrame = document.getElementById('bracket-frame');
 document.querySelector('.tab-btn[data-tab="bracket"]')?.addEventListener('click', () => {
   if (bracketFrame && !bracketFrame.src) bracketFrame.src = '/bracket-builder';
+});
+
+// Charge l'iframe Créateur de visuels à la première ouverture de l'onglet
+const visualsFrame = document.getElementById('visuals-frame');
+document.querySelector('.tab-btn[data-tab="visuals"]')?.addEventListener('click', () => {
+  if (visualsFrame && !visualsFrame.src) visualsFrame.src = '/visual-builder';
 });
 
 // ── Onglet Theme ──────────────────────────────────────────────────────────────
