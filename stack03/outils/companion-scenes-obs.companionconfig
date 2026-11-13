@@ -1,0 +1,1085 @@
+{
+  "version": 12,
+  "type": "page",
+  "companionBuild": "4.3.1+9209-stable-bf5535c82b",
+  "page": {
+    "id": "VDQjmQILzVsste5cFsNo0",
+    "name": "STACK 03 · OBS",
+    "controls": {
+      "0": {
+        "0": {
+          "type": "button",
+          "style": {
+            "text": "POV\nSTATION 01",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "nNwCXmPl6oimc2NXxEeg",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "POV - Station 01",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "TBANbG8fTnhwYhUqwEjlC",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "POV - Station 01",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "1": {
+          "type": "button",
+          "style": {
+            "text": "POV\nSTATION 02",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "shB0KAZDdSFxNnQ1eAjLw",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "POV - Station 02",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "7LT38S0EJcqbTTbElbONo",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "POV - Station 02",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "2": {
+          "type": "button",
+          "style": {
+            "text": "POV\nCASTER",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "eyPBsATdZwRRv2HZZ8j83",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "POV - Caster",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "CE58SZvf3czGqpBQWKA",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "POV - Caster",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "4": {
+          "type": "button",
+          "style": {
+            "text": "CAM\nSTATION 01",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "sJf5RzIbEs0LSGpP9aASv",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "CAM - Station 01",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "YEq2XBKs4hOCvgvRy9BJU",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "CAM - Station 01",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "5": {
+          "type": "button",
+          "style": {
+            "text": "CAM\nSTATION 02",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "dfcSVL5O24y89GqniZANU",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "CAM - Station 02",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "XQk5KTHVrVdfJxUQsGgWi",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "CAM - Station 02",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        }
+      },
+      "1": {
+        "0": {
+          "type": "button",
+          "style": {
+            "text": "PICK & BAN\nSTATION 01",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "pdLzF7kdc5meMMnARlg",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "Pick & Ban - Station 01",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "8czekyrqfn3ScSIT9dOVi",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "Pick & Ban - Station 01",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "1": {
+          "type": "button",
+          "style": {
+            "text": "PICK & BAN\nSTATION 02",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "S1oiDuXj68IqYUIUx0wtA",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "Pick & Ban - Station 02",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "KMWyRCOoI0UfYDV4UdWoQ",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "Pick & Ban - Station 02",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "2": {
+          "type": "button",
+          "style": {
+            "text": "BRACKET",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "3GzV91WI2OAVXq8YY2gFg",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "Bracket",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "7wjkNMX0juYkVYFfINBTw",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "Bracket",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "3": {
+          "type": "button",
+          "style": {
+            "text": "TIMEOUT",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "x6wo7YS2af8x7FCEJkV7a",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "Timeout",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "Q66C3HlLfSIP8J9A5BCTp",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "Timeout",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        }
+      },
+      "2": {
+        "0": {
+          "type": "button",
+          "style": {
+            "text": "START",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "fhjCwnDFXLKMdMFygVuSg",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "Start",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "I5pF7olIQRbLsl9j0gdiG",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "Start",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "1": {
+          "type": "button",
+          "style": {
+            "text": "END",
+            "textExpression": false,
+            "size": "auto",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 15787731,
+            "bgcolor": 2363417,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "M27kozfrwZiCC9RKb2XVJ",
+              "definitionId": "sceneProgram",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "scene": {
+                  "value": "End",
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14891950,
+                "color": 1181198
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "0gxLkW0kkOtvNsMCHPag",
+                    "definitionId": "set_scene",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "scene": {
+                        "value": "End",
+                        "isExpression": false
+                      },
+                      "customSceneName": {
+                        "value": "",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        }
+      },
+      "3": {
+        "0": {
+          "type": "button",
+          "style": {
+            "text": "STACK 03\nOBS",
+            "textExpression": false,
+            "size": "14",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 14891950,
+            "bgcolor": 1249039,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "5": {
+          "type": "button",
+          "style": {
+            "text": "★\nMARQUEUR",
+            "textExpression": false,
+            "size": "18",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 10128020,
+            "bgcolor": 1249039,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "0p03bajFqVSEw0LxRgtxg",
+              "definitionId": "recording",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "bg": {
+                  "value": 13934615,
+                  "isExpression": false
+                },
+                "fg": {
+                  "value": 1181198,
+                  "isExpression": false
+                },
+                "bg_paused": {
+                  "value": 1249039,
+                  "isExpression": false
+                },
+                "fg_paused": {
+                  "value": 10128020,
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [
+                  {
+                    "type": "action",
+                    "id": "zI4tB33wQCJrzrlDgRLwo",
+                    "definitionId": "CreateRecordChapter",
+                    "connectionId": "e97bBnCdY4MbGd2RevXtG",
+                    "options": {
+                      "chapterName": {
+                        "value": "$(obs:scene_active) · $(internal:time_hms)",
+                        "isExpression": false
+                      }
+                    },
+                    "upgradeIndex": 8
+                  }
+                ],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "6": {
+          "type": "button",
+          "style": {
+            "text": "REC\n$(obs:recording_timecode)",
+            "textExpression": false,
+            "size": "14",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 10128020,
+            "bgcolor": 1249039,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "eTDSm0YVEfsFgbvP7Jp8w",
+              "definitionId": "recording",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {
+                "bg": {
+                  "value": 14163750,
+                  "isExpression": false
+                },
+                "fg": {
+                  "value": 15787731,
+                  "isExpression": false
+                },
+                "bg_paused": {
+                  "value": 13934615,
+                  "isExpression": false
+                },
+                "fg_paused": {
+                  "value": 1181198,
+                  "isExpression": false
+                }
+              },
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        },
+        "7": {
+          "type": "button",
+          "style": {
+            "text": "LIVE\n$(obs:stream_timecode)",
+            "textExpression": false,
+            "size": "14",
+            "png64": null,
+            "alignment": "center:center",
+            "pngalignment": "center:center",
+            "color": 10128020,
+            "bgcolor": 1249039,
+            "show_topbar": false,
+            "png": null,
+            "latch": false
+          },
+          "options": {
+            "stepProgression": "auto",
+            "stepExpression": "",
+            "rotaryActions": false
+          },
+          "feedbacks": [
+            {
+              "type": "feedback",
+              "id": "Mipa0jWCWrecHygJjzl6B",
+              "definitionId": "streaming",
+              "connectionId": "e97bBnCdY4MbGd2RevXtG",
+              "options": {},
+              "isInverted": {
+                "value": false,
+                "isExpression": false
+              },
+              "style": {
+                "bgcolor": 14163750,
+                "color": 15787731
+              },
+              "upgradeIndex": 8
+            }
+          ],
+          "steps": {
+            "0": {
+              "action_sets": {
+                "down": [],
+                "up": []
+              },
+              "options": {
+                "runWhileHeld": []
+              }
+            }
+          },
+          "localVariables": []
+        }
+      }
+    },
+    "gridSize": {
+      "minColumn": 0,
+      "maxColumn": 7,
+      "minRow": 0,
+      "maxRow": 3
+    }
+  },
+  "instances": {
+    "e97bBnCdY4MbGd2RevXtG": {
+      "moduleInstanceType": "connection",
+      "moduleId": "obs-studio",
+      "moduleVersionId": "3.15.3",
+      "updatePolicy": "stable",
+      "sortOrder": 3,
+      "label": "obs",
+      "isFirstInit": false,
+      "config": {
+        "host": "127.0.0.1",
+        "port": 4455
+      },
+      "secrets": {},
+      "lastUpgradeIndex": 8,
+      "enabled": true
+    }
+  },
+  "oldPageNumber": 12
+}

@@ -17,6 +17,7 @@ const timer = require('./lib/timer');
 const chat = require('./lib/chat');
 const rulesets = require('./lib/rulesets');
 const bracket = require('./lib/bracket');
+const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
 
@@ -357,6 +358,11 @@ app.post('/api/bracket/report', (req, res) => {
   }
 });
 
+// ── Stack 03 (overlays OBS du pack Stack) ────────────────────────────────────
+// Pages, API et temps réel sous /stack03 (namespace Socket.IO /stack03).
+const STACK = stack03.mount(app, io, { base: '/stack03', port: PORT });
+process.on('SIGINT', () => { stack03.flush(); process.exit(130); });
+
 // ── Socket.IO ─────────────────────────────────────────────────────────────────
 io.on('connection', (socket) => {
   console.log('  ⚡ Client connecté   (' + io.engine.clientsCount + ' en ligne)');
@@ -392,6 +398,11 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log('  ── Autre PC (réseau local) ────────────────────────────────');
     ips.forEach((ip) => console.log('   Contrôle → http://' + ip + ':' + PORT + '/control'));
   }
+  console.log('');
+  console.log('  ── Stack 03 (overlays OBS) ────────────────────────────────');
+  console.log('   Régie     → http://localhost:' + PORT + '/stack03/control');
+  console.log('   Overlays  → http://localhost:' + PORT + '/stack03/overlays');
+  ips.forEach((ip) => console.log('   Régie (autre PC) → http://' + ip + ':' + PORT + '/stack03/control?key=' + STACK.regieKey));
   console.log('');
 
   // Auto-mise à jour des assets (agents + maps) au démarrage — non bloquant

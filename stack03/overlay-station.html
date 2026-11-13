@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Overlay in game · Station</title>
+<!-- OBS : source navigateur, 1920×1080. Ajouter ?station=1 ou ?station=2 à la fin de l'URL.
+     Option : &pos=br|bl|tr|tl pour placer le cadre sponsors (par défaut br). -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+#root{position:absolute;inset:0}
+.top{position:absolute;top:96px;left:50%;transform:translateX(-50%) scale(.68);transform-origin:top center;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
+.board{display:flex;align-items:stretch;height:92px}
+.team{width:330px;background:rgba(7,5,8,.96);display:flex;flex-direction:column;justify-content:center;padding:0 26px;position:relative;border-top:4px solid #2a1c24}
+.team.a{align-items:flex-end;text-align:right;padding-left:40px}
+.team.b{align-items:flex-start;text-align:left;padding-right:40px}
+.team .col{position:absolute;top:-4px;bottom:0;width:12px;background:var(--c,#e33bae)}
+.team.a .col{left:0}.team.b .col{right:0}
+.team .tag{font-size:58px;line-height:.95;letter-spacing:.05em;color:var(--cream)}
+.team .nm{font-size:17px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:2px;max-width:270px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{width:96px;background:#120c10;display:flex;align-items:center;justify-content:center;font-size:72px;color:var(--cream);transition:background .3s,color .3s;border-top:4px solid #2a1c24}
+.score.lead{background:var(--pink);color:#12060e;border-top-color:var(--pink)}
+.mid{width:236px;background:#0a0709;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-top:4px solid #2a1c24}
+.mid img{height:50px;width:auto}
+.mid .fmt{font-size:34px;letter-spacing:.14em;color:var(--pink);line-height:1}
+.mid .mp{font-size:18px;letter-spacing:.18em;color:var(--cream)}
+.mid .rd{font-size:16px;letter-spacing:.12em;color:var(--muted)}
+.pips{position:absolute;bottom:-16px;display:flex;gap:7px}
+.team.a .pips{right:40px}.team.b .pips{left:40px}
+.pip{width:44px;height:7px;background:#2a1c24}
+.pip.on{background:var(--pink)}
+.label{margin-top:24px;padding:6px 22px;background:rgba(7,5,8,.94);border-left:4px solid var(--pink);font-size:20px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);white-space:nowrap}
+.label b{color:var(--pink);font-weight:700;margin-right:10px}
+#sp{position:absolute}
+.pos-br{right:36px;bottom:36px}.pos-bl{left:36px;bottom:36px}.pos-tr{right:36px;top:36px}.pos-tl{left:36px;top:36px}
+</style></head>
+<body>
+<div id="root" class="fade-show">
+  <div class="top">
+    <div class="board">
+      <div class="team a" id="boxa"><i class="col"></i><div class="tag" id="ta">EQ1</div><div class="nm" id="na">ÉQUIPE 1</div><div class="pips" id="pa"></div></div>
+      <div class="score" id="sa">0</div>
+      <div class="mid"><img src="assets/logo-stack.svg" alt="Stack"><div class="rd" id="rd"></div></div>
+      <div class="score" id="sb">0</div>
+      <div class="team b" id="boxb"><i class="col"></i><div class="tag" id="tb">EQ2</div><div class="nm" id="nb">ÉQUIPE 2</div><div class="pips" id="pb"></div></div>
+    </div>
+    <div class="label" id="label"><b id="st">STATION 01</b><span id="lbl"></span></div>
+  </div>
+  <div id="sp"></div>
+</div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+var q=new URLSearchParams(location.search),N=q.get('station')==='2'?2:1,pos=q.get('pos')||'br';
+var sp=document.getElementById('sp');sp.className='pos-'+pos;Stack.mountSponsors(sp);
+function $(i){return document.getElementById(i);}
+function pips(el,wins,need,bo){el.innerHTML='';if(bo<2)return;for(var i=0;i<need;i++){var d=document.createElement('i');d.className='pip'+(i<wins?' on':'');el.appendChild(d);}}
+Stack.onChange(function(s){
+  var st=s.stations[N],bo=parseInt(st.bo,10)||1,w=Stack.seriesWins(st.maps,bo);
+  var cur=st.maps[Math.max(0,Math.min(4,(st.map||1)-1))],ra=Stack.num(cur.a),rb=Stack.num(cur.b);
+  $('ta').textContent=s.teams[st.a].tag;$('na').textContent=s.teams[st.a].name;
+  $('tb').textContent=s.teams[st.b].tag;$('nb').textContent=s.teams[st.b].name;
+  $('boxa').style.setProperty('--c',Stack.tcol(s,st.a));$('boxb').style.setProperty('--c',Stack.tcol(s,st.b));
+  var A,B;
+  if(bo===1){A=ra===null?0:ra;B=rb===null?0:rb;}else{A=w.a;B=w.b;}
+  $('sa').textContent=A;$('sb').textContent=B;
+  $('sa').className='score'+(A>B?' lead':'');$('sb').className='score'+(B>A?' lead':'');
+  $('rd').textContent=bo===1?'':((ra===null?0:ra)+' – '+(rb===null?0:rb));
+  pips($('pa'),w.a,w.need,bo);pips($('pb'),w.b,w.need,bo);
+  $('st').textContent='STATION 0'+N;$('lbl').textContent=(st.label?' · '+st.label:'')+' — BO'+bo+' — '+(bo===1?'MAP UNIQUE':'MAP '+(st.map||1));
+  $('root').className=st.show?'fade-show':'fade-hide';
+});
+</script></body></html>

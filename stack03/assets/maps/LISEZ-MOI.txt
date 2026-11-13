@@ -1,0 +1,3 @@
+Images de maps pour la scène Pick & Ban.
+Déposez ici un fichier .jpg par map, nommé en minuscules : abyss.jpg, ascent.jpg, haven.jpg, lotus.jpg, split.jpg, summit.jpg, sunset.jpg (et bind.jpg, breeze.jpg, corrode.jpg, fracture.jpg, icebox.jpg, pearl.jpg si le pool change).
+Format conseillé : portrait ou carré, environ 600×900 px. Sans image, la carte affiche un fond uni avec le nom de la map.

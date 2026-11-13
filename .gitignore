@@ -2,3 +2,6 @@ node_modules/
 .env
 config.json
 public/uploads/
+
+# Stack 03 : état du tournoi et liens équipes (tokens, clé régie)
+stack03/data/

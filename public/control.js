@@ -87,6 +87,12 @@ document.querySelector('.tab-btn[data-tab="visuals"]')?.addEventListener('click'
   if (visualsFrame && !visualsFrame.src) visualsFrame.src = '/visual-builder';
 });
 
+// Charge l'iframe Régie Stack 03 à la première ouverture de l'onglet
+const stack03Frame = document.getElementById('stack03-frame');
+document.querySelector('.tab-btn[data-tab="stack03"]')?.addEventListener('click', () => {
+  if (stack03Frame && !stack03Frame.src) stack03Frame.src = '/stack03/control';
+});
+
 // ── Onglet Theme ──────────────────────────────────────────────────────────────
 const themeGrid = document.getElementById('theme-grid');
 
