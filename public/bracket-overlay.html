@@ -134,7 +134,7 @@
       flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
       border-left: 5px solid var(--sc, transparent); min-width: 0;
     }
-    .gmatch .gside.right { flex-direction: row-reverse; border-left: none; border-right: 5px solid var(--sc, transparent); text-align: right; justify-content: flex-end; }
+    .gmatch .gside.right { flex-direction: row-reverse; border-left: none; border-right: 5px solid var(--sc, transparent); text-align: right; justify-content: flex-start; } /* row-reverse : flex-start = collé à droite, contre la couleur */
     .gmatch .gside.win { background: rgba(255,255,255,.06); }
     .gmatch .gside.win .nm { color: var(--gold); }
     .gmatch .gside .nm {
@@ -166,6 +166,7 @@
     [data-pso-theme="stack"] .section-title .n { font-size:16px; letter-spacing:.22em; color:#9a8a94; }
     [data-pso-theme="stack"] .round .rlabel { font-size:15px; letter-spacing:.22em; font-weight:600; }
     [data-pso-theme="stack"] .match, [data-pso-theme="stack"] .gmatch { background:#0e0a0d; border:0; border-top:4px solid #e33bae; box-shadow:none; }
+    [data-pso-theme="stack"] .gmatch { border-top:0; } /* poules : pas de barre rose entre les matchs */
     [data-pso-theme="stack"] .match .side .nm { font-size:24px; letter-spacing:.06em; max-width:200px; }
     [data-pso-theme="stack"] .match .side .sc { font-size:26px; }
     [data-pso-theme="stack"] .match .side + .side { border-top-color:#2a1c24; }
