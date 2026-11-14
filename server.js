@@ -278,7 +278,7 @@ app.post('/api/rulesets', (req, res) => {
 });
 app.delete('/api/rulesets/:id', (req, res) => { rulesets.remove(req.params.id); emitRulesets(); res.json({ ok: true }); });
 
-function emitVeto() { io.emit('vetoUpdate', veto.publicState()); }
+function emitVeto() { io.emit('vetoUpdate', veto.publicState()); io.emit('bracketVetoUpdate'); }
 
 app.get('/api/veto', (req, res) => res.json(veto.publicState()));
 
@@ -290,7 +290,15 @@ app.get('/api/veto/whoami', (req, res) => {
 
 app.post('/api/veto/setup', (req, res) => {
   try {
-    veto.setup(req.body || {}, assets.getMaps());
+    const body = Object.assign({}, req.body || {});
+    // Veto lié au match en cours du bracket : équipes reprises du bracket (A = équipe 1, B = équipe 2).
+    if (body.bracketMatchId) {
+      const lm = bracket.liveMatch();
+      if (!lm || lm.id !== body.bracketMatchId) throw new Error("Ce match n'est plus le match en cours du bracket");
+      body.teams = { 1: { name: lm.teamA.name, color: lm.teamA.color }, 2: { name: lm.teamB.name, color: lm.teamB.color } };
+      body.link = { matchId: lm.id };
+    }
+    veto.setup(body, assets.getMaps());
     const t = veto.getTokens();
     emitVeto();
     res.json({ ok: true, tokens: t, state: veto.publicState() });
@@ -359,6 +367,26 @@ app.post('/api/bracket/confirm/:matchId', (req, res) => {
 app.post('/api/bracket/reject/:matchId', (req, res) => {
   try { bracket.reject(req.params.matchId); emitBracket(); res.json({ ok: true }); }
   catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+// Match en cours du bracket (régie) et accès pick & ban pour les équipes de ce match uniquement.
+app.post('/api/bracket/live', (req, res) => {
+  try { bracket.setLive((req.body || {}).matchId || null); emitBracket(); io.emit('bracketVetoUpdate'); res.json({ ok: true, liveMatchId: bracket.get().liveMatchId }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.get('/api/bracket/live', (req, res) => {
+  const m = bracket.liveMatch();
+  res.json({ match: m ? { id: m.id, bo: m.bo, teamA: m.teamA, teamB: m.teamB } : null });
+});
+app.get('/api/bracket/veto', (req, res) => {
+  const teamId = bracket.teamOfToken(req.query.token);
+  if (!teamId) return res.status(404).json({ error: 'Token invalide' });
+  const m = bracket.liveMatch();
+  const side = m ? (m.teamA && m.teamA.id === teamId ? 1 : m.teamB && m.teamB.id === teamId ? 2 : 0) : 0;
+  if (!side) return res.json({ active: false, live: false, matchId: m ? m.id : null });
+  const link = veto.getLink();
+  if (!link || link.matchId !== m.id || veto.status() === 'idle') return res.json({ active: false, live: true, matchId: m.id, msg: "Le pick & ban n'a pas encore été lancé par la régie." });
+  res.json({ active: true, live: true, matchId: m.id, done: veto.status() === 'done', url: '/veto/team/' + veto.getTokens()[side] });
 });
 
 app.get('/api/bracket/whoami', (req, res) => {

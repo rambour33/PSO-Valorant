@@ -68,6 +68,10 @@
     .mfoot { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: rgba(0,0,0,.15); flex-wrap: wrap; }
     .mfoot .bo-sel { width: auto; padding: 3px 6px; font-size: 11px; }
     .mfoot .bo-tag { font-size: 11px; color: var(--muted); padding: 3px 6px; }
+    /* Match en cours : seul match dont les équipes ont accès au pick & ban */
+    .match.live { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; }
+    .live-btn { margin-left: auto; padding: 3px 8px; font-size: 11px; font-weight: 700; border-radius: 5px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+    .live-btn.on { background: var(--red); border-color: var(--red); color: #fff; }
     .mscore.pending { color: var(--gold); font-size: 11px; padding: 6px 8px; display: block; }
 
     /* ── Saisie manche par manche (admin) ── */
@@ -395,10 +399,14 @@
       if (m.status === 'reported') extra = '<div class="mscore pending">' + m.reported.scoreA + ' — ' + m.reported.scoreB + ' (en attente de validation)</div>';
       else if (m.status === 'ready') extra = mapsBuilderHTML(m);
       else if (m.status === 'done') extra = mapsDoneHTML(m);
-      return '<div class="match ' + m.status + '" data-id="' + m.id + '"' + nextAttr + '>' +
+      const isLive = LIVE_ID === m.id;
+      const canLive = m.status !== 'done' && m.status !== 'skipped' && m.teamA && m.teamB;
+      const liveBtn = isLive ? '<button type="button" class="live-btn on" data-live="" title="Ne plus en faire le match en cours">● EN COURS</button>'
+        : canLive ? '<button type="button" class="live-btn" data-live="' + m.id + '" title="Les équipes de ce match auront accès au pick & ban">▶ Match en cours</button>' : '';
+      return '<div class="match ' + m.status + (isLive ? ' live' : '') + '" data-id="' + m.id + '"' + nextAttr + '>' +
         '<div class="side' + (m.winner === 'A' ? ' win' : '') + '"' + scStyle(m.teamA) + '><span>' + teamName(m.teamA) + '</span>' + sideScore(m, 'A') + '</div>' +
         '<div class="side' + (m.winner === 'B' ? ' win' : '') + '"' + scStyle(m.teamB) + '><span>' + teamName(m.teamB) + '</span>' + sideScore(m, 'B') + '</div>' +
-        '<div class="mfoot">' + boCtl + '</div>' + extra + '</div>';
+        '<div class="mfoot">' + boCtl + liveBtn + '</div>' + extra + '</div>';
     }
     function roundLabel(bracket, round, totalRounds) {
       const fromEnd = totalRounds - 1 - round;
@@ -453,8 +461,10 @@
       svg.innerHTML = html;
     }
 
+    let LIVE_ID = null;
     function renderBracket(s) {
       lastState = s;
+      LIVE_ID = s.liveMatchId || null;
       const readyIds = new Set(s.matches.filter((m) => m.status === 'ready').map((m) => m.id));
       Object.keys(mapDrafts).forEach((id) => { if (!readyIds.has(id)) delete mapDrafts[id]; });
       if (!seedsInitialized) initSeedsFromState(s);
@@ -502,6 +512,12 @@
       renderBracket(lastState);
     });
     $('bracket-view').addEventListener('click', (e) => {
+      const live = e.target.closest('[data-live]');
+      if (live) {
+        fetch('/api/bracket/live', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ matchId: live.dataset.live || null }) })
+          .then(r => r.json()).then(d => { if (d.error) alert(d.error); }).catch(() => {});
+        return;
+      }
       const undo = e.target.closest('[data-undo]');
       if (undo) { const d = mapDrafts[undo.dataset.undo]; if (d && d.length) d.pop(); renderBracket(lastState); return; }
       const send = e.target.closest('[data-send]');
