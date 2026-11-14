@@ -465,7 +465,9 @@ function sbCurrentBase() {
 function sbRenderLinks() {
   if (!sbLinks) return;
   const base = sbCurrentBase();
+  // Tous les overlays OBS au même endroit
   const rows = [
+    ['Scoreboard (in game)', base + '/scoreboard-stack-overlay'],
     ['Team 1', base + '/scoreboard-overlay?part=team1'],
     ['Team 2', base + '/scoreboard-overlay?part=team2'],
     ['Score',  base + '/scoreboard-overlay?part=score'],
@@ -473,6 +475,16 @@ function sbRenderLinks() {
     ['Lineup équipe 1', base + '/lineup-overlay?team=1'],
     ['Lineup équipe 2', base + '/lineup-overlay?team=2'],
     ['Sponsors', base + '/sponsors-overlay'],
+    ['Start', base + '/start-overlay'],
+    ['Timeout caster', base + '/timeout-caster-overlay'],
+    ['Caméra station 01', base + '/cam-overlay?station=1'],
+    ['Caméra station 02', base + '/cam-overlay?station=2'],
+    ['Casters', base + '/casters-overlay'],
+    ['Chat', base + '/chat-overlay'],
+    ['Timer', base + '/timer-overlay'],
+    ['Map veto', base + '/veto-overlay'],
+    ['Bracket', base + '/bracket-overlay'],
+    ['Stinger', base + '/stinger'],
   ];
   const rowHtml = ([label, url]) =>
     '<div class="sb-linkrow"><span class="lbl">' + label + '</span>' +

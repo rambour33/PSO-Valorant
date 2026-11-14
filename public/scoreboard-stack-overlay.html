@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Scoreboard (in game)</title>
+  <!-- Repris de stack03/overlay-station.html. OBS : source navigateur 1920×1080 en jeu.
+       Suit le match en cours (onglet Scoreboard). Options : ?station=1|2 (étiquette), &pos=br|bl|tr|tl|none (sponsors). -->
+  <link rel="stylesheet" href="/stack03/css/fonts.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+    body { color: #f0e6d3; font-family: 'Rajdhani', sans-serif; font-weight: 700; --pink: #e33bae; --muted: #9a8a94; --cream: #f0e6d3; }
+    #root { position: absolute; inset: 0; transition: opacity .45s ease, transform .45s ease; }
+    #root.hidden { opacity: 0; transform: translateY(-14px); }
+    .top { position: absolute; top: 96px; left: 50%; transform: translateX(-50%) scale(.68); transform-origin: top center; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
+    .board { display: flex; align-items: stretch; height: 92px; }
+    .team { width: 330px; background: rgba(7,5,8,.96); display: flex; flex-direction: column; justify-content: center; padding: 0 26px; position: relative; border-top: 4px solid #2a1c24; }
+    .team.a { align-items: flex-end; text-align: right; padding-left: 40px; }
+    .team.b { align-items: flex-start; text-align: left; padding-right: 40px; }
+    .team .col { position: absolute; top: -4px; bottom: 0; width: 12px; background: var(--c, #e33bae); }
+    .team.a .col { left: 0; } .team.b .col { right: 0; }
+    .team .tag { font-size: 58px; line-height: .95; letter-spacing: .05em; color: var(--cream); text-transform: uppercase; white-space: nowrap; }
+    .score { width: 96px; background: #120c10; display: flex; align-items: center; justify-content: center; font-size: 72px; color: var(--cream); transition: background .3s, color .3s; border-top: 4px solid #2a1c24; }
+    .score.lead { background: var(--pink); color: #12060e; border-top-color: var(--pink); }
+    .mid { width: 236px; background: #0a0709; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-top: 4px solid #2a1c24; }
+    .mid img { height: 50px; width: auto; max-width: 200px; object-fit: contain; }
+    .pips { position: absolute; bottom: -16px; display: flex; gap: 7px; }
+    .team.a .pips { right: 40px; } .team.b .pips { left: 40px; }
+    .pip { width: 44px; height: 7px; background: #2a1c24; }
+    .pip.on { background: var(--pink); }
+    .label { margin-top: 24px; padding: 6px 22px; background: rgba(7,5,8,.94); border-left: 4px solid var(--pink); font-size: 20px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--cream); white-space: nowrap; }
+    .label b { color: var(--pink); font-weight: 700; margin-right: 10px; }
+    /* cadre sponsors (340×112 dans l'iframe, décalé de 24 px) à 36 px du bord */
+    #sp { position: absolute; width: 364px; height: 136px; border: 0; background: transparent; }
+    .pos-br { right: 36px; bottom: 36px; } .pos-bl { left: 12px; bottom: 36px; } .pos-tr { right: 36px; top: 12px; } .pos-tl { left: 12px; top: 12px; }
+  </style>
+</head>
+<body>
+  <div id="root" class="hidden">
+    <div class="top">
+      <div class="board">
+        <div class="team a" id="boxa"><i class="col"></i><div class="tag" id="ta"></div><div class="pips" id="pa"></div></div>
+        <div class="score" id="sa">0</div>
+        <div class="mid"><img src="/stack03/assets/logo-stack.svg" alt="" /></div>
+        <div class="score" id="sb">0</div>
+        <div class="team b" id="boxb"><i class="col"></i><div class="tag" id="tb"></div><div class="pips" id="pb"></div></div>
+      </div>
+      <div class="label"><b id="st"></b><span id="lbl"></span></div>
+    </div>
+    <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const $ = (i) => document.getElementById(i);
+    const q = new URLSearchParams(location.search), N = q.get('station') === '2' ? 2 : 1, pos = q.get('pos') || 'br';
+    if (pos === 'none') $('sp').remove(); else $('sp').className = 'pos-' + pos;
+    const NEED = { BO1: 1, BO3: 2, BO5: 3 };
+    // Nom trop long : on réduit la police pour tenir dans le cadre
+    function fit(el) { el.style.fontSize = ''; let f = 58; while (el.scrollWidth > 264 && f > 26) { f -= 2; el.style.fontSize = f + 'px'; } }
+    function pips(el, wins, need) { el.innerHTML = ''; if (need < 2) return; for (let i = 0; i < need; i++) { const d = document.createElement('i'); d.className = 'pip' + (i < wins ? ' on' : ''); el.appendChild(d); } }
+    function render(s) {
+      if (!s || !s.team1) return;
+      const bo = s.format || 'BO3', need = NEED[bo] || 2, A = s.team1.score || 0, B = s.team2.score || 0;
+      $('root').classList.toggle('hidden', s.visible === false);
+      $('ta').textContent = s.team1.name; $('tb').textContent = s.team2.name; fit($('ta')); fit($('tb'));
+      $('boxa').style.setProperty('--c', s.team1.color || '#e33bae'); $('boxb').style.setProperty('--c', s.team2.color || '#e33bae');
+      $('sa').textContent = A; $('sb').textContent = B;
+      $('sa').className = 'score' + (A > B ? ' lead' : ''); $('sb').className = 'score' + (B > A ? ' lead' : '');
+      pips($('pa'), A, need); pips($('pb'), B, need);
+      const games = bo === 'BO5' ? 5 : bo === 'BO3' ? 3 : 1;
+      $('st').textContent = 'STATION 0' + N;
+      $('lbl').textContent = '— ' + bo + ' — ' + (bo === 'BO1' ? 'MAP UNIQUE' : 'MAP ' + Math.min(games, A + B + 1));
+    }
+    fetch('/api/scoreboard').then((r) => r.json()).then(render).catch(() => {});
+    io().on('scoreboardUpdate', render);
+  </script>
+</body>
+</html>
