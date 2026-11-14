@@ -35,6 +35,7 @@
       <button class="tab-btn" data-tab="casters">Casters</button>
       <button class="tab-btn" data-tab="timer">Timer</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="sponsors">Sponsors</button>
       <button class="tab-btn" data-tab="visuals">Visuels</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
       <button class="tab-btn" data-tab="stack03">Stack 03</button>
@@ -235,6 +236,38 @@
         <div class="sb-links-card">
           <h2 class="section-title">Lien overlay</h2>
           <div class="sb-links" id="chat-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-sponsors">
+        <div class="ca-head">
+          <h2 class="section-title">Sponsors</h2>
+          <button class="sb-action" id="sp-visible">Masquer</button>
+        </div>
+        <p class="section-hint">Cadre sponsors du pack Stack 03 : les logos cochés tournent en boucle, dans l'ordre de la liste. Logos blancs conseillés (PNG ou SVG sur fond transparent).</p>
+        <div class="sp-grid">
+          <div class="sb-card">
+            <label class="fld">Durée par logo <span id="sp-every-val" style="color:var(--text)">10 s</span></label>
+            <input type="range" id="sp-every" min="2" max="60" step="1" value="10" style="width:100%;margin-bottom:16px;accent-color:#e33bae" />
+            <label class="fld">Barre rose</label>
+            <div class="sb-fmt" id="sp-bar">
+              <button data-b="left" class="active">À gauche</button>
+              <button data-b="right">À droite</button>
+            </div>
+          </div>
+          <div class="sb-card sp-prev">
+            <label class="fld">Aperçu</label>
+            <iframe id="sp-preview" title="Aperçu sponsors"></iframe>
+          </div>
+        </div>
+        <div class="ca-list" id="sp-list"></div>
+        <div class="ca-add sp-add">
+          <input id="sp-name" placeholder="Nom du sponsor" maxlength="40" />
+          <label class="sb-action sp-file">🖼️ Choisir un logo<input type="file" id="sp-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden /></label>
+          <button class="sb-action primary" id="sp-add">Ajouter</button>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="sp-links"></div>
         </div>
       </div>
       <div class="tab-content" id="tab-visuals">

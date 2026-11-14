@@ -17,6 +17,7 @@ const timer = require('./lib/timer');
 const chat = require('./lib/chat');
 const rulesets = require('./lib/rulesets');
 const bracket = require('./lib/bracket');
+const sponsors = require('./lib/sponsors');
 const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
@@ -84,9 +85,9 @@ app.post('/api/stinger/play', (req, res) => { io.emit('stingerPlay'); res.json({
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 app.post('/api/upload', (req, res) => {
   try {
-    const m = /^data:image\/(png|jpe?g|gif|webp);base64,(.+)$/i.exec((req.body || {}).dataUrl || '');
+    const m = /^data:image\/(png|jpe?g|gif|webp|svg\+xml);base64,(.+)$/i.exec((req.body || {}).dataUrl || '');
     if (!m) return res.status(400).json({ error: 'Image invalide' });
-    const ext = m[1].toLowerCase() === 'jpeg' ? 'jpg' : m[1].toLowerCase();
+    const ext = { jpeg: 'jpg', 'svg+xml': 'svg' }[m[1].toLowerCase()] || m[1].toLowerCase();
     const buf = Buffer.from(m[2], 'base64');
     if (buf.length > 8 * 1024 * 1024) return res.status(413).json({ error: 'Image trop lourde (8 Mo max)' });
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -113,6 +114,8 @@ function emitScore() { io.emit('scoreboardUpdate', scorePayload()); }
 
 app.get('/scoreboard-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-overlay.html')));
 app.get('/sponsors-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sponsors-overlay.html')));
+app.get('/api/sponsors', (req, res) => res.json(sponsors.get()));
+app.post('/api/sponsors', (req, res) => { const s = sponsors.set(req.body || {}); io.emit('sponsorsUpdate', s); res.json(s); });
 app.get('/lineup-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lineup-overlay.html')));
 
 function scorePayload() { return { ...scoreboard.get(), formats: scoreboard.FORMATS, maxWins: scoreboard.maxWins(), mapsCount: scoreboard.mapsCount() }; }

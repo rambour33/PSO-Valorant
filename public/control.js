@@ -486,6 +486,8 @@ function sbRenderLinks() {
   if (caLinks) caLinks.innerHTML = rowHtml(['Casters', base + '/casters-overlay']);
   const tmLinks = document.getElementById('tm-links');
   if (tmLinks) tmLinks.innerHTML = rowHtml(['Timer', base + '/timer-overlay']);
+  const spLinks = document.getElementById('sp-links');
+  if (spLinks) spLinks.innerHTML = rowHtml(['Sponsors', base + '/sponsors-overlay']);
   const chatLinks = document.getElementById('chat-links');
   if (chatLinks) chatLinks.innerHTML = rowHtml(['Chat', base + '/chat-overlay']);
 }
@@ -674,6 +676,101 @@ if (caVisible) caVisible.addEventListener('click', () => {
 
 fetch('/api/casters').then((r) => r.json()).then(renderCasters).catch(() => {});
 socket.on('castersUpdate', renderCasters);
+
+// ── Onglet Sponsors ───────────────────────────────────────────────────────────
+const sp = {
+  list: document.getElementById('sp-list'), visible: document.getElementById('sp-visible'),
+  every: document.getElementById('sp-every'), everyVal: document.getElementById('sp-every-val'),
+  bar: document.getElementById('sp-bar'), name: document.getElementById('sp-name'),
+  file: document.getElementById('sp-file'), add: document.getElementById('sp-add'),
+  preview: document.getElementById('sp-preview'),
+};
+let spState = null, spPrevIds = '', spUpload = '', spDeb = null;
+
+function spSave(patch) {
+  spState = Object.assign({}, spState, patch);
+  return fetch('/api/sponsors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(spState) })
+    .then((r) => r.json()).then(renderSponsors).catch(() => {});
+}
+function spItems() { return (spState && spState.items || []).map((x) => Object.assign({}, x)); }
+function spToggle(label, on, act, id) {
+  return '<button class="ca-live' + (on ? ' on' : '') + '" data-act="' + act + '" data-id="' + id + '">' + label + '</button>';
+}
+function sponsorRow(it, i, n) {
+  const thumb = it.src ? '<img src="' + esc(it.src) + '" class="' + (it.white ? 'white' : '') + '" alt="" />' : '<span>' + esc(it.name) + '</span>';
+  return '<div class="ca-row sp-row" data-id="' + it.id + '">' +
+    '<div class="sp-thumb">' + thumb + '</div>' +
+    '<input class="ca-f" data-f="name" value="' + esc(it.name) + '" placeholder="Nom" maxlength="40" />' +
+    spToggle(it.enabled ? 'Affiché' : 'Masqué', it.enabled, 'enabled', it.id) +
+    spToggle('Large', it.wide, 'wide', it.id) +
+    spToggle('Blanc', it.white, 'white', it.id) +
+    '<button class="sp-mv" data-act="up" data-id="' + it.id + '"' + (i === 0 ? ' disabled' : '') + ' title="Monter">↑</button>' +
+    '<button class="sp-mv" data-act="down" data-id="' + it.id + '"' + (i === n - 1 ? ' disabled' : '') + ' title="Descendre">↓</button>' +
+    '<button class="ca-del" data-act="del" data-id="' + it.id + '" title="Supprimer">🗑</button></div>';
+}
+function renderSponsors(s) {
+  if (!s || !sp.list) return;
+  spState = s;
+  sp.visible.textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  if (document.activeElement !== sp.every) { sp.every.value = s.every; sp.everyVal.textContent = s.every + ' s'; }
+  sp.bar.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.b === s.bar));
+  const sig = JSON.stringify(s.items);
+  if (!(sp.list.contains(document.activeElement) && sig === spPrevIds)) {
+    sp.list.innerHTML = s.items.length ? s.items.map((it, i) => sponsorRow(it, i, s.items.length)).join('') : '<div class="empty">Aucun sponsor. Ajoute-en un ci-dessous.</div>';
+  }
+  spPrevIds = sig;
+}
+if (sp.list) {
+  sp.list.addEventListener('input', (e) => {
+    const row = e.target.closest('.sp-row');
+    if (!row) return;
+    clearTimeout(spDeb);
+    spDeb = setTimeout(() => spSave({ items: spItems().map((x) => x.id === row.dataset.id ? Object.assign(x, { name: e.target.value }) : x) }), 300);
+  });
+  sp.list.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const items = spItems(), i = items.findIndex((x) => x.id === b.dataset.id);
+    if (i < 0) return;
+    const a = b.dataset.act;
+    if (a === 'del') { if (!confirm('Supprimer « ' + items[i].name + ' » ?')) return; items.splice(i, 1); }
+    else if (a === 'up' && i > 0) items.splice(i - 1, 0, items.splice(i, 1)[0]);
+    else if (a === 'down' && i < items.length - 1) items.splice(i + 1, 0, items.splice(i, 1)[0]);
+    else if (a === 'enabled' || a === 'wide' || a === 'white') items[i][a] = !items[i][a];
+    spSave({ items });
+  });
+  sp.visible.addEventListener('click', () => spSave({ visible: spState && spState.visible === false }));
+  sp.every.addEventListener('input', () => { sp.everyVal.textContent = sp.every.value + ' s'; });
+  sp.every.addEventListener('change', () => spSave({ every: parseInt(sp.every.value, 10) }));
+  sp.bar.addEventListener('click', (e) => { const b = e.target.closest('[data-b]'); if (b) spSave({ bar: b.dataset.b }); });
+  sp.file.addEventListener('change', () => {
+    const f = sp.file.files[0];
+    if (!f) return;
+    const label = sp.file.closest('label');
+    const rd = new FileReader();
+    rd.onload = () => {
+      fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+        .then((r) => r.json()).then((d) => {
+          if (d.error) { alert(d.error); return; }
+          spUpload = d.url; label.classList.add('ok'); label.firstChild.textContent = '✓ ' + f.name.slice(0, 24);
+          if (!sp.name.value) sp.name.value = f.name.replace(/\.[^.]+$/, '');
+        }).catch(() => alert('Envoi du logo impossible'));
+    };
+    rd.readAsDataURL(f);
+  });
+  sp.add.addEventListener('click', () => {
+    const name = sp.name.value.trim() || 'Sponsor';
+    spSave({ items: spItems().concat([{ name, src: spUpload, wide: false, white: true, enabled: true }]) }).then(() => {
+      sp.name.value = ''; spUpload = ''; sp.file.value = '';
+      const label = sp.file.closest('label'); label.classList.remove('ok'); label.firstChild.textContent = '🖼️ Choisir un logo';
+    });
+  });
+  document.querySelector('.tab-btn[data-tab="sponsors"]')?.addEventListener('click', () => {
+    if (sp.preview && !sp.preview.src) sp.preview.src = '/sponsors-overlay';
+  });
+  fetch('/api/sponsors').then((r) => r.json()).then(renderSponsors).catch(() => {});
+  socket.on('sponsorsUpdate', renderSponsors);
+}
 
 // ── Onglet Timer ──────────────────────────────────────────────────────────────
 const tm = {
