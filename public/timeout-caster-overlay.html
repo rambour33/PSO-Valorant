@@ -137,7 +137,7 @@
       $('ctitle').textContent = S.chatTitle;
       $('chat').style.display = S.chatTitle ? '' : 'none';
       $('chatwin').style.display = S.chatEmbed ? 'block' : 'none';
-      if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?bottom=1';
+      if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?flow=down';
       $('fr1').style.display = $('fr2').style.display = S.frame ? '' : 'none';
       $('sp').style.display = S.sponsors ? '' : 'none';
       FX.set(S);
