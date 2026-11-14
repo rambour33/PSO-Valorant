@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Start</title>
+<!-- OBS : source navigateur 1920×1080, plein écran (fond opaque). Le compte à rebours se règle dans le panneau de contrôle. -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative;background:var(--bg)}
+.c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.c img{height:370px}
+.t{font-weight:700;font-size:60px;letter-spacing:.2em;margin-top:44px;line-height:1;text-transform:uppercase}
+.t em{color:var(--pink);font-style:normal}
+.d{font-size:24px;letter-spacing:.34em;color:var(--muted);text-transform:uppercase;margin-top:16px}
+.cnt{font-weight:700;font-size:150px;line-height:1;margin-top:72px;letter-spacing:.04em;color:var(--cream)}
+.lb{font-size:24px;letter-spacing:.3em;color:var(--pink);text-transform:uppercase;margin-top:14px;font-weight:700}
+#sp{position:absolute;right:64px;bottom:44px}
+.line{position:absolute;left:64px;right:64px;top:64px;display:flex;justify-content:space-between;font-size:20px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase}
+</style></head><body class="grid-bg glow">
+<div class="line"><span>Team LS4B</span><span>Houilles</span></div>
+<div class="c">
+  <img src="assets/logo-stack.svg" alt="Stack">
+  <div class="t">ÉDITION <em>03</em> — 18 OCTOBRE 2026</div>
+  <div class="d">Valorant 5v5 · Houilles</div>
+  <div class="cnt" id="cnt">--:--</div>
+  <div class="lb" id="lb">Le live démarre bientôt</div>
+</div>
+<div id="sp"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+Stack.mountSponsors(document.getElementById('sp'));
+function $(i){return document.getElementById(i);}
+var S=null;Stack.onChange(function(s){S=s;$('lb').textContent=s.start.label||'Le live démarre bientôt';});
+function tick(){if(!S)return;var at=S.start.at,rem=at-Date.now();
+  if(!at){$('cnt').textContent='BIENTÔT';return;}
+  if(rem>0)$('cnt').textContent=Stack.fmt(rem);else{$('cnt').textContent='C\'EST PARTI';}}
+setInterval(tick,250);
+</script></body></html>

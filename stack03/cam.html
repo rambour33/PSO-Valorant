@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Caméra · Station</title>
+<!-- OBS : source navigateur 1920×1080 au-dessus de la caméra. Ajouter ?station=1 ou ?station=2. -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+#root{position:absolute;inset:0}
+.tag{position:absolute;left:64px;top:64px;display:flex;align-items:center;gap:16px;background:rgba(7,5,8,.95);padding:10px 26px 10px 0;border-left:8px solid var(--pink)}
+.tag .n{font-family:'Rajdhani';font-weight:700;font-size:46px;letter-spacing:.08em;padding-left:22px}
+.tag .c{font-size:17px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+.rec{width:14px;height:14px;border-radius:50%;background:var(--pink);animation:b 1.6s ease infinite}
+@keyframes b{50%{opacity:.25}}
+.lower{position:absolute;left:64px;bottom:64px;display:flex;align-items:stretch;height:84px;background:rgba(7,5,8,.96);border-left:8px solid var(--pink)}
+.lower .t{display:flex;align-items:center;gap:14px;padding:0 24px;font-family:'Rajdhani';font-weight:700;font-size:46px;letter-spacing:.06em}
+.lower .s{display:flex;align-items:center;justify-content:center;width:70px;background:#120c10;font-family:'Rajdhani';font-weight:700;font-size:54px}
+.lower .s.lead{background:var(--pink);color:#12060e}
+.lower .f{display:flex;flex-direction:column;justify-content:center;padding:0 22px;font-size:16px;letter-spacing:.18em;color:var(--muted);background:#0a0709}
+.lower .f b{font-family:'Rajdhani';font-weight:700;font-size:26px;color:var(--pink);letter-spacing:.14em}
+.sq{display:block;width:16px;height:46px;background:#e33bae}
+#sp{position:absolute;right:64px;bottom:64px}
+</style></head><body>
+<div id="root" class="fade-show">
+  <div class="tag"><span class="n" id="n">STATION 01</span><span class="c" id="c">Caméra</span><span class="rec"></span></div>
+  <div class="lower"><div class="t"><i class="sq" id="qa"></i><span id="ta">EQ1</span></div><div class="s" id="sa">0</div><div class="s" id="sb">0</div><div class="t"><span id="tb">EQ2</span><i class="sq" id="qb"></i></div><div class="f"><b id="fmt">BO1</b><span id="mp">MAP 1</span></div></div>
+  <div id="sp"></div>
+</div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+var q=new URLSearchParams(location.search),N=q.get('station')==='2'?2:1;
+Stack.mountSponsors(document.getElementById('sp'));
+function $(i){return document.getElementById(i);}
+Stack.onChange(function(s){
+  var st=s.stations[N],bo=parseInt(st.bo,10)||1,w=Stack.seriesWins(st.maps,bo);
+  var cur=st.maps[Math.max(0,Math.min(4,(st.map||1)-1))],ra=Stack.num(cur.a),rb=Stack.num(cur.b);
+  var A=bo===1?(ra===null?0:ra):w.a,B=bo===1?(rb===null?0:rb):w.b;
+  $('n').textContent='STATION 0'+N;$('c').textContent=st.label||'';
+  $('ta').textContent=s.teams[st.a].tag;$('tb').textContent=s.teams[st.b].tag;
+  $('qa').style.background=Stack.tcol(s,st.a);$('qb').style.background=Stack.tcol(s,st.b);$('sa').textContent=A;$('sb').textContent=B;$('sa').className='s'+(A>B?' lead':'');$('sb').className='s'+(B>A?' lead':'');
+  $('fmt').textContent='BO'+bo;$('mp').textContent=bo===1?'MAP UNIQUE':'MAP '+(st.map||1);
+});
+</script></body></html>

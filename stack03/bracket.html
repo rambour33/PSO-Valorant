@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Bracket · Stack 03</title>
+<!-- OBS : source navigateur 1920×1080, plein écran (fond opaque). Se met à jour seule depuis le panneau de contrôle. -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative;background:var(--bg)}
+.hd{position:absolute;left:64px;right:64px;top:34px;height:100px;display:flex;align-items:center;gap:28px}
+.hd img{height:88px}
+.hd .t{font-family:'Rajdhani';font-weight:700;font-size:96px;letter-spacing:.1em;line-height:1}
+.hd .t em{color:var(--pink);font-style:normal}
+.hd .r{margin-left:auto;text-align:right;font-size:20px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
+.col h2{font-family:'Rajdhani';font-weight:700;font-size:30px;letter-spacing:.16em;color:var(--pink);margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+.col h2 span{font-family:'Rajdhani';font-size:16px;letter-spacing:.22em;color:var(--muted);font-weight:600}
+.left{position:absolute;left:64px;top:168px;width:600px}
+.panel{background:#0e0a0d;border-top:4px solid var(--pink);padding:8px 0}
+.cl{display:grid;grid-template-columns:44px 1fr 46px 46px 70px 80px;align-items:center;padding:9px 22px;border-bottom:1px solid var(--line);font-size:24px}
+.cl:last-child{border-bottom:none}
+.cl.h{font-size:14px;letter-spacing:.2em;color:var(--muted);padding:8px 22px;text-transform:uppercase}
+.cl .rk{font-family:'Rajdhani';font-weight:700;font-size:36px;color:var(--muted)}
+.cl .nm{font-weight:700;font-size:36px;letter-spacing:.06em;display:flex;align-items:center;gap:14px}
+.sq{display:block;width:10px;height:32px;flex:none}
+.tg{display:inline-flex;align-items:center;gap:10px}.tg .sq{width:8px;height:24px}
+.cl .c{text-align:center}.cl .pt{font-family:'Rajdhani';font-weight:700;font-size:42px;color:var(--pink);text-align:right}
+.cl .rd{text-align:right;color:var(--muted)}
+.cl.q{background:var(--pink-soft)}.cl.q .rk{color:var(--pink)}
+.res{margin-top:16px}
+.rr{display:flex;align-items:center;justify-content:space-between;padding:4px 22px;font-family:'Rajdhani';font-weight:700;font-size:30px;letter-spacing:.05em;border-bottom:1px solid var(--line)}
+.rr:last-child{border-bottom:none}
+.rr .s{color:var(--pink);font-size:32px;letter-spacing:.1em}
+.rr .r{font-family:'Rajdhani';font-size:14px;letter-spacing:.16em;color:var(--muted);width:90px;white-space:nowrap}
+.rr .m{flex:1;display:flex;justify-content:space-between;align-items:center}
+.right{position:absolute;left:728px;top:168px;width:1128px;height:690px;display:grid;grid-template-columns:1fr 70px 1fr;}
+.arrow{display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-weight:700;font-size:54px;color:var(--pink-dim);padding-top:40px}
+.stack{display:flex;flex-direction:column;gap:26px}
+.mc{background:#0e0a0d;border-top:4px solid var(--pink-dim)}
+.mc .lb{display:flex;justify-content:space-between;padding:10px 20px;font-size:15px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line)}
+.tr{display:flex;align-items:center;height:76px;border-bottom:1px solid var(--line);position:relative;border-left:9px solid #3a2832}
+.tr:last-child{border-bottom:none}
+.tr .nm{flex:1;padding-left:18px;font-family:'Rajdhani';font-weight:700;font-size:36px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr.tbd .nm{color:#4f4049;font-size:34px}
+.tr .mps{display:flex;gap:4px;padding-right:10px}
+.tr .mps i{width:46px;height:42px;display:flex;align-items:center;justify-content:center;background:#1b1217;font-style:normal;font-family:'Rajdhani';font-weight:700;font-size:28px;color:var(--muted)}
+.tr .mps i.w{color:var(--cream);background:#33202c}
+.tr .wn{width:70px;align-self:stretch;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-weight:700;font-size:54px;background:#1b1217;color:var(--muted)}
+.tr.win .wn{background:var(--pink);color:#12060e}
+.tr.win .nm{color:var(--pink)}
+.tr.lose{opacity:.42}
+.pod{position:absolute;left:728px;top:880px;width:1128px;height:150px;display:flex;gap:12px}
+.pd{flex:1;background:#0e0a0d;padding:20px 26px;display:flex;flex-direction:column;justify-content:center;border-top:4px solid var(--line)}
+.pd .r{font-size:16px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.pd .n{font-family:'Rajdhani';font-weight:700;font-size:60px;letter-spacing:.06em;line-height:1.05}
+.pd.c1{border-top-color:var(--pink);background:linear-gradient(180deg,rgba(227,59,174,.15),var(--panel));flex:1.3}.pd.c1 .n{color:var(--pink);font-size:72px}
+#sp{position:absolute;left:64px;top:926px}
+</style></head><body class="grid-bg">
+<div class="hd"><img src="assets/logo-stack.svg" alt="Stack"><div class="t">BRACKET <em>03</em></div><div class="r">Dimanche 18 octobre 2026<br>Houilles · Valorant 5v5</div></div>
+
+<div class="left col">
+  <h2>PHASE DE POULES <span>BO1 · 3 ROUNDS</span></h2>
+  <div class="panel"><div class="cl h"><div>#</div><div>Équipe</div><div class="c">V</div><div class="c">D</div><div class="rd">RD</div><div class="c" style="text-align:right">Pts</div></div><div id="cl"></div></div>
+  <div class="res panel" id="res"></div>
+</div>
+
+<div class="right">
+  <div class="col"><h2>DEMI-FINALES <span>14:00 · BO3</span></h2><div class="stack"><div id="d1"></div><div id="d2"></div></div></div>
+  <div class="arrow">›</div>
+  <div class="col"><h2>FINALES <span>17:00 · BO3</span></h2><div class="stack"><div id="gf"></div><div id="pf"></div></div></div>
+</div>
+
+<div class="pod">
+  <div class="pd c1"><div class="r">Champion</div><div class="n" id="n1">—</div></div>
+  <div class="pd"><div class="r">2e place</div><div class="n" id="n2">—</div></div>
+  <div class="pd"><div class="r">3e place</div><div class="n" id="n3">—</div></div>
+</div>
+<div id="sp"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+Stack.mountSponsors(document.getElementById('sp'));
+function $(i){return document.getElementById(i);}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function card(s,label,fmt,m){
+  function row(side){
+    var t=side==='a'?m.ta:m.tb,w=side==='a'?m.wa:m.wb,mine=side==='a'?'a':'b',opp=side==='a'?'b':'a';
+    var cls='tr'+(t===null?' tbd':'')+(m.winner===side?' win':'')+(m.winner&&m.winner!==side?' lose':'');
+    var mps=m.maps.map(function(x){var v=x[mine],o=x[opp],n=Stack.num(v),no=Stack.num(o);
+      return '<i class="'+(n!==null&&no!==null&&n>no?'w':'')+'">'+(n===null?'':n)+'</i>';}).join('');
+    return '<div class="'+cls+'" style="border-left-color:'+Stack.tcol(s,t)+'"><div class="nm">'+(t===null?'À DÉTERMINER':esc(s.teams[t].name))+'</div><div class="mps">'+mps+'</div><div class="wn">'+(m.live?w:'')+'</div></div>';
+  }
+  return '<div class="mc"><div class="lb"><span>'+label+'</span><span>'+fmt+'</span></div>'+row('a')+row('b')+'</div>';
+}
+Stack.onChange(function(s){
+  var st=Stack.standings(s);
+  $('cl').innerHTML=st.rows.map(function(r,i){var q=st.done&&i<2;
+    return '<div class="cl'+(q?' q':'')+'"><div class="rk">'+(i+1)+'</div><div class="nm"><i class="sq" style="background:'+Stack.tcol(s,r.i)+'"></i>'+esc(s.teams[r.i].name)+'</div><div class="c">'+r.v+'</div><div class="c">'+r.d+'</div><div class="rd">'+(r.rd>0?'+':'')+r.rd+'</div><div class="pt">'+r.pts+'</div></div>';}).join('');
+  var out='';
+  Stack.SCHEDULE.forEach(function(R,ri){R.m.forEach(function(m,mi){var sc=s.poules[ri][mi],a=Stack.num(sc.a),b=Stack.num(sc.b);
+    out+='<div class="rr"><span class="r">'+(mi===0?'ROUND '+R.r:'')+'</span><span class="m"><span class="tg"><i class="sq" style="background:'+Stack.tcol(s,m[0])+'"></i>'+esc(s.teams[m[0]].tag)+'</span><span class="s">'+(a===null?'–':a)+' · '+(b===null?'–':b)+'</span><span class="tg">'+esc(s.teams[m[1]].tag)+'<i class="sq" style="background:'+Stack.tcol(s,m[1])+'"></i></span></span></div>';});});
+  $('res').innerHTML=out;
+  var b=Stack.bracketView(s);
+  $('d1').innerHTML=card(s,'Demi-finale 1 · #1 vs #4','BO3',b.d1);
+  $('d2').innerHTML=card(s,'Demi-finale 2 · #2 vs #3','BO3',b.d2);
+  $('gf').innerHTML=card(s,'Grande finale','BO3',b.gf);
+  $('pf').innerHTML=card(s,'Petite finale · 3e place','BO3',b.pf);
+  $('n1').textContent=b.champion!==null?s.teams[b.champion].name:'—';
+  $('n2').textContent=b.second!==null?s.teams[b.second].name:'—';
+  $('n3').textContent=b.third!==null?s.teams[b.third].name:'—';
+});
+</script></body></html>

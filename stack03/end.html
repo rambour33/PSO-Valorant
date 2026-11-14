@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>End</title>
+<!-- OBS : source navigateur 1920×1080, plein écran (fond opaque). Le podium se remplit seul avec les scores du bracket. -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative;background:var(--bg)}
+.hd{position:absolute;left:0;right:0;top:34px;text-align:center}
+.hd img{height:400px}
+.hd .t{font-weight:700;font-size:84px;letter-spacing:.14em;line-height:1}
+.hd .t em{color:var(--pink);font-style:normal}
+.hd .s{font-size:22px;letter-spacing:.34em;color:var(--muted);text-transform:uppercase;margin-top:12px}
+.pod{position:absolute;left:0;right:0;top:690px;display:flex;justify-content:center;align-items:flex-end;gap:26px}
+.p{width:420px;background:#0e0a0d;border:1px solid var(--line);padding:18px 24px;text-align:center;display:flex;flex-direction:column;gap:4px}
+.p .r{font-size:17px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.p .n{font-weight:700;font-size:52px;letter-spacing:.06em;line-height:1}
+.p.c1{width:560px;border-top:6px solid var(--pink);background:linear-gradient(180deg,rgba(227,59,174,.14),#0e0a0d);padding:26px 24px}
+.p.c1 .n{font-size:84px;color:var(--pink)}
+.p.c1 .r{color:var(--cream)}
+.p.c2{border-top:4px solid var(--pink-dim)}.p.c3{border-top:4px solid var(--line)}
+.lg{position:absolute;left:0;right:0;bottom:46px;display:flex;justify-content:center;align-items:center;gap:90px}
+.lg img{height:46px;width:auto;filter:brightness(0) invert(1);opacity:.9}
+.ft{position:absolute;left:64px;right:64px;bottom:128px;display:flex;align-items:center;justify-content:center;gap:40px;font-size:22px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.ft b{color:var(--cream);font-weight:700}
+</style></head><body class="grid-bg glow">
+<div class="hd"><img src="assets/logo-stack.svg" alt="Stack"><div class="t">MERCI <em>À TOUS</em></div><div class="s">Stack · Édition 03 · Dimanche 18 octobre 2026</div></div>
+<div class="pod">
+  <div class="p c2"><div class="r">2e place</div><div class="n" id="n2">—</div></div>
+  <div class="p c1"><div class="r">Champion</div><div class="n" id="n1">—</div></div>
+  <div class="p c3"><div class="r">3e place</div><div class="n" id="n3">—</div></div>
+</div>
+<div class="ft"><span><b>Team LS4B</b> · teamls4b.fr</span><span>·</span><span>twitch.tv/<b>teamls4b</b></span></div>
+<div class="lg"><img src="assets/logo-lst-2023-white.svg" alt="LST" onerror="this.outerHTML='<b style=\'font-size:44px;color:#fff;letter-spacing:.08em\'>LST</b>'"><img src="assets/credit-mutuel.svg" alt="Crédit Mutuel"><img src="assets/logols4bv3.svg" alt="LS4B" style="height:24px"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+function $(i){return document.getElementById(i);}
+Stack.onChange(function(s){var b=Stack.bracketView(s);
+  $('n1').textContent=b.champion!==null?s.teams[b.champion].name:'—';
+  $('n2').textContent=b.second!==null?s.teams[b.second].name:'—';
+  $('n3').textContent=b.third!==null?s.teams[b.third].name:'—';});
+</script></body></html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Timeout caster</title>
+<!-- OBS : source navigateur 1920×1080 au-dessus de deux sources placées dessous :
+     • la caméra des casters dans la fenêtre de gauche (1280×720 : x 64, y 176)
+     • le chat Twitch dans la fenêtre de droite (460×460 : x 1396, y 436), par ex. une source navigateur sur https://www.twitch.tv/popout/teamls4b/chat?popout= -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative}
+.bg{position:absolute;inset:0;background:var(--bg);clip-path:path(evenodd,'M0 0H1920V1080H0Z M64 176H1344V896H64Z M1396 436H1856V896H1396Z')}
+.bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(227,59,174,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(227,59,174,.045) 1px,transparent 1px);background-size:48px 48px}
+.fr{position:absolute;border-bottom:4px solid var(--pink);pointer-events:none}
+.top{position:absolute;left:64px;top:36px;right:64px;display:flex;align-items:center;gap:30px}
+.top img{height:92px}
+.top .t{font-size:76px;letter-spacing:.08em;line-height:1}
+.top .t em{color:var(--pink);font-style:normal}
+.chip{margin-left:auto;display:flex;align-items:center;gap:18px;background:#0a0709;border-left:6px solid var(--pink);padding:10px 26px}
+.chip .k{font-size:16px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;line-height:1.2}
+.chip .w{font-size:30px;letter-spacing:.06em;color:var(--pink);line-height:1.1}
+.chip .c{font-size:60px;line-height:1;letter-spacing:.03em;min-width:120px;text-align:right}
+.chip .c.end{color:var(--pink)}
+.names{position:absolute;left:64px;top:944px;display:flex;gap:2px}
+.names div{background:#0a0709;border-left:6px solid var(--pink);padding:8px 26px;font-size:32px;letter-spacing:.08em}
+.names small{font-size:15px;letter-spacing:.2em;color:var(--muted);margin-right:12px;font-weight:600}
+.card{position:absolute;left:1396px;width:460px;background:#0a0709}
+.card h3{font-size:16px;letter-spacing:.26em;color:var(--muted);font-weight:700;text-transform:uppercase;padding:12px 22px 4px}
+#mc{top:176px;height:214px;padding:0 0 6px}
+.mt{display:flex;align-items:center;justify-content:space-between;padding:7px 22px;border-top:1px solid var(--line)}
+.mt .l{display:flex;align-items:center;gap:12px;font-size:36px;letter-spacing:.05em;line-height:1}
+.mt .l small{display:block;font-size:13px;letter-spacing:.2em;color:var(--muted);font-weight:600;margin-bottom:2px}
+.mt .sq{width:12px;height:34px;display:block}
+.mt .sc{font-size:40px;color:var(--pink);letter-spacing:.08em}
+.vs{color:var(--muted);font-size:20px}
+#chat{top:396px;height:36px}
+#chat h3{padding-top:10px}
+#sp{position:absolute;left:1396px;width:460px;top:934px;display:flex;justify-content:center}
+</style></head><body>
+<div class="bg"></div>
+<div class="fr" style="left:64px;top:896px;width:1280px;height:0"></div>
+<div class="fr" style="left:1396px;top:896px;width:460px;height:0"></div>
+<div class="top"><img src="assets/logo-stack.svg" alt="Stack"><div class="t">TIMEOUT <em>CASTERS</em></div>
+  <div class="chip"><div><div class="k" id="tl">Timeout</div><div class="w" id="who">PAUSE</div></div><div class="c" id="cnt">1:00</div></div></div>
+<div class="names"><div><small>CASTERS</small><span id="c1">Caster 1</span></div><div id="c2">Caster 2</div></div>
+<div class="card" id="mc"><h3>Matchs en cours</h3><div id="ms"></div></div>
+<div class="card" id="chat"><h3>Chat</h3></div>
+<div id="sp"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+Stack.mountSponsors(document.getElementById('sp'));
+function $(i){return document.getElementById(i);}
+var S=null;
+function row(s,n){var st=s.stations[n],bo=parseInt(st.bo,10)||1,w=Stack.seriesWins(st.maps,bo),cur=st.maps[Math.max(0,Math.min(4,(st.map||1)-1))];
+  var A=bo===1?(Stack.num(cur.a)||0):w.a,B=bo===1?(Stack.num(cur.b)||0):w.b;
+  return '<div class="mt"><div class="l"><i class="sq" style="background:'+Stack.tcol(s,st.a)+'"></i><div><small>STATION 0'+n+' · BO'+bo+'</small>'+s.teams[st.a].tag+' <span class="vs">VS</span> '+s.teams[st.b].tag+'</div></div><div class="sc">'+A+' – '+B+'</div></div>';}
+Stack.onChange(function(s){S=s;
+  $('ms').innerHTML=row(s,1)+row(s,2);
+  $('c1').textContent=s.casters.a;$('c2').textContent=s.casters.b;
+  var t=s.timeout;$('tl').textContent=t.label||'Timeout';
+  $('who').textContent=t.team>=0?s.teams[t.team].name:'Pause';
+});
+function tick(){if(!S)return;var t=S.timeout,rem=t.endsAt-Date.now();
+  if(t.endsAt&&rem>0){$('cnt').textContent=Stack.fmtMS(rem);$('cnt').className='c';}
+  else{$('cnt').textContent=t.endsAt?'0:00':Stack.fmtMS(t.duration*1000);$('cnt').className='c'+(t.endsAt?' end':'');}
+}
+setInterval(tick,200);
+</script></body></html>

@@ -1,0 +1,28 @@
+@font-face{font-family:'Rajdhani';src:url('../assets/fonts/rajdhani-latin-400-normal.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Rajdhani';src:url('../assets/fonts/rajdhani-latin-600-normal.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'Rajdhani';src:url('../assets/fonts/rajdhani-latin-700-normal.woff2') format('woff2');font-weight:700}
+:root{
+  --bg:#0c0a0a; --panel:#130f0f; --panel2:#1a1212; --line:#2a1c24;
+  --pink:#e33bae; --pink-dim:#9c2b78; --pink-soft:rgba(227,59,174,.14);
+  --cream:#f0e6d3; --muted:#9a8a94; --grey:#161619; --green:#4ade80; --red:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;color:var(--cream);font-family:'Rajdhani',sans-serif;font-weight:600}
+.bebas{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.04em}
+.opaque{background:var(--bg)}
+.grid-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(227,59,174,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(227,59,174,.045) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.glow::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(227,59,174,.16),transparent 60%);pointer-events:none}
+
+/* Cadre sponsors : fond gris, logos blancs, barre rose sur un côté, rotation en boucle */
+.sponsor-box{position:relative;width:340px;height:112px;background:var(--grey);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sponsor-box .bar{position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--pink)}
+.sponsor-box .sp{position:absolute;left:8px;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .7s ease}
+.sponsor-box .sp.on{opacity:1}
+.sponsor-box .sp img{max-width:236px;max-height:44px;width:auto;height:auto;filter:brightness(0) invert(1)}
+.sponsor-box .sp .txt{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:56px;letter-spacing:.08em;color:#fff}
+.sponsor-box .sp img.wide{max-width:262px}
+.sponsor-box.right-bar .bar{left:auto;right:0}
+.sponsor-box.right-bar .sp{left:0;right:8px}
+
+.fade-hide{opacity:0;transform:translateY(-14px);transition:opacity .45s ease,transform .45s ease}
+.fade-show{opacity:1;transform:none;transition:opacity .45s ease,transform .45s ease}

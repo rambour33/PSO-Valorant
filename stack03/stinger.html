@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Transition Stack</title>
+<!-- Transition lente : fond gris foncé, logo Stack rose, logo Crédit Mutuel blanc en dessous. Durée 2,4 s.
+     Utilisation 1 : transition "Stinger" avec stinger/stack03-stinger.mov, point de transition 1200 ms.
+     Utilisation 2 : source navigateur 1920×1080 sur la scène Transition (se rejoue quand la scène s'active si
+     "Actualiser le navigateur quand la scène devient active" est coché). ?t=1.2 affiche une image figée (secondes). -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+html,body{background:transparent}
+#bg{position:absolute;inset:0;background:#141417;opacity:0}
+#bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(227,59,174,.10),transparent 62%)}
+#c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:54px;opacity:0}
+#logo{width:760px}
+#cm{height:40px;filter:brightness(0) invert(1);opacity:0}
+</style></head><body>
+<div id="bg"></div>
+<div id="c"><img id="logo" src="assets/logo-stack.svg" alt=""><img id="cm" src="assets/credit-mutuel.svg" alt=""></div>
+<script>
+var D=2.4;
+function clamp(x){return Math.max(0,Math.min(1,x));}
+function sm(x){x=clamp(x);return x*x*(3-2*x);}                 /* smoothstep */
+function render(t){
+  var bg=sm(t/0.8)*(1-sm((t-1.6)/0.8));
+  var lg=sm((t-0.35)/0.7)*(1-sm((t-1.55)/0.55));
+  var cm=sm((t-0.7)/0.6)*(1-sm((t-1.5)/0.5));
+  document.getElementById('bg').style.opacity=bg;
+  var c=document.getElementById('c');c.style.opacity=lg;
+  var sc=0.955+0.045*sm(t/2.0);
+  c.style.transform='translateY('+(14*(1-sm((t-0.35)/0.9)))+'px) scale('+sc+')';
+  document.getElementById('cm').style.opacity=cm/(lg||1);
+}
+var q=new URLSearchParams(location.search);
+window.renderAt=render;
+if(q.get('t')!==null){render(parseFloat(q.get('t')));}
+else{render(0);var s=null;(function f(ts){if(s===null)s=ts;var t=(ts-s)/1000;render(Math.min(t,D));if(t<D)requestAnimationFrame(f);})(performance.now());}
+</script></body></html>

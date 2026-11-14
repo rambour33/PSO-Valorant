@@ -1,0 +1,3 @@
+Copiez ici votre logo LST blanc sous le nom exact : logo-lst-2023-white.svg
+(le fichier qui est dans web-lst-1.4/img). Tant qu'il n'est pas là, le cadre sponsors affiche le texte "LST".
+Le logo Crédit Mutuel (credit-mutuel.svg) est déjà inclus et s'affiche en blanc.

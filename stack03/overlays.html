@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Overlays · Stack 03</title>
+<!-- Galerie : aperçu en direct de chaque overlay OBS. Servie par server.js sur /overlays. -->
+<link rel="stylesheet" href="/stack03/css/theme.css">
+<style>
+html,body{width:auto;height:auto;min-height:100%;overflow:auto;background:var(--bg)}
+body{position:relative;min-height:100vh;padding:0 0 40px}
+.wrap{position:relative;max-width:1800px;margin:0 auto;padding:22px 24px 0}
+.hd{display:flex;align-items:center;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+.hd img{height:48px}
+.hd .t{font-family:'Rajdhani';font-weight:700;font-size:44px;letter-spacing:.1em;line-height:1}
+.hd .t em{color:var(--pink);font-style:normal}
+.hd .r{margin-left:auto;display:flex;gap:6px;align-items:center;font-size:12px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.hd .r button{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:#1a1212;border:1px solid var(--line);padding:6px 12px;cursor:pointer}
+.hd .r button.on{background:var(--pink);border-color:var(--pink);color:#12060e}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:18px}
+.ov{background:#0e0a0d;border-top:4px solid var(--pink-dim)}
+.ov:hover{border-top-color:var(--pink)}
+.scr{position:relative;aspect-ratio:16/9;overflow:hidden;background:#000}
+.scr.chk{background:repeating-conic-gradient(#1b1418 0% 25%,#120d10 0% 50%) 0 0/24px 24px}
+.scr iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0;pointer-events:none}
+.scr a{position:absolute;inset:0}
+.ft{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.ft .n{font-family:'Rajdhani';font-weight:700;font-size:22px;letter-spacing:.08em;line-height:1}
+.ft .u{font-size:12px;letter-spacing:.06em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.ft button{font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#12060e;background:var(--pink);border:0;padding:6px 12px;cursor:pointer;flex:none}
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--pink);color:#12060e;padding:8px 16px;font-weight:700;letter-spacing:.1em;display:none}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.wrap{padding:16px 16px 0}.hd .t{font-size:32px}}
+</style></head><body class="grid-bg">
+<div class="wrap">
+  <div class="hd"><img src="/stack03/assets/logo-stack.svg" alt="Stack"><div class="t">OVER<em>LAYS</em></div>
+    <div class="r">Fond <button data-bg="chk" class="on">Damier</button><button data-bg="blk">Noir</button></div></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div id="toast"></div>
+<script>
+var L=[
+  ['POV Station 01','overlay-station?station=1',1],['POV Station 02','overlay-station?station=2',1],
+  ['Caméra Station 01','cam?station=1',1],['Caméra Station 02','cam?station=2',1],
+  ['Pick & ban Station 01','pickban?station=1',0],['Pick & ban Station 02','pickban?station=2',0],
+  ['Bracket','bracket',0],['Timeout caster','timeout-caster',1],['Timeout','timeout',1],
+  ['Start','start',0],['End','end',0],['Stinger','stinger',1]
+];
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var base=location.origin+'/stack03/';
+document.getElementById('grid').innerHTML=L.map(function(x,i){var u=base+x[1];
+  return '<div class="ov"><div class="scr'+(x[2]?' chk':'')+'" data-t="'+x[2]+'"><iframe src="/stack03/'+x[1]+'" loading="lazy" title="'+esc(x[0])+'"></iframe><a href="/stack03/'+x[1]+'" target="_blank" title="Ouvrir en plein écran"></a></div>'+
+    '<div class="ft"><div><div class="n">'+esc(x[0])+'</div></div><div class="u">'+esc(u)+'</div><button data-u="'+esc(u)+'">Copier</button></div></div>';}).join('');
+/* mise à l'échelle des aperçus 1920×1080 */
+var ro=new ResizeObserver(function(es){es.forEach(function(e){e.target.firstChild.style.transform='scale('+(e.contentRect.width/1920)+')';});});
+document.querySelectorAll('.scr').forEach(function(s){ro.observe(s);});
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display='none';},1800);}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-u]');
+  if(b){var u=b.dataset.u;if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(u).then(function(){toast('URL copiée');});else window.prompt('URL OBS :',u);return;}
+  var g=e.target.closest('[data-bg]');
+  if(g){document.querySelectorAll('[data-bg]').forEach(function(x){x.classList.toggle('on',x===g);});
+    document.querySelectorAll('.scr').forEach(function(s){s.classList.toggle('chk',g.dataset.bg==='chk'&&s.dataset.t==='1');});}
+});
+</script></body></html>

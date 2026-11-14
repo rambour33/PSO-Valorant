@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Pick &amp; Ban · Station</title>
+<!-- OBS : source navigateur 1920×1080, plein écran (fond opaque). Ajouter ?station=1 ou ?station=2.
+     Images de maps facultatives : assets/maps/abyss.jpg, bind.jpg, corrode.jpg… (nom de la map en minuscules). -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative;background:var(--bg)}
+.hd{position:absolute;left:64px;right:64px;top:30px;height:90px;display:flex;align-items:center;gap:28px}
+.hd img{height:80px}
+.hd .t{font-family:'Rajdhani';font-weight:700;font-size:88px;letter-spacing:.1em;line-height:1}
+.hd .t em{color:var(--pink);font-style:normal}
+.hd .r{margin-left:auto;text-align:right;font-size:20px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
+.hd .r b{display:block;color:var(--pink);font-family:'Rajdhani';font-weight:700;font-size:40px;letter-spacing:.14em}
+.team{position:absolute;top:140px;width:890px;height:176px;background:#0e0a0d;border-top:5px solid var(--pink);padding:14px 26px 0;display:flex;flex-direction:column}
+.team.a{left:64px}.team.b{right:64px}
+.team .h{display:flex;align-items:baseline;gap:20px}
+.team .tag{font-family:'Rajdhani';font-weight:700;font-size:64px;line-height:1;letter-spacing:.06em}
+.team .nm{font-size:20px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+.pls{display:flex;gap:8px;margin-top:14px}
+.pl{flex:1;border-left:3px solid var(--line);padding:2px 0 2px 12px;min-width:0}
+.pl .p{font-family:'Rajdhani';font-weight:700;font-size:30px;letter-spacing:.04em;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .ag{font-size:15px;letter-spacing:.18em;color:var(--pink);text-transform:uppercase;font-weight:600;min-height:18px}
+.pl.empty .p{color:#4a3b44}
+.pool{position:absolute;left:64px;top:340px;width:1792px;height:384px;display:flex;gap:12px}
+.mp{flex:1;position:relative;background:var(--panel2) center/cover no-repeat;border:3px solid #2a1c24;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 18px 16px}
+.mp::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,10,10,.05) 25%,rgba(12,10,10,.92))}
+.mp>*{position:relative}
+.mp .bd{position:absolute;top:14px;left:14px;background:rgba(12,10,10,.85);padding:4px 12px;font-size:15px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;font-weight:700}
+.mp .n{font-family:'Rajdhani';font-weight:700;font-size:60px;text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.mp .sub{font-size:16px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;min-height:20px;margin-top:4px;font-weight:600}
+.mp.ban{filter:grayscale(1) brightness(.55);border-color:#2a1c24}
+.mp.ban .n{text-decoration:line-through;text-decoration-thickness:4px}
+.mp.ban .bd{color:var(--red)}
+.mp.pick{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink),0 0 30px rgba(227,59,174,.35)}
+.mp.pick .bd{background:var(--pink);color:#12060e}
+.mp.decider{border-color:var(--cream)}.mp.decider .bd{background:var(--cream);color:#12060e}
+.tl{position:absolute;left:64px;top:752px;width:1792px;height:112px;display:flex;gap:6px}
+.s{flex:1;background:#0e0a0d;border-top:4px solid #3a2832;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between}
+.s .k{font-size:14px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.s .a{font-family:'Rajdhani';font-weight:700;font-size:30px;letter-spacing:.06em;line-height:1}
+.s .m{font-size:18px;letter-spacing:.1em;color:var(--cream);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s.done{border-top-color:var(--pink-dim)}.s.done .a{color:var(--muted)}
+.s.cur{border-top-color:var(--pink);background:#241019}.s.cur .a{color:var(--pink)}
+#sp{position:absolute;left:1516px;top:920px}
+.turn{position:absolute;left:64px;top:920px;width:1410px;height:112px;display:flex;align-items:center;gap:22px;background:#0e0a0d;border-left:8px solid var(--pink);padding:0 32px;font-family:'Rajdhani';font-weight:700;font-size:56px;letter-spacing:.08em}
+.turn span{font-family:'Rajdhani';font-size:20px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
+.turn em{color:var(--pink);font-style:normal}
+</style></head><body class="grid-bg">
+<div class="hd"><img src="assets/logo-stack.svg" alt="Stack"><div class="t">PICK <em>&amp;</em> BAN</div><div class="r"><b id="st">STATION 01</b><span id="lb"></span></div></div>
+<div class="team a" id="boxa"><div class="h"><div class="tag" id="ta">EQ1</div><div class="nm" id="na">ÉQUIPE 1</div></div><div class="pls" id="pa"></div></div>
+<div class="team b" id="boxb"><div class="h"><div class="tag" id="tb">EQ2</div><div class="nm" id="nb">ÉQUIPE 2</div></div><div class="pls" id="pb"></div></div>
+<div class="pool" id="pool"></div>
+<div class="tl" id="tl"></div><div id="sp"></div>
+<div class="turn" id="turn"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+Stack.mountSponsors(document.getElementById('sp'));
+var N=new URLSearchParams(location.search).get('station')==='2'?2:1;
+function $(i){return document.getElementById(i);}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function roster(el,team){el.innerHTML=team.players.map(function(p){return p.n?'<div class="pl"><div class="p">'+esc(p.n)+'</div><div class="ag">'+esc(p.ag||'')+'</div></div>':'<div class="pl empty"><div class="p">—</div><div class="ag"></div></div>';}).join('');}
+Stack.onChange(function(s){
+  var st=s.stations[N],bo=parseInt(st.bo,10)||1,v=st.veto,A=s.teams[st.a],B=s.teams[st.b];
+  $('st').textContent='STATION 0'+N;$('lb').textContent=(st.label||'')+' · BO'+bo;
+  $('boxa').style.borderTopColor=Stack.tcol(s,st.a);$('boxb').style.borderTopColor=Stack.tcol(s,st.b);$('ta').textContent=A.tag;$('na').textContent=A.name;$('tb').textContent=B.tag;$('nb').textContent=B.name;
+  roster($('pa'),A);roster($('pb'),B);
+  var seq=Stack.vetoSequence(bo,v.first),tags={a:A.tag,b:B.tag};
+  var steps=v.steps.map(function(x,i){return {map:x.map,side:x.side,act:seq[i].act,team:seq[i].team};});
+  var used=steps.filter(function(x){return x.map;}).map(function(x){return x.map;});
+  var rest=s.mapPool.filter(function(m){return used.indexOf(m)<0;});
+  var first6=steps.slice(0,6).every(function(x){return x.map;});
+  if(!steps[6].map&&first6&&rest.length===1)steps[6].map=rest[0];
+  var cur=-1;for(var i=0;i<7;i++){if(!steps[i].map){cur=i;break;}}
+  /* pool */
+  $('pool').innerHTML=s.mapPool.map(function(m){
+    var k=steps.filter(function(x){return x.map===m;})[0],cls='',lab='',sub='';
+    if(k){cls=k.act;
+      if(k.act==='ban'){lab='BAN';sub=tags[k.team];}
+      else if(k.act==='pick'){lab='PICK';sub=tags[k.team]+(k.side?' — '+tags.a+' '+k.side:'');}
+      else{lab='DECIDER';sub=k.side?tags.a+' '+k.side:'';}
+    }
+    return '<div class="mp '+cls+'" style="background-image:url(assets/maps/'+esc(m.toLowerCase())+'.jpg)">'+(k?'<div class="bd">'+lab+'</div>':'')+'<div class="n">'+esc(m)+'</div><div class="sub">'+sub+'</div></div>';
+  }).join('');
+  /* déroulé */
+  $('tl').innerHTML=steps.map(function(x,i){
+    var cl=x.map?'done':(i===cur?'cur':'');
+    var who=x.act==='decider'?'DECIDER':(x.act.toUpperCase()+' '+tags[x.team]);
+    return '<div class="s '+cl+'"><div class="k">Étape '+(i+1)+'</div><div class="a">'+who+'</div><div class="m">'+(x.map?esc(x.map):(i===cur?'en cours…':'—'))+'</div></div>';
+  }).join('');
+  /* bandeau */
+  var nx=Stack.vetoNext(st);
+  if(nx&&nx.kind==='side'){$('turn').innerHTML='<span>Étape '+(nx.i+1)+' / 7 · '+esc(nx.map)+'</span> '+esc(s.teams[nx.team==='a'?st.a:st.b].name)+' <em>CÔTÉ</em>';}
+  else if(cur<0){$('turn').innerHTML='<span>Veto terminé</span> Bon match !';}
+  else if(cur===6){$('turn').innerHTML='<span>Dernière map</span> <em>DECIDER</em>';}
+  else{var x=steps[cur];$('turn').innerHTML='<span>Étape '+(cur+1)+' / 7</span> '+s.teams[x.team==='a'?st.a:st.b].name+' <em>'+(x.act==='ban'?'BAN':'PICK')+'</em>';}
+});
+</script></body></html>

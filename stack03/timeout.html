@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Timeout</title>
+<!-- OBS : source navigateur 1920×1080 au-dessus de la caméra de la pièce : le fond est translucide, la vidéo reste visible derrière. Réglez la transparence avec .veil (rgba ci-dessous). -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+body{position:relative;background:transparent}
+.veil{position:absolute;inset:0;background:rgba(12,10,10,.58)}
+.veil::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(227,59,174,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(227,59,174,.07) 1px,transparent 1px);background-size:48px 48px}
+.c{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.c img{height:150px;margin-bottom:34px}
+.c,.m{text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.k{font-size:24px;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
+.h{font-family:'Rajdhani';font-weight:700;font-size:210px;line-height:.95;letter-spacing:.06em;margin-top:8px}
+.h em{color:var(--pink);font-style:normal}
+.who{font-family:'Rajdhani';font-weight:700;font-size:64px;letter-spacing:.12em;color:var(--pink);margin-top:10px;min-height:68px}
+.cnt{font-family:'Rajdhani';font-weight:700;font-size:190px;line-height:1;margin-top:10px;letter-spacing:.03em}
+.cnt.end{color:var(--pink)}
+.m{position:absolute;z-index:2;left:0;right:0;bottom:44px;display:flex;justify-content:center;align-items:center;gap:40px;font-size:20px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase}
+#sp{position:absolute;z-index:2;right:64px;bottom:42px}
+</style></head><body>
+<div class="veil"></div>
+<div class="c">
+  <img src="assets/logo-stack.svg" alt="Stack">
+  <div class="k" id="k">Stack · Édition 03</div>
+  <div class="h" id="h">TIME<em>OUT</em></div>
+  <div class="who" id="who"></div>
+  <div class="cnt" id="cnt">01:00</div>
+</div>
+<div class="m"><span>Le live reprend dans un instant</span></div>
+<div id="sp"></div>
+<script src="/socket.io/socket.io.js"></script><script src="js/core.js"></script>
+<script>
+Stack.mountSponsors(document.getElementById('sp'));
+function $(i){return document.getElementById(i);}
+var S=null;
+Stack.onChange(function(s){S=s;var t=s.timeout;
+  $('who').textContent=t.team>=0?s.teams[t.team].name:'';
+  var tech=t.team<0;$('h').innerHTML=tech?'<em>PAUSE</em>':'TIME<em>OUT</em>';
+  $('k').textContent=(t.label||'Stack · Édition 03');});
+function tick(){if(!S)return;var t=S.timeout,rem=t.endsAt-Date.now();
+  if(t.endsAt&&rem>0){$('cnt').textContent=Stack.fmtMS(rem);$('cnt').className='cnt';}
+  else{$('cnt').textContent=t.endsAt?'00:00':Stack.fmtMS(t.duration*1000);$('cnt').className='cnt'+(t.endsAt?' end':'');}}
+setInterval(tick,200);
+</script></body></html>
