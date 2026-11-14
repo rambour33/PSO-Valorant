@@ -5,6 +5,7 @@
   <title>PSO Valorant — Overlay Veto</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/typo/typo.css" />
+  <link rel="stylesheet" href="/stack-skin.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; font-family: var(--pso-font-body, 'Inter', sans-serif); }
@@ -95,6 +96,50 @@
     }
     /* Croix de ban tracée à la main */
     [data-pso-theme^="qg"] .card.banned::after { font-family: var(--pso-font-head); transform: rotate(-8deg); }
+
+    /* ════ STACK 03 : écran pick & ban du pack OBS (stack03/pickban.html) ════ */
+    #sk { position:absolute; inset:0; background:var(--bg); display:none; }
+    #sk.on { display:block; }
+    #sk.on.hidden { opacity:0; }
+    #sk .hd { position:absolute; left:64px; right:64px; top:30px; height:90px; display:flex; align-items:center; gap:28px; }
+    #sk .hd img { height:80px; }
+    #sk .hd .t { font-weight:700; font-size:88px; letter-spacing:.1em; line-height:1; }
+    #sk .hd .t em { color:var(--pink); font-style:normal; }
+    #sk .hd .r { margin-left:auto; text-align:right; font-size:20px; letter-spacing:.24em; color:var(--muted); text-transform:uppercase; }
+    #sk .hd .r b { display:block; color:var(--pink); font-weight:700; font-size:40px; letter-spacing:.14em; }
+    #sk .team { position:absolute; top:140px; width:890px; height:176px; background:#0e0a0d; border-top:5px solid var(--pink); padding:14px 26px 0; display:flex; flex-direction:column; }
+    #sk .team.a { left:64px; } #sk .team.b { right:64px; }
+    #sk .team .h { display:flex; align-items:baseline; gap:20px; }
+    #sk .team .tag { font-weight:700; font-size:64px; line-height:1; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:600px; }
+    #sk .team .nm { font-size:20px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; }
+    #sk .pls { display:flex; gap:8px; margin-top:14px; }
+    #sk .pl { flex:1; border-left:3px solid var(--line); padding:2px 0 2px 12px; min-width:0; }
+    #sk .pl .p { font-weight:700; font-size:30px; letter-spacing:.04em; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #sk .pl .ag { font-size:15px; letter-spacing:.18em; color:var(--pink); text-transform:uppercase; font-weight:600; min-height:18px; }
+    #sk .skpool { position:absolute; left:64px; top:340px; width:1792px; height:384px; display:flex; gap:12px; }
+    #sk .mp { flex:1; position:relative; background:var(--panel2) center/cover no-repeat; border:3px solid #2a1c24; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; padding:0 18px 16px; transition:all .3s ease; }
+    #sk .mp::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(12,10,10,.05) 25%,rgba(12,10,10,.92)); }
+    #sk .mp > * { position:relative; }
+    #sk .mp .bd { position:absolute; top:14px; left:14px; background:rgba(12,10,10,.85); padding:4px 12px; font-size:15px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; font-weight:700; }
+    #sk .mp .n { font-weight:700; font-size:52px; text-transform:uppercase; letter-spacing:.04em; line-height:1; }
+    #sk .mp .sub { font-size:16px; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; min-height:20px; margin-top:4px; font-weight:600; }
+    #sk .mp.banned { filter:grayscale(1) brightness(.55); }
+    #sk .mp.banned .n { text-decoration:line-through; text-decoration-thickness:4px; }
+    #sk .mp.banned .bd { color:var(--red); }
+    #sk .mp.picked { border-color:var(--pink); box-shadow:0 0 0 1px var(--pink),0 0 30px rgba(227,59,174,.35); }
+    #sk .mp.picked .bd { background:var(--pink); color:#12060e; }
+    #sk .mp.decider { border-color:var(--cream); } #sk .mp.decider .bd { background:var(--cream); color:#12060e; }
+    #sk .mp.current { border-color:var(--pink-dim); }
+    #sk .tl { position:absolute; left:64px; top:752px; width:1792px; height:112px; display:flex; gap:6px; }
+    #sk .s { flex:1; min-width:0; background:#0e0a0d; border-top:4px solid #3a2832; padding:12px 14px; display:flex; flex-direction:column; justify-content:space-between; }
+    #sk .s .k { font-size:14px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; }
+    #sk .s .a { font-weight:700; font-size:26px; letter-spacing:.06em; line-height:1; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #sk .s .m { font-size:18px; letter-spacing:.1em; color:var(--cream); text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #sk .s.done { border-top-color:var(--pink-dim); } #sk .s.done .a { color:var(--muted); }
+    #sk .s.cur { border-top-color:var(--pink); background:#241019; } #sk .s.cur .a { color:var(--pink); }
+    #sk .turn { position:absolute; left:64px; top:920px; width:1792px; height:112px; display:flex; align-items:center; gap:22px; background:#0e0a0d; border-left:8px solid var(--pink); padding:0 32px; font-weight:700; font-size:56px; letter-spacing:.08em; text-transform:uppercase; }
+    #sk .turn span { font-size:20px; letter-spacing:.24em; color:var(--muted); }
+    #sk .turn em { color:var(--pink); font-style:normal; }
   </style>
 </head>
 <body>
@@ -102,9 +147,11 @@
     <div class="status" id="status"></div>
     <div class="pool" id="pool"></div>
   </div>
+  <div id="sk" class="sk sk-grid hidden"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/particles.js"></script>
+  <script src="/stack-skin.js"></script>
   <script src="/theme.js"></script>
   <script>
     const wrap = document.getElementById('wrap');
@@ -116,8 +163,69 @@
     function teamName(s, t) { return (s.teams[t] && s.teams[t].name) || ('TEAM ' + t); }
     const SIDE_FR = { attack: 'ATQ', defense: 'DEF' };
 
+    // ── Habillage Stack 03 : écran pick & ban du pack OBS ──
+    const skEl = document.getElementById('sk');
+    let ROSTER = null;   // joueurs du scoreboard, associés aux équipes du veto par leur nom
+    function loadRoster() { fetch('/api/scoreboard').then(r => r.json()).then(sb => { ROSTER = sb; if (S && PSOSkin.is()) renderStack(S); }).catch(() => {}); }
+    const ACT = { ban: 'BAN', pick: 'PICK', side: 'CÔTÉ' };
+    const SIDE_LONG = { attack: 'ATTAQUE', defense: 'DÉFENSE' };
+
+    function rosterOf(name) {
+      if (!ROSTER) return [];
+      const n = String(name || '').trim().toLowerCase();
+      const t = [ROSTER.team1, ROSTER.team2].find(x => x && String(x.name || '').trim().toLowerCase() === n);
+      return t ? (t.players || []) : [];
+    }
+
+    function renderStack(s) {
+      const E = PSOSkin.esc;
+      skEl.classList.add('on'); wrap.classList.add('hidden');
+      if (!s || s.status === 'idle') { skEl.classList.add('hidden'); return; }
+      skEl.classList.remove('hidden');
+      const seq = s.sequence || [], log = s.log || [], si = s.stepIndex || 0;
+      const short = (t) => E(teamName(s, t));
+      const teamBox = (t, cls) => {
+        const pl = rosterOf(teamName(s, t)).filter(p => p && p.name);
+        const pls = pl.length ? '<div class="pls">' + pl.map(p => '<div class="pl"><div class="p">' + E(p.name) + '</div><div class="ag">' + E(p.agent || '') + '</div></div>').join('') + '</div>' : '';
+        return '<div class="team ' + cls + '" style="border-top-color:' + teamColor(s, t) + '"><div class="h"><div class="tag">' + short(t) + '</div><div class="nm">' + (s.firstTeam === t ? 'Commence' : '') + '</div></div>' + pls + '</div>';
+      };
+
+      const mapsHtml = s.maps.map(m => {
+        let lab = '', sub = '';
+        if (m.status === 'banned') { lab = 'BAN'; sub = short(m.by); }
+        else if (m.status === 'picked') { lab = 'PICK'; sub = short(m.by) + (m.side ? ' — ' + short(m.sideBy) + ' ' + SIDE_FR[m.side] : ''); }
+        else if (m.status === 'decider') { lab = 'DECIDER'; sub = m.side ? short(m.sideBy) + ' ' + SIDE_FR[m.side] : ''; }
+        const cur = s.current && (s.current.action === 'ban' || s.current.action === 'pick') && m.status === 'available' ? ' current' : '';
+        const bg = m.splash || m.minimap;
+        return '<div class="mp ' + m.status + cur + '"' + (bg ? ' style="background-image:url(\'' + bg + '\')"' : '') + '>' + (lab ? '<div class="bd">' + lab + '</div>' : '') +
+          '<div class="n">' + E(m.name) + '</div><div class="sub">' + sub + '</div></div>';
+      }).join('');
+
+      const tl = seq.map((x, i) => {
+        const done = i < si, cur = i === si && s.status !== 'done', l = log[i];
+        const isDecider = x.action === 'side' && i === seq.length - 1;
+        const who = (isDecider ? 'DECIDER · ' : '') + ACT[x.action] + ' ' + short(x.team);
+        const what = l ? E(l.name) + (l.side ? ' · ' + SIDE_FR[l.side] : '') : (cur ? 'en cours…' : '—');
+        return '<div class="s' + (done ? ' done' : cur ? ' cur' : '') + '"><div class="k">Étape ' + (i + 1) + '</div><div class="a">' + who + '</div><div class="m">' + what + '</div></div>';
+      }).join('');
+
+      let turn;
+      if (s.status === 'done') turn = '<span>Veto terminé</span> Bon match !';
+      else if (s.current) {
+        const c = s.current, pending = c.action === 'side' && c.map ? s.maps.find(m => m.slug === c.map) : null;
+        turn = '<span>Étape ' + (si + 1) + ' / ' + seq.length + (pending ? ' · ' + E(pending.name) : '') + '</span> ' + short(c.team) + ' <em>' + ACT[c.action] + '</em>';
+      } else turn = '';
+
+      skEl.innerHTML =
+        '<div class="hd"><img src="' + PSOSkin.logo + '" alt="Stack"><div class="t">PICK <em>&amp;</em> BAN</div><div class="r"><b>' + E(s.format || '') + '</b><span>Veto des maps</span></div></div>' +
+        teamBox(1, 'a') + teamBox(2, 'b') +
+        '<div class="skpool">' + mapsHtml + '</div><div class="tl">' + tl + '</div><div class="turn">' + turn + '</div>';
+    }
+
     function render(s) {
       S = s;
+      if (PSOSkin.is()) { if (!ROSTER) loadRoster(); return renderStack(s); }
+      skEl.classList.remove('on');
       if (!s || s.status === 'idle') { wrap.classList.add('hidden'); return; }
       wrap.classList.remove('hidden');
 
@@ -201,6 +309,8 @@
 
     fetch('/api/veto').then(r => r.json()).then(render).catch(() => {});
     io().on('vetoUpdate', render);
+    io().on('scoreboardUpdate', (sb) => { ROSTER = sb; if (S && PSOSkin.is()) renderStack(S); });
+    PSOSkin.onChange(() => render(S));
   </script>
 </body>
 </html>

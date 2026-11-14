@@ -53,6 +53,12 @@
       mix-blend-mode: overlay; opacity: .2; background: var(--graf-grain);
     }
     [data-pso-theme^="qg"] .box .time, [data-pso-theme^="qg"] .box .label { font-family: var(--pso-font-head); }
+
+    /* ════ STACK 03 : chrono façon « chip » du pack OBS (timeout-caster) ════ */
+    [data-pso-theme="stack"] .box { flex-direction:row; align-items:center; gap:22px; background:#0a0709; border:0; border-left:8px solid #e33bae; padding:12px 30px; box-shadow:0 8px 20px rgba(0,0,0,.5); }
+    [data-pso-theme="stack"] .box .label { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:18px; letter-spacing:.24em; color:#9a8a94; max-width:260px; line-height:1.2; }
+    [data-pso-theme="stack"] .box .time { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:84px; letter-spacing:.03em; color:#f0e6d3; text-shadow:none; }
+    [data-pso-theme="stack"] .box.ended { border-color:#e33bae; } [data-pso-theme="stack"] .box.ended .time { color:#e33bae; }
   </style>
 </head>
 <body>
