@@ -488,6 +488,8 @@ function sbRenderLinks() {
   if (tmLinks) tmLinks.innerHTML = rowHtml(['Timer', base + '/timer-overlay']);
   const spLinks = document.getElementById('sp-links');
   if (spLinks) spLinks.innerHTML = rowHtml(['Sponsors', base + '/sponsors-overlay']);
+  const stLinks = document.getElementById('st-links');
+  if (stLinks) stLinks.innerHTML = rowHtml(['Start', base + '/start-overlay']);
   const chatLinks = document.getElementById('chat-links');
   if (chatLinks) chatLinks.innerHTML = rowHtml(['Chat', base + '/chat-overlay']);
 }
@@ -782,6 +784,95 @@ if (sp.list) {
   });
   fetch('/api/sponsors').then((r) => r.json()).then(renderSponsors).catch(() => {});
   socket.on('sponsorsUpdate', renderSponsors);
+}
+
+// ── Onglet Start ──────────────────────────────────────────────────────────────
+const stTab = document.getElementById('tab-start');
+let stState = null, stSkew = 0, stDeb = null, stPending = {};
+const stGet = (o, k) => k.split('.').reduce((a, x) => (a == null ? a : a[x]), o);
+function stPatch(k, v) {   // 'halo.color' → { halo: { color } }
+  const parts = k.split('.'), out = {};
+  let cur = out;
+  parts.forEach((p, i) => { if (i === parts.length - 1) cur[p] = v; else cur = cur[p] = {}; });
+  return out;
+}
+function stSave(patch) {
+  return fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
+    .then((r) => r.json()).then(renderStart).catch(() => {});
+}
+function stLabel(el, v) {
+  if (el.dataset.pct) el.textContent = Math.round(v * 100) + '%';
+  else el.textContent = v + (el.dataset.unit || (el.dataset.v === 'logoSize' ? ' px' : ''));
+}
+function renderStart(s) {
+  if (!s || !stTab) return;
+  stState = s; if (s.now) stSkew = s.now - Date.now();
+  document.getElementById('st-visible').textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  stTab.querySelectorAll('[data-st]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.st);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  stTab.querySelectorAll('.st-v').forEach((el) => stLabel(el, stGet(s, el.dataset.v)));
+  document.getElementById('st-logo').innerHTML = s.logo ? '<img src="' + esc(s.logo) + '" alt="" />' : 'Sans logo';
+}
+function stTick() {
+  const el = document.getElementById('st-cd');
+  if (!el || !stState) return;
+  if (!stState.at) { el.textContent = 'Pas de compte à rebours'; return; }
+  const rem = stState.at - (Date.now() + stSkew);
+  if (rem <= 0) { el.textContent = 'Terminé'; return; }
+  const t = Math.ceil(rem / 1000), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), x = t % 60, p = (n) => String(n).padStart(2, '0');
+  el.textContent = (h ? h + ':' + p(m) : p(m)) + ':' + p(x) + '  (début à ' + new Date(stState.at - stSkew).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ')';
+}
+function stFitPreview() {
+  const f = document.getElementById('st-preview');
+  if (f && f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')';
+}
+if (stTab) {
+  stTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.st) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') v = parseFloat(v);
+    const lab = stTab.querySelector('.st-v[data-v="' + el.dataset.st + '"]'); if (lab) stLabel(lab, v);
+    // Les modifications s'accumulent jusqu'à l'envoi (aucune n'est perdue si on enchaîne les champs).
+    const p = stPatch(el.dataset.st, v);
+    if (p.halo) p.halo = Object.assign({}, stPending.halo, p.halo);
+    Object.assign(stPending, p);
+    clearTimeout(stDeb);
+    stDeb = setTimeout(() => { const send = stPending; stPending = {}; stSave(send); }, el.type === 'range' ? 80 : 300);
+  });
+  document.getElementById('st-visible').addEventListener('click', () => stSave({ visible: stState && stState.visible === false }));
+  document.getElementById('st-reset').addEventListener('click', () => {
+    if (confirm('Remettre l\'écran Start comme dans le pack d\'origine ?')) fetch('/api/start/reset', { method: 'POST' }).then((r) => r.json()).then(renderStart);
+  });
+  stTab.querySelectorAll('[data-in]').forEach((b) => b.addEventListener('click', () => stSave({ at: Date.now() + stSkew + parseInt(b.dataset.in, 10) * 60000 })));
+  document.getElementById('st-stop').addEventListener('click', () => stSave({ at: 0 }));
+  document.getElementById('st-at').addEventListener('click', () => {
+    const v = document.getElementById('st-time').value; if (!v) return;
+    const [h, m] = v.split(':').map(Number), d = new Date(); d.setHours(h, m, 0, 0);
+    if (d.getTime() < Date.now() - 60000) d.setDate(d.getDate() + 1);   // heure passée → demain
+    stSave({ at: d.getTime() + stSkew });
+  });
+  document.getElementById('st-logo-def').addEventListener('click', () => stSave({ logo: '/stack03/assets/logo-stack.svg' }));
+  document.getElementById('st-logo-none').addEventListener('click', () => stSave({ logo: '' }));
+  document.getElementById('st-file').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+      .then((r) => r.json()).then((d) => { if (d.error) return alert(d.error); stSave({ logo: d.url }); e.target.value = ''; })
+      .catch(() => alert('Envoi du logo impossible'));
+    rd.readAsDataURL(f);
+  });
+  document.querySelector('.tab-btn[data-tab="start"]')?.addEventListener('click', () => {
+    const f = document.getElementById('st-preview');
+    if (f && !f.src) f.src = '/start-overlay';
+    setTimeout(stFitPreview, 30);
+  });
+  window.addEventListener('resize', stFitPreview);
+  setInterval(stTick, 500);
+  fetch('/api/start').then((r) => r.json()).then(renderStart).catch(() => {});
+  socket.on('startUpdate', renderStart);
 }
 
 // ── Onglet Timer ──────────────────────────────────────────────────────────────

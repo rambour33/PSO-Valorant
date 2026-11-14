@@ -36,6 +36,7 @@
       <button class="tab-btn" data-tab="timer">Timer</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
       <button class="tab-btn" data-tab="sponsors">Sponsors</button>
+      <button class="tab-btn" data-tab="start">Start</button>
       <button class="tab-btn" data-tab="visuals">Visuels</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
       <button class="tab-btn" data-tab="stack03">Stack 03</button>
@@ -268,6 +269,69 @@
         <div class="sb-links-card">
           <h2 class="section-title">Lien overlay</h2>
           <div class="sb-links" id="sp-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-start">
+        <div class="ca-head">
+          <h2 class="section-title">Écran Start</h2>
+          <div style="display:flex;gap:8px"><button class="sb-action" id="st-reset">Réglages d'origine</button><button class="sb-action" id="st-visible">Masquer</button></div>
+        </div>
+        <p class="section-hint">Écran d'attente avant le live (design Stack 03). Tout s'applique en direct.</p>
+        <div class="st-prev sb-card"><div class="st-frame"><iframe id="st-preview" title="Aperçu Start" scrolling="no"></iframe></div></div>
+        <div class="st-grid">
+          <div class="sb-card">
+            <h3 class="st-h">Textes</h3>
+            <label class="fld">En haut à gauche<input data-st="topLeft" maxlength="60" /></label>
+            <label class="fld">En haut à droite<input data-st="topRight" maxlength="60" /></label>
+            <label class="fld">Titre <span class="st-tip">— entoure un mot d'astérisques pour le mettre en rose : *03*</span><input data-st="title" maxlength="120" /></label>
+            <label class="fld">Sous-titre<input data-st="subtitle" maxlength="120" /></label>
+            <label class="fld">Message sous le compte à rebours<input data-st="label" maxlength="80" /></label>
+            <label class="fld">Texte sans compte à rebours<input data-st="waitText" maxlength="40" /></label>
+            <label class="fld">Texte à la fin du compte à rebours<input data-st="endText" maxlength="40" /></label>
+          </div>
+          <div>
+            <div class="sb-card">
+              <h3 class="st-h">Compte à rebours</h3>
+              <div class="st-cd" id="st-cd">—</div>
+              <div class="st-row">
+                <input type="time" id="st-time" />
+                <button class="sb-action primary" id="st-at">Démarrer à cette heure</button>
+              </div>
+              <div class="st-row">
+                <button class="sb-action" data-in="5">Dans 5 min</button>
+                <button class="sb-action" data-in="10">Dans 10 min</button>
+                <button class="sb-action" data-in="15">Dans 15 min</button>
+                <button class="sb-action" id="st-stop">Arrêter</button>
+              </div>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Logo</h3>
+              <div class="st-row">
+                <div class="st-logo" id="st-logo"></div>
+                <label class="sb-action sp-file">🖼️ Changer le logo<input type="file" id="st-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden /></label>
+                <button class="sb-action" id="st-logo-def">Logo Stack</button>
+                <button class="sb-action" id="st-logo-none">Sans logo</button>
+              </div>
+              <label class="fld">Taille <b class="st-v" data-v="logoSize"></b><input type="range" data-st="logoSize" data-t="n" min="60" max="800" step="5" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Halo et fond</h3>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-st="halo.on" data-t="b" /> Halo</label>
+                <label class="st-chk"><input type="checkbox" data-st="grid" data-t="b" /> Grille</label>
+                <label class="st-chk"><input type="checkbox" data-st="sponsors" data-t="b" /> Cadre sponsors</label>
+                <label class="st-chk">Couleur <input type="color" data-st="halo.color" /></label>
+              </div>
+              <label class="fld">Intensité <b class="st-v" data-v="halo.intensity" data-pct="1"></b><input type="range" data-st="halo.intensity" data-t="n" min="0" max="0.6" step="0.01" /></label>
+              <label class="fld">Taille <b class="st-v" data-v="halo.size" data-unit="%"></b><input type="range" data-st="halo.size" data-t="n" min="10" max="150" step="1" /></label>
+              <label class="fld">Position horizontale <b class="st-v" data-v="halo.x" data-unit="%"></b><input type="range" data-st="halo.x" data-t="n" min="0" max="100" step="1" /></label>
+              <label class="fld">Position verticale <b class="st-v" data-v="halo.y" data-unit="%"></b><input type="range" data-st="halo.y" data-t="n" min="0" max="100" step="1" /></label>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="st-links"></div>
         </div>
       </div>
       <div class="tab-content" id="tab-visuals">

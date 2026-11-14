@@ -235,6 +235,25 @@ body {
 .sp-row .sp-mv { flex: 0 0 34px; padding: 8px 0; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 6px; cursor: pointer; }
 .sp-row .sp-mv:disabled { opacity: .3; cursor: default; }
 .sp-add { margin-top: 12px; }
+#tab-start { max-width: 1100px; }
+#tab-start .ca-head { max-width: none; }
+.st-prev { margin-bottom: 14px; padding: 10px; }
+.st-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; background: #000; }
+.st-frame iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; }
+.st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.st-h { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.st-tip { text-transform: none; letter-spacing: 0; }
+.st-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.st-row .sb-action { width: auto; margin: 0; padding: 9px 12px; }
+.st-row input[type=time] { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px; font-size: 14px; color-scheme: dark; }
+.st-cd { font-size: 40px; font-weight: 700; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+.st-logo { width: 120px; height: 56px; background: #0c0a0a; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--muted); font-size: 11px; }
+.st-logo img { max-width: 110px; max-height: 48px; }
+.st-chk { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); margin-right: 8px; }
+.st-chk input[type=color] { width: 44px; height: 30px; border: 1px solid var(--border); background: none; cursor: pointer; }
+#tab-start input[type=range] { accent-color: #e33bae; }
+.st-v { color: var(--text); font-weight: 700; }
+@media (max-width: 900px) { .st-grid { grid-template-columns: 1fr; } }
 .sp-row .sp-zoom { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; }
 .sp-row .sp-zoom input { width: 90px; accent-color: #e33bae; }
 .sp-row .sp-zoom b { min-width: 38px; color: var(--text); font-size: 12px; text-align: right; }

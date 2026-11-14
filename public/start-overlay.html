@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Start</title>
+  <!-- Écran d'attente avant le live (repris de stack03/start.html). OBS : source navigateur
+       1920×1080, plein écran (fond opaque). Réglages : onglet « Start » de la régie. -->
+  <link rel="stylesheet" href="/stack03/css/fonts.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; }
+    body { position: relative; background: #0c0a0a; color: #f0e6d3; font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+    #grid { position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(227,59,174,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(227,59,174,.045) 1px, transparent 1px);
+      background-size: 48px 48px; }
+    #halo { position: absolute; inset: 0; pointer-events: none; }
+    #root { position: absolute; inset: 0; transition: opacity .45s ease; }
+    #root.hidden { opacity: 0; }
+    .c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .c img { height: 370px; max-width: 1600px; object-fit: contain; }
+    .t { font-weight: 700; font-size: 60px; letter-spacing: .2em; margin-top: 44px; line-height: 1; text-transform: uppercase; }
+    .t em { color: #e33bae; font-style: normal; }
+    .d { font-size: 24px; letter-spacing: .34em; color: #9a8a94; text-transform: uppercase; margin-top: 16px; }
+    .cnt { font-weight: 700; font-size: 150px; line-height: 1; margin-top: 72px; letter-spacing: .04em; color: #f0e6d3; }
+    .lb { font-size: 24px; letter-spacing: .3em; color: #e33bae; text-transform: uppercase; margin-top: 14px; font-weight: 700; }
+    .t:empty, .d:empty, .lb:empty { display: none; }
+    .line { position: absolute; left: 64px; right: 64px; top: 64px; display: flex; justify-content: space-between; font-size: 20px; letter-spacing: .26em; color: #9a8a94; text-transform: uppercase; }
+    #sp { position: absolute; right: 64px; bottom: 44px; width: 364px; height: 136px; border: 0; background: transparent; }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div id="halo"></div>
+  <div id="root">
+    <div class="line"><span id="tl"></span><span id="tr"></span></div>
+    <div class="c">
+      <img id="logo" alt="" />
+      <div class="t" id="title"></div>
+      <div class="d" id="sub"></div>
+      <div class="cnt" id="cnt">--:--</div>
+      <div class="lb" id="lb"></div>
+    </div>
+    <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const $ = (i) => document.getElementById(i);
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // *mot* → mot en rose
+    const rich = (t) => esc(t).replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    const pad = (n) => (n < 10 ? '0' : '') + n;
+    function fmt(ms) { const t = Math.ceil(Math.max(0, ms) / 1000), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), x = t % 60; return (h ? h + ':' + pad(m) : pad(m)) + ':' + pad(x); }
+    function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+
+    let S = null, skew = 0;
+    function render(s) {
+      if (!s) return;
+      S = s; if (s.now) skew = s.now - Date.now();
+      $('root').classList.toggle('hidden', s.visible === false);
+      $('tl').textContent = s.topLeft; $('tr').textContent = s.topRight;
+      const logo = $('logo');
+      if (s.logo) { if (logo.getAttribute('src') !== s.logo) logo.src = s.logo; logo.style.display = ''; logo.style.height = s.logoSize + 'px'; }
+      else logo.style.display = 'none';
+      $('title').innerHTML = rich(s.title);
+      $('sub').textContent = s.subtitle;
+      $('lb').textContent = s.label;
+      const h = s.halo;
+      $('halo').style.background = h.on ? 'radial-gradient(ellipse at ' + h.x + '% ' + h.y + '%, ' + rgba(h.color, h.intensity) + ', transparent ' + h.size + '%)' : 'none';
+      $('grid').style.display = s.grid ? '' : 'none';
+      $('sp').style.display = s.sponsors ? '' : 'none';
+      tick();
+    }
+    function tick() {
+      if (!S) return;
+      const el = $('cnt');
+      if (!S.at) { el.textContent = S.waitText; return; }
+      const rem = S.at - (Date.now() + skew);
+      el.textContent = rem > 0 ? fmt(rem) : S.endText;
+    }
+    fetch('/api/start').then((r) => r.json()).then(render).catch(() => {});
+    io().on('startUpdate', render);
+    setInterval(tick, 250);
+  </script>
+</body>
+</html>

@@ -18,6 +18,7 @@ const chat = require('./lib/chat');
 const rulesets = require('./lib/rulesets');
 const bracket = require('./lib/bracket');
 const sponsors = require('./lib/sponsors');
+const startScreen = require('./lib/start');
 const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
@@ -115,6 +116,10 @@ function emitScore() { io.emit('scoreboardUpdate', scorePayload()); }
 app.get('/scoreboard-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-overlay.html')));
 app.get('/sponsors-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sponsors-overlay.html')));
 app.get('/api/sponsors', (req, res) => res.json(sponsors.get()));
+app.get('/start-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'start-overlay.html')));
+app.get('/api/start', (req, res) => res.json({ ...startScreen.get(), now: Date.now() }));
+app.post('/api/start', (req, res) => { const s = startScreen.set(req.body || {}); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
+app.post('/api/start/reset', (req, res) => { const s = startScreen.reset(); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
 app.post('/api/sponsors', (req, res) => { const s = sponsors.set(req.body || {}); io.emit('sponsorsUpdate', s); res.json(s); });
 app.get('/lineup-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lineup-overlay.html')));
 
