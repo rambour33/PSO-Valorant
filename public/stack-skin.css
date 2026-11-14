@@ -1,0 +1,28 @@
+/* stack-skin.css — design du pack OBS Stack 03 (stack03/css/theme.css), repris pour les
+   overlays PSO quand le thème « STACK 03 » est actif. Classes préfixées sk- : sans effet
+   sur les autres thèmes. */
+.sk { --bg:#0c0a0a; --panel:#130f0f; --panel2:#1a1212; --line:#2a1c24; --pink:#e33bae; --pink-dim:#9c2b78;
+  --cream:#f0e6d3; --muted:#9a8a94; --grey:#161619; --green:#4ade80; --red:#f87171;
+  color: var(--cream); font-family: 'Rajdhani', sans-serif; font-weight: 600; }
+.sk *, .sk *::before, .sk *::after { box-sizing: border-box; }
+.sk-grid::before { content:''; position:absolute; inset:0; pointer-events:none;
+  background-image: linear-gradient(rgba(227,59,174,.045) 1px,transparent 1px), linear-gradient(90deg,rgba(227,59,174,.045) 1px,transparent 1px);
+  background-size: 48px 48px; }
+.sk-fade { transition: opacity .45s ease, transform .45s ease; }
+.sk-fade.hidden { opacity: 0; transform: translateY(-14px); }
+
+/* Bandeau « prochain match » / score compact (cam.html du pack) */
+.sk-lower { display:inline-flex; align-items:stretch; height:84px; background:rgba(7,5,8,.96); border-left:8px solid var(--pink); }
+.sk-lower .t { display:flex; align-items:center; gap:14px; padding:0 24px; font-weight:700; font-size:46px; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
+.sk-lower .s { display:flex; align-items:center; justify-content:center; width:70px; background:#120c10; font-weight:700; font-size:54px; }
+.sk-lower .s.lead { background:var(--pink); color:#12060e; }
+.sk-lower .f { display:flex; flex-direction:column; justify-content:center; padding:0 22px; font-size:16px; letter-spacing:.18em; color:var(--muted); background:#0a0709; text-transform:uppercase; }
+.sk-lower .f b { font-weight:700; font-size:26px; color:var(--pink); letter-spacing:.14em; }
+.sk-lower .sq { display:block; width:16px; height:46px; background:var(--c,#e33bae); }
+
+/* Cartouche titre (tag caméra du pack) */
+.sk-tag { display:inline-flex; align-items:center; gap:16px; background:rgba(7,5,8,.95); padding:10px 26px 10px 22px; border-left:8px solid var(--pink); }
+.sk-tag .n { font-weight:700; font-size:46px; letter-spacing:.08em; line-height:1; }
+.sk-tag .c { font-size:17px; letter-spacing:.22em; color:var(--muted); text-transform:uppercase; }
+.sk-rec { width:14px; height:14px; border-radius:50%; background:var(--pink); animation: sk-blink 1.6s ease infinite; }
+@keyframes sk-blink { 50% { opacity:.25; } }

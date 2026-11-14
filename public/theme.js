@@ -22,6 +22,8 @@
     applyVars(d.vars);
     if (d.active) document.documentElement.setAttribute('data-pso-theme', d.active);
     if (window.PSOParticles) window.PSOParticles.setEffect(d.particles || null);
+    // Les overlays qui ont un habillage propre à un thème se redessinent sur cet événement.
+    document.dispatchEvent(new CustomEvent('pso:theme', { detail: d }));
   }
 
   fetch('/api/theme').then((r) => r.json()).then(apply).catch(() => {});

@@ -5,6 +5,7 @@
   <title>PSO Valorant — Overlay Bracket</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/typo/typo.css" />
+  <link rel="stylesheet" href="/stack-skin.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { overflow: hidden; }
@@ -150,9 +151,33 @@
       font-size: 14px; color: var(--muted); background: var(--surface); border: 1px solid var(--border);
       padding: 14px 20px; border-radius: var(--radius);
     }
+
+    /* ════ STACK 03 : écran bracket façon pack OB[data-pso-theme="stack"] (stack03/bracket.html) ════ */
+    #skhd { display:none; }
+    [data-pso-theme="stack"] #skhd { display:flex; position:absolute; left:64px; right:64px; top:34px; height:100px; align-items:center; gap:28px; z-index:2; }
+    #skhd img { height:88px; }
+    #skhd .t { font-weight:700; font-size:96px; letter-spacing:.1em; line-height:1; }
+    #skhd .t em { color:#e33bae; font-style:normal; }
+    #skhd .r { margin-left:auto; text-align:right; font-size:20px; letter-spacing:.24em; color:#9a8a94; text-transform:uppercase; }
+    #skhd .r b { display:block; color:#e33bae; font-weight:700; font-size:40px; letter-spacing:.14em; }
+    [data-pso-theme="stack"] body { background:#0c0a0a; padding-top:160px; position:relative; }
+    [data-pso-theme="stack"] body::before { content:''; position:absolute; inset:0; pointer-events:none;
+      background-image:linear-gradient(rgba(227,59,174,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(227,59,174,.045) 1px,transparent 1px); background-size:48px 48px; }
+    [data-pso-theme="stack"] .section-title { background:transparent; border-left:0; box-shadow:none; padding:0; font-size:30px; letter-spacing:.16em; color:#e33bae; }
+    [data-pso-theme="stack"] .section-title .n { font-size:16px; letter-spacing:.22em; color:#9a8a94; }
+    [data-pso-theme="stack"] .round .rlabel { font-size:15px; letter-spacing:.22em; font-weight:600; }
+    [data-pso-theme="stack"] .match, [data-pso-theme="stack"] .gmatch { background:#0e0a0d; border:0; border-top:4px solid #e33bae; box-shadow:none; }
+    [data-pso-theme="stack"] .match .side .nm { font-size:24px; letter-spacing:.06em; max-width:200px; }
+    [data-pso-theme="stack"] .match .side .sc { font-size:26px; }
+    [data-pso-theme="stack"] .match .side + .side { border-top-color:#2a1c24; }
+    [data-pso-theme="stack"] .match .side.win, [data-pso-theme="stack"] .gmatch .gside.win { background:#241019; }
+    [data-pso-theme="stack"] .match .side.win .nm, [data-pso-theme="stack"] .match .side.win .sc, [data-pso-theme="stack"] .gmatch .gside.win .nm { color:#e33bae; }
+    [data-pso-theme="stack"] .match .bo { background:#0a0709; border-bottom-color:#2a1c24; font-size:11px; letter-spacing:.2em; }
+    [data-pso-theme="stack"] svg.connectors path { stroke:#3a2832; }
   </style>
 </head>
 <body>
+  <div id="skhd" class="sk"><img src="/stack03/assets/logo-stack.svg" alt="Stack"><div class="t">BRACKET <em>03</em></div><div class="r"><b id="skname"></b><span>Valorant</span></div></div>
   <div id="root"><div class="empty">Chargement du bracket…</div></div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -297,11 +322,16 @@
     function resetScale() { root.style.transform = 'none'; }
     function fitToCanvas() {
       const rect = root.getBoundingClientRect();
-      const scale = Math.min(1, (CANVAS_W - CANVAS_PAD * 2) / rect.width, (CANVAS_H - CANVAS_PAD * 2) / rect.height);
+      const top = document.documentElement.getAttribute('data-pso-theme') === 'stack' ? 160 : CANVAS_PAD;   // place du bandeau Stack 03
+      const scale = Math.min(1, (CANVAS_W - CANVAS_PAD * 2) / rect.width, (CANVAS_H - top - CANVAS_PAD) / rect.height);
       root.style.transform = scale < 1 ? 'scale(' + scale + ')' : 'none';
     }
 
+    let LASTB = null;
+    document.addEventListener('pso:theme', () => { if (LASTB) render(LASTB); });
     function render(s) {
+      LASTB = s;
+      const nm = document.getElementById('skname'); if (nm) nm.textContent = (s && s.name) || '';
       if (!s || !s.format) { root.innerHTML = '<div class="empty">Aucun tournoi généré pour le moment.</div>'; resetScale(); fitToCanvas(); return; }
       const winners = s.matches.filter(m => m.bracket === 'winners');
       const losers = s.matches.filter(m => m.bracket === 'losers');

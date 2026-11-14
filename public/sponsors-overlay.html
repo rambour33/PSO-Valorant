@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Overlay Sponsors</title>
+  <!-- Cadre sponsors du pack Stack 03 : fond gris, logos blancs, barre rose, rotation en boucle.
+       OBS : source navigateur (ex. 400×160), ancrée en haut à gauche.
+       Options : ?every=10 (secondes par logo), ?bar=right (barre rose à droite). -->
+  <link rel="stylesheet" href="/stack03/css/fonts.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; overflow: hidden; }
+    body { padding: 24px; font-family: 'Rajdhani', sans-serif; }
+    .sponsor-box { position: relative; width: 340px; height: 112px; background: #161619; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .sponsor-box .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: #e33bae; }
+    .sponsor-box .sp { position: absolute; left: 8px; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .7s ease; }
+    .sponsor-box .sp.on { opacity: 1; }
+    .sponsor-box .sp img { max-width: 236px; max-height: 44px; width: auto; height: auto; filter: brightness(0) invert(1); }
+    .sponsor-box .sp img.wide { max-width: 262px; }
+    .sponsor-box .sp .txt { font-weight: 700; font-size: 56px; letter-spacing: .08em; color: #fff; }
+    .sponsor-box.right-bar .bar { left: auto; right: 0; }
+    .sponsor-box.right-bar .sp { left: 0; right: 8px; }
+  </style>
+</head>
+<body>
+  <div class="sponsor-box" id="box">
+    <i class="bar"></i>
+    <div class="sp on"><img src="/stack03/assets/logo-lst-2023-white.svg" alt="LST" onerror="this.outerHTML='<span class=txt>LST</span>'"></div>
+    <div class="sp"><img src="/stack03/assets/credit-mutuel.svg" alt="Crédit Mutuel"></div>
+    <div class="sp"><img class="wide" src="/stack03/assets/logols4bv3.svg" alt="Team LS4B"></div>
+  </div>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const box = document.getElementById('box');
+    if (q.get('bar') === 'right') box.classList.add('right-bar');
+    const every = Math.max(2, parseFloat(q.get('every')) || 10) * 1000;
+    const items = box.querySelectorAll('.sp');
+    let k = 0;
+    setInterval(() => { items[k].classList.remove('on'); k = (k + 1) % items.length; items[k].classList.add('on'); }, every);
+  </script>
+</body>
+</html>

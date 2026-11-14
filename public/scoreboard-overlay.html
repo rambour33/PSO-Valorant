@@ -5,6 +5,7 @@
   <title>PSO Valorant — Overlay Scoreboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/typo/typo.css" />
+  <link rel="stylesheet" href="/stack-skin.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { background: transparent; overflow: hidden; }
@@ -146,12 +147,35 @@
     [data-pso-theme="championship"] .caption { color: var(--pso-gold, #FFD600); }
     /* Panneau de score */
     [data-pso-theme="championship"] .rects { border: 1px solid var(--pso-border, #242024); }
+
+    /* ════ STACK 03 : design du pack OBS (voir /stack-skin.css) ════ */
+    .sk-team { display:inline-flex; align-items:stretch; height:92px; filter:drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
+    .sk-team .box { width:330px; background:rgba(7,5,8,.96); display:flex; flex-direction:column; justify-content:center; padding:0 26px; position:relative; border-top:4px solid var(--line); }
+    .sk-team .box .col { position:absolute; top:-4px; bottom:0; width:12px; background:var(--c,#e33bae); }
+    .sk-team.t1 .box { align-items:flex-end; text-align:right; padding-left:40px; }
+    .sk-team.t1 .box .col { left:0; }
+    .sk-team.t2 .box { align-items:flex-start; text-align:left; padding-right:40px; }
+    .sk-team.t2 .box .col { right:0; }
+    .sk-team .nm { font-weight:700; font-size:58px; line-height:.95; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:270px; }
+    .sk-team .score { width:96px; background:#120c10; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:72px; border-top:4px solid var(--line); }
+    .sk-team .score.lead { background:var(--pink); color:#12060e; border-top-color:var(--pink); }
+    .sk-team .pips { position:absolute; bottom:-16px; display:flex; gap:7px; }
+    .sk-team.t1 .pips { right:40px; } .sk-team.t2 .pips { left:40px; }
+    .sk-team .pip, .sk-score .pip { width:44px; height:7px; background:var(--line); }
+    .sk-team .pip.on { background:var(--pink); }
+    .sk-team { padding-bottom:16px; }
+    .sk-score { display:inline-flex; align-items:center; gap:10px; padding:18px 22px; background:rgba(7,5,8,.96); border-left:8px solid var(--pink); }
+    .sk-score .pip { width:64px; height:12px; transition:background .35s ease; }
+    .sk-score .pip.on { background:var(--rc,#e33bae); }
+    .sk-score .pip.pop { animation: pop .45s cubic-bezier(.2,.9,.3,1.2); }
+    .sk-score .lbl { font-weight:700; font-size:20px; letter-spacing:.2em; color:var(--muted); margin-right:8px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script src="/socket.io/socket.io.js"></script>
+  <script src="/stack-skin.js"></script>
   <script src="/theme.js"></script>
   <script>
     const params = new URLSearchParams(location.search);
@@ -162,11 +186,46 @@
     const teamColor = (s, t) => (s['team' + t] && s['team' + t].color) || (t === 1 ? '#FF4655' : '#00C8C8');
     const teamName  = (s, t) => (s['team' + t] && s['team' + t].name)  || ('TEAM ' + t);
 
-    let prevFilled = 0;
+    let prevFilled = 0, LAST = null;
+
+    // Habillage Stack 03 : mêmes données, design du pack OBS (cam / overlay-station).
+    function renderStack(s) {
+      const E = PSOSkin.esc, sc1 = s.team1 ? s.team1.score : 0, sc2 = s.team2 ? s.team2.score : 0;
+      const fmt = s.format || 'BO3', total = s.mapsCount || 3, need = Math.ceil(total / 2);
+      const pips = (wins) => total < 2 ? '' : '<div class="pips">' + Array.from({ length: need }, (_, i) => '<i class="pip' + (i < wins ? ' on' : '') + '"></i>').join('') + '</div>';
+
+      if (PART === 'team1' || PART === 'team2') {
+        const t = PART === 'team1' ? 1 : 2, me = t === 1 ? sc1 : sc2, other = t === 1 ? sc2 : sc1;
+        const box = '<div class="box" style="--c:' + teamColor(s, t) + '"><i class="col"></i><div class="nm">' + E(teamName(s, t)) + '</div>' + pips(me) + '</div>';
+        const score = '<div class="score' + (me > other ? ' lead' : '') + '">' + me + '</div>';
+        root.innerHTML = '<div class="sk sk-team t' + t + '">' + (t === 1 ? box + score : score + box) + '</div>';
+        return;
+      }
+      if (PART === 'match') {
+        const mapNo = Math.min(total, sc1 + sc2 + 1);
+        root.innerHTML = '<div class="sk sk-lower">' +
+          '<div class="t"><i class="sq" style="--c:' + teamColor(s, 1) + '"></i><span>' + E(teamName(s, 1)) + '</span></div>' +
+          '<div class="s' + (sc1 > sc2 ? ' lead' : '') + '">' + sc1 + '</div>' +
+          '<div class="s' + (sc2 > sc1 ? ' lead' : '') + '">' + sc2 + '</div>' +
+          '<div class="t"><span>' + E(teamName(s, 2)) + '</span><i class="sq" style="--c:' + teamColor(s, 2) + '"></i></div>' +
+          '<div class="f"><b>' + E(fmt) + '</b><span>' + (total === 1 ? 'MAP UNIQUE' : 'MAP ' + mapNo) + '</span></div></div>';
+        return;
+      }
+      const seq = Array.isArray(s.sequence) ? s.sequence : [];
+      let html = '<div class="sk sk-score"><span class="lbl">' + E(fmt) + '</span>';
+      for (let i = 0; i < total; i++) {
+        const w = seq[i];
+        html += w ? '<i class="pip on' + (i >= prevFilled ? ' pop' : '') + '" style="--rc:' + teamColor(s, w) + '"></i>' : '<i class="pip"></i>';
+      }
+      root.innerHTML = html + '</div>';
+      prevFilled = seq.length;
+    }
 
     function render(s) {
       if (!s) return;
+      LAST = s;
       root.classList.toggle('hidden', s.visible === false);
+      if (PSOSkin.is()) return renderStack(s);
 
       if (PART === 'team1' || PART === 'team2') {
         const t = PART === 'team1' ? 1 : 2;
@@ -212,6 +271,7 @@
 
     fetch('/api/scoreboard').then(r => r.json()).then(render).catch(() => {});
     io().on('scoreboardUpdate', render);
+    PSOSkin.onChange(() => { prevFilled = 0; render(LAST); });
   </script>
 </body>
 </html>

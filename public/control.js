@@ -472,6 +472,7 @@ function sbRenderLinks() {
     ['Prochain match', base + '/scoreboard-overlay?part=match'],
     ['Lineup équipe 1', base + '/lineup-overlay?team=1'],
     ['Lineup équipe 2', base + '/lineup-overlay?team=2'],
+    ['Sponsors', base + '/sponsors-overlay'],
   ];
   const rowHtml = ([label, url]) =>
     '<div class="sb-linkrow"><span class="lbl">' + label + '</span>' +
@@ -499,6 +500,7 @@ const SB_PREVIEW_URLS = {
   match: '/scoreboard-overlay?part=match',
   lineup1: '/lineup-overlay?team=1',
   lineup2: '/lineup-overlay?team=2',
+  sponsors: '/sponsors-overlay',
 };
 function sbSetPreview(key) {
   if (!sbPreviewFrame || !SB_PREVIEW_URLS[key]) return;

@@ -81,6 +81,16 @@
     [data-pso-theme^="qg"].play .tag2 { animation: tagfly2 1.3s cubic-bezier(.7,0,.3,1) .16s both; }
     @keyframes tagfly  { 0%,34% { opacity: 0; transform: translateX(-70vw) rotate(-7deg); } 50% { opacity: 1; transform: translateX(0) rotate(-7deg); } 64%,100% { opacity: 0; transform: translateX(55vw) rotate(-7deg); } }
     @keyframes tagfly2 { 0%,34% { opacity: 0; transform: translateX(70vw) rotate(6deg); } 50% { opacity: 1; transform: translateX(0) rotate(6deg); } 64%,100% { opacity: 0; transform: translateX(-55vw) rotate(6deg); } }
+
+    /* ════ STACK 03 : transition du pack OBS (fond gris foncé, logo Stack rose) ════ */
+    #sk-st { position:absolute; inset:0; display:none; }
+    [data-pso-theme="stack"] #sk-st { display:block; }
+    [data-pso-theme="stack"] #stinger { display:none; }
+    #sk-st .bg { position:absolute; inset:0; background:#141417; opacity:0; }
+    #sk-st .bg::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 45%,rgba(227,59,174,.10),transparent 62%); }
+    #sk-st .c { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:54px; opacity:0; }
+    #sk-st .logo { width:760px; }
+    #sk-st .cm { height:40px; filter:brightness(0) invert(1); opacity:0; }
   </style>
 </head>
 <body>
@@ -96,6 +106,8 @@
     </div>
   </div>
 
+  <div id="sk-st"><div class="bg"></div><div class="c"><img class="logo" src="/stack03/assets/logo-stack.svg" alt=""><img class="cm" src="/stack03/assets/credit-mutuel.svg" alt=""></div></div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/theme.js"></script>
   <script>
@@ -109,7 +121,26 @@
       document.getElementById('st-sub').textContent = SUBS[th] || '';
     }
 
+    // Animation Stack 03 (reprise de stack03/stinger.html, 2,4 s).
+    const SK = document.getElementById('sk-st');
+    const skBg = SK.querySelector('.bg'), skC = SK.querySelector('.c'), skCm = SK.querySelector('.cm');
+    const clamp = (x) => Math.max(0, Math.min(1, x)), sm = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+    function skRender(t) {
+      const lg = sm((t - 0.35) / 0.7) * (1 - sm((t - 1.55) / 0.55));
+      skBg.style.opacity = sm(t / 0.8) * (1 - sm((t - 1.6) / 0.8));
+      skC.style.opacity = lg;
+      skC.style.transform = 'translateY(' + (14 * (1 - sm((t - 0.35) / 0.9))) + 'px) scale(' + (0.955 + 0.045 * sm(t / 2.0)) + ')';
+      skCm.style.opacity = (sm((t - 0.7) / 0.6) * (1 - sm((t - 1.5) / 0.5))) / (lg || 1);
+    }
+    let skRaf = null;
+    function skPlay() {
+      if (skRaf) cancelAnimationFrame(skRaf);
+      const t0 = performance.now();
+      (function f(now) { const t = (now - t0) / 1000; skRender(Math.min(t, 2.4)); if (t < 2.4) skRaf = requestAnimationFrame(f); })(t0);
+    }
+
     function play() {
+      if (document.documentElement.getAttribute('data-pso-theme') === 'stack') return skPlay();
       setBrand();
       stage.classList.remove('play');
       void stage.offsetWidth;   // force le redémarrage de l'animation
