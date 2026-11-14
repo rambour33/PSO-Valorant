@@ -31,7 +31,8 @@
     .chip .c.end { color: var(--pink); }
     /* Casters : design de l'onglet Casters (habillage Stack). Masqués à l'antenne par défaut,
        visibles dans l'aperçu de la régie (?backend=1) pour savoir qui est devant l'écran. */
-    .names { position: absolute; left: 64px; top: 932px; display: flex; align-items: stretch; gap: 2px; }
+    /* Même ligne que le cadre sponsors : haut 934 px, hauteur 112 px, marges extérieures 64 px */
+    .names { position: absolute; left: 64px; top: 934px; height: 112px; display: flex; align-items: stretch; gap: 2px; }
     .names.off { display: none; }
     .names .label { display: flex; align-items: center; gap: 10px; padding: 0 22px; background: #0a0709; border-left: 6px solid var(--pink);
       color: var(--muted); font-size: 15px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; }
@@ -54,7 +55,7 @@
     .vs { color: var(--muted); font-size: 20px; }
     #chat { top: 396px; height: 36px; }
     #chat h3 { padding-top: 10px; }
-    #sp { position: absolute; left: 1444px; top: 926px; width: 364px; height: 136px; border: 0; background: transparent; }
+    #sp { position: absolute; left: 1492px; top: 910px; width: 364px; height: 136px; border: 0; background: transparent; }
   </style>
 </head>
 <body>
