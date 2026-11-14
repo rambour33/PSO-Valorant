@@ -468,6 +468,7 @@ function sbRenderLinks() {
   // Tous les overlays OBS au même endroit
   const rows = [
     ['Scoreboard (in game)', base + '/scoreboard-stack-overlay'],
+    ['Équipes versus', base + '/versus-overlay'],
     // Team 1 / Team 2 / Score (scoreboard-overlay?part=…) : masqués, plus utilisés
     ['Prochain match', base + '/scoreboard-overlay?part=match'],
     ['Lineup équipe 1', base + '/lineup-overlay?team=1'],

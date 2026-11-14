@@ -125,6 +125,7 @@ app.post('/api/start', (req, res) => { const s = startScreen.set(req.body || {})
 app.post('/api/start/reset', (req, res) => { const s = startScreen.reset(); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
 // Caméras des stations
 app.get('/scoreboard-stack-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-stack-overlay.html')));
+app.get('/versus-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'versus-overlay.html')));
 app.get('/cam-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'cam-overlay.html')));
 app.get('/api/cams', (req, res) => res.json(cams.get()));
 app.post('/api/cams', (req, res) => { const s = cams.set(req.body || {}); io.emit('camsUpdate', s); res.json(s); });
