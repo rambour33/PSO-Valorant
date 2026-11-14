@@ -57,7 +57,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Start",
-      "uuid": "8e61324c-6384-4b9d-983b-af5d232cc17b",
+      "uuid": "2206e3f8-789b-40e0-819a-a64b88479f8f",
       "settings": {
         "url": "http://localhost:3004/start-overlay",
         "width": 1920,
@@ -83,12 +83,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Start",
-      "uuid": "9695fe89-c8cf-44c6-936a-c49e2eaee3df",
+      "uuid": "87f5fa03-594d-4bfb-89d2-b8086af3efbb",
       "settings": {
         "items": [
           {
             "name": "Start",
-            "source_uuid": "8e61324c-6384-4b9d-983b-af5d232cc17b",
+            "source_uuid": "2206e3f8-789b-40e0-819a-a64b88479f8f",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -142,7 +142,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Équipes versus",
-      "uuid": "35c81424-684a-4b92-b955-e163ad68f68e",
+      "uuid": "c8a33891-7f87-4943-805b-f3113dc164fd",
       "settings": {
         "url": "http://localhost:3004/versus-overlay",
         "width": 1920,
@@ -168,12 +168,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Équipes versus",
-      "uuid": "c35f56c2-1a64-4ea6-92ec-356b7ea1d149",
+      "uuid": "8038124c-7db6-48c0-9175-81f327983bbe",
       "settings": {
         "items": [
           {
             "name": "Équipes versus",
-            "source_uuid": "35c81424-684a-4b92-b955-e163ad68f68e",
+            "source_uuid": "c8a33891-7f87-4943-805b-f3113dc164fd",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -227,7 +227,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Scoreboard in game",
-      "uuid": "dfe535a4-0036-45bd-a8bc-e87ce42e96d1",
+      "uuid": "47908796-f84a-4144-acb5-a5579b0e5530",
       "settings": {
         "url": "http://localhost:3004/scoreboard-stack-overlay",
         "width": 1920,
@@ -253,12 +253,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · In game",
-      "uuid": "fc42c556-ead3-47e7-8455-9bedaeefe31f",
+      "uuid": "a63d65d1-28f7-4865-bfa6-612ba3b47148",
       "settings": {
         "items": [
           {
             "name": "Scoreboard in game",
-            "source_uuid": "dfe535a4-0036-45bd-a8bc-e87ce42e96d1",
+            "source_uuid": "47908796-f84a-4144-acb5-a5579b0e5530",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -312,7 +312,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Caméra station 01",
-      "uuid": "3748922b-7419-4cc0-8ac1-6498fdad8cfc",
+      "uuid": "a0d28a23-77c5-4329-b413-90e8bcd818da",
       "settings": {
         "url": "http://localhost:3004/cam-overlay?station=1",
         "width": 1920,
@@ -338,12 +338,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Caméra station 01",
-      "uuid": "5c83a346-9cf1-4f19-9c8f-cba5c246455a",
+      "uuid": "5e7a07a9-a12b-40e7-adb3-49d9ef0998ee",
       "settings": {
         "items": [
           {
             "name": "Caméra station 01",
-            "source_uuid": "3748922b-7419-4cc0-8ac1-6498fdad8cfc",
+            "source_uuid": "a0d28a23-77c5-4329-b413-90e8bcd818da",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -397,7 +397,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Caméra station 02",
-      "uuid": "6f8f8007-05a4-41f6-8840-77e3d4e86c40",
+      "uuid": "13207a6a-938a-4e12-bb84-d712232a56ff",
       "settings": {
         "url": "http://localhost:3004/cam-overlay?station=2",
         "width": 1920,
@@ -423,12 +423,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Caméra station 02",
-      "uuid": "3123944c-75f1-4c41-b37a-9cb3270d0007",
+      "uuid": "ac39c0d4-684f-440d-9368-cacc4fbf2d16",
       "settings": {
         "items": [
           {
             "name": "Caméra station 02",
-            "source_uuid": "6f8f8007-05a4-41f6-8840-77e3d4e86c40",
+            "source_uuid": "13207a6a-938a-4e12-bb84-d712232a56ff",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -482,7 +482,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Timeout caster",
-      "uuid": "816e519a-88ef-496c-b499-aa98f53eafad",
+      "uuid": "88cce353-8db0-4264-b191-3fd77fcddbdc",
       "settings": {
         "url": "http://localhost:3004/timeout-caster-overlay",
         "width": 1920,
@@ -508,12 +508,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Timeout caster",
-      "uuid": "a4d3a543-9b7d-4826-b1de-c27c77826e0c",
+      "uuid": "26d1c1cc-e74b-4790-af25-a8ad9819e014",
       "settings": {
         "items": [
           {
             "name": "Timeout caster",
-            "source_uuid": "816e519a-88ef-496c-b499-aa98f53eafad",
+            "source_uuid": "88cce353-8db0-4264-b191-3fd77fcddbdc",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -567,7 +567,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Map veto",
-      "uuid": "c57df51a-bf7d-4ad2-b286-08db5569f10e",
+      "uuid": "72558c16-0268-4a8c-84e6-ce3209066131",
       "settings": {
         "url": "http://localhost:3004/veto-overlay",
         "width": 1920,
@@ -593,12 +593,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Map veto",
-      "uuid": "f512af3e-47a4-4a1e-9c2e-313fad823977",
+      "uuid": "56fbe6c7-7e28-4800-a264-be2820e3446b",
       "settings": {
         "items": [
           {
             "name": "Map veto",
-            "source_uuid": "c57df51a-bf7d-4ad2-b286-08db5569f10e",
+            "source_uuid": "72558c16-0268-4a8c-84e6-ce3209066131",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -652,7 +652,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Bracket",
-      "uuid": "ab39d2f2-3148-4b99-bf65-9560f82ef310",
+      "uuid": "af50ac79-aa29-4107-a640-6c7cb0fe1c18",
       "settings": {
         "url": "http://localhost:3004/bracket-overlay",
         "width": 1920,
@@ -678,12 +678,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Bracket",
-      "uuid": "f59a29a0-a482-4375-8b16-6be6ab8ae38c",
+      "uuid": "d5969b67-5ff5-4059-b58d-9f746a9767b4",
       "settings": {
         "items": [
           {
             "name": "Bracket",
-            "source_uuid": "ab39d2f2-3148-4b99-bf65-9560f82ef310",
+            "source_uuid": "af50ac79-aa29-4107-a640-6c7cb0fe1c18",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -737,9 +737,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Prochain match",
-      "uuid": "33c60f3c-a642-4438-9173-668b15e8b1c3",
+      "uuid": "6e32514d-7d07-44b0-9bc7-041935dfc03b",
       "settings": {
-        "url": "http://localhost:3004/scoreboard-overlay?part=match",
+        "url": "http://localhost:3004/scoreboard-overlay?part=match&fit=0.85",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -763,12 +763,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Prochain match",
-      "uuid": "0f3e3ac7-74f9-48c7-85ee-4c254403fcae",
+      "uuid": "a1d38e93-003d-4eb0-8e57-b1016960a3d6",
       "settings": {
         "items": [
           {
             "name": "Prochain match",
-            "source_uuid": "33c60f3c-a642-4438-9173-668b15e8b1c3",
+            "source_uuid": "6e32514d-7d07-44b0-9bc7-041935dfc03b",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -822,9 +822,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Lineup équipe 1",
-      "uuid": "5798803c-d39d-4692-a061-3d29253cced4",
+      "uuid": "8526bf46-be51-4878-ab3c-914045bfeaa8",
       "settings": {
-        "url": "http://localhost:3004/lineup-overlay?team=1",
+        "url": "http://localhost:3004/lineup-overlay?team=1&fit=1",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -848,12 +848,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Lineup équipe 1",
-      "uuid": "167cc835-0df6-4a22-a8c5-bd155dcac4f3",
+      "uuid": "0c4c31c4-a4eb-4afb-bcd7-63ca1d3cdd7f",
       "settings": {
         "items": [
           {
             "name": "Lineup équipe 1",
-            "source_uuid": "5798803c-d39d-4692-a061-3d29253cced4",
+            "source_uuid": "8526bf46-be51-4878-ab3c-914045bfeaa8",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -907,9 +907,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Lineup équipe 2",
-      "uuid": "c4f9cfcf-71d0-4b01-aa74-d23c3039f55b",
+      "uuid": "0ecd2c5b-8509-4d33-b109-cf5886bbba3d",
       "settings": {
-        "url": "http://localhost:3004/lineup-overlay?team=2",
+        "url": "http://localhost:3004/lineup-overlay?team=2&fit=1",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -933,12 +933,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Lineup équipe 2",
-      "uuid": "68747516-bff2-4d07-995c-05d9df7ea53a",
+      "uuid": "13327f8b-0ed3-4ce7-900b-273e8f5d05a9",
       "settings": {
         "items": [
           {
             "name": "Lineup équipe 2",
-            "source_uuid": "c4f9cfcf-71d0-4b01-aa74-d23c3039f55b",
+            "source_uuid": "0ecd2c5b-8509-4d33-b109-cf5886bbba3d",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -992,9 +992,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Casters",
-      "uuid": "b64eb00d-a764-4d85-a462-b2893d99d551",
+      "uuid": "4fc1c1da-d09d-410e-8d21-4ae9bf02ed0f",
       "settings": {
-        "url": "http://localhost:3004/casters-overlay",
+        "url": "http://localhost:3004/casters-overlay?fit=0.8",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -1018,12 +1018,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Casters",
-      "uuid": "eecf368b-1656-4af9-9003-6cfee94827ee",
+      "uuid": "5e34df9f-7219-4837-86cc-fba7a792b9d5",
       "settings": {
         "items": [
           {
             "name": "Casters",
-            "source_uuid": "b64eb00d-a764-4d85-a462-b2893d99d551",
+            "source_uuid": "4fc1c1da-d09d-410e-8d21-4ae9bf02ed0f",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -1077,9 +1077,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Chat",
-      "uuid": "3626a361-8adb-4def-9833-3d26c31a0a41",
+      "uuid": "56b6fb18-52eb-476d-bf3d-024abc40241d",
       "settings": {
-        "url": "http://localhost:3004/chat-overlay",
+        "url": "http://localhost:3004/chat-overlay?scale=2",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -1103,12 +1103,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Chat",
-      "uuid": "96e9c908-9a06-454a-9a0f-06e957eef5ea",
+      "uuid": "c141953c-005c-4c82-9f96-97e3116ab33c",
       "settings": {
         "items": [
           {
             "name": "Chat",
-            "source_uuid": "3626a361-8adb-4def-9833-3d26c31a0a41",
+            "source_uuid": "56b6fb18-52eb-476d-bf3d-024abc40241d",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -1162,9 +1162,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Timer",
-      "uuid": "17260166-eee6-4824-9c86-12996d3dc720",
+      "uuid": "c622a04a-dddc-409b-b647-20d5326ccf73",
       "settings": {
-        "url": "http://localhost:3004/timer-overlay",
+        "url": "http://localhost:3004/timer-overlay?fit=0.6",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -1188,12 +1188,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Timer",
-      "uuid": "83b96571-3358-4ef5-8a25-db6479d0ad4f",
+      "uuid": "dfe4b95e-80d0-4fb3-a15b-2499fb94144c",
       "settings": {
         "items": [
           {
             "name": "Timer",
-            "source_uuid": "17260166-eee6-4824-9c86-12996d3dc720",
+            "source_uuid": "c622a04a-dddc-409b-b647-20d5326ccf73",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -1247,9 +1247,9 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Sponsors",
-      "uuid": "b4c7290e-c9ea-4ab7-a078-909b3574120a",
+      "uuid": "c8f65b92-795c-40aa-8d08-b76f3884a408",
       "settings": {
-        "url": "http://localhost:3004/sponsors-overlay",
+        "url": "http://localhost:3004/sponsors-overlay?fit=0.5",
         "width": 1920,
         "height": 1080,
         "fps": 60,
@@ -1273,12 +1273,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Sponsors",
-      "uuid": "c8d0ffe4-ad4b-4814-82bd-16577148b7d4",
+      "uuid": "209b032b-9b6a-4878-af41-3288fc85f484",
       "settings": {
         "items": [
           {
             "name": "Sponsors",
-            "source_uuid": "b4c7290e-c9ea-4ab7-a078-909b3574120a",
+            "source_uuid": "c8f65b92-795c-40aa-8d08-b76f3884a408",
             "visible": true,
             "locked": false,
             "rot": 0.0,
@@ -1332,7 +1332,7 @@
       "id": "browser_source",
       "versioned_id": "browser_source",
       "name": "Stinger",
-      "uuid": "962821f3-98e9-46ca-8088-543c9f89ddae",
+      "uuid": "c4da52a3-11ed-44a3-bc1a-9c4fc70fee0f",
       "settings": {
         "url": "http://localhost:3004/stinger",
         "width": 1920,
@@ -1358,12 +1358,12 @@
       "id": "scene",
       "versioned_id": "scene",
       "name": "PSO · Stinger",
-      "uuid": "f8b9164f-600a-47ec-9123-0fa7ccbae126",
+      "uuid": "4341bc83-24f3-47e4-a3b2-7eb47f242f37",
       "settings": {
         "items": [
           {
             "name": "Stinger",
-            "source_uuid": "962821f3-98e9-46ca-8088-543c9f89ddae",
+            "source_uuid": "c4da52a3-11ed-44a3-bc1a-9c4fc70fee0f",
             "visible": true,
             "locked": false,
             "rot": 0.0,
