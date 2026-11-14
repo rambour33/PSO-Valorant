@@ -40,7 +40,9 @@
     @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
     .names .person { display: flex; flex-direction: column; justify-content: center; gap: 3px; background: #0a0709; border-left: 6px solid var(--pink); padding: 10px 26px; }
     .names .label + .person { border-left: 0; }          /* pas de barre entre l'étiquette et le 1er caster */
-    .names .person + .person { border-left-width: 3px; } /* barre moitié moins épaisse entre deux casters */
+    /* entre deux casters : barre moitié moins épaisse et moitié moins haute, centrée */
+    .names .person + .person { position: relative; border-left: 0; padding-left: 32px; }
+    .names .person + .person::before { content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 3px; background: var(--pink); }
     .names .nm { font-size: 32px; font-weight: 700; letter-spacing: .08em; color: #f0e6d3; line-height: 1; white-space: nowrap; text-transform: uppercase; }
     .names .sub { font-size: 15px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
     .names .sub .role { color: var(--pink); font-weight: 700; }
