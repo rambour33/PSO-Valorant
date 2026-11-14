@@ -12,6 +12,7 @@ const veto = require('./lib/veto');
 const theme = require('./lib/theme');
 const scoreboard = require('./lib/scoreboard');
 const teams = require('./lib/teams');
+const teamPool = require('./lib/teampool');
 const casters = require('./lib/casters');
 const timer = require('./lib/timer');
 const chat = require('./lib/chat');
@@ -180,16 +181,24 @@ app.get('/api/teams', (req, res) => res.json(teams.list()));
 
 app.post('/api/teams', (req, res) => {
   try {
+    const before = new Set(teams.list().map((x) => x.id));
     const t = teams.saveTeam(req.body || {});
+    const isNew = !before.has(t.id);
     emitTeams();
+    // Nouvelle équipe sauvegardée (scoreboard) → elle entre dans le pool du bracket builder.
+    if (isNew) { teamPool.add(t.id); io.emit('teamPoolUpdate', teamPool.get()); }
     res.json(t);
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
 });
+teamPool.initFrom((bracket.get().teams || []).map((t) => t.id));
+app.get('/api/team-pool', (req, res) => res.json(teamPool.get()));
+app.post('/api/team-pool', (req, res) => { const ids = teamPool.set((req.body || {}).ids); io.emit('teamPoolUpdate', ids); res.json(ids); });
 
 app.delete('/api/teams/:id', (req, res) => {
   teams.remove(req.params.id);
+  teamPool.remove(req.params.id); io.emit('teamPoolUpdate', teamPool.get());
   emitTeams();
   res.json({ ok: true });
 });

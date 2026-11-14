@@ -185,7 +185,7 @@
     function initSeedsFromState(s) {
       seedsInitialized = true;
       if (!s.format || !s.teams.length) return;
-      seeds = s.teams.map(t => ({ id: t.id, name: t.name, color: t.color }));
+      if (!seeds.length) { seeds = s.teams.map(t => ({ id: t.id, name: t.name, color: t.color })); pushPool(); }
       format = s.format;
       $('fmt-format').querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.f === format));
       $('groups-config').style.display = format === 'groups' ? 'block' : 'none';
@@ -253,12 +253,21 @@
       }).join('') || '<div class="status">Ajoute des équipes depuis la liste ci-dessus.</div>';
     }
 
+    // Pool partagé avec le scoreboard (équipes sauvegardées) et persisté côté serveur.
+    function seedsFromIds(ids) {
+      return ids.map(id => allTeams.find(t => t.id === id)).filter(Boolean).map(t => ({ id: t.id, name: t.name, color: t.color }));
+    }
+    function pushPool() {
+      fetch('/api/team-pool', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: seeds.map(t => t.id) }) }).catch(() => {});
+    }
+    function applyPool(ids) { seeds = seedsFromIds(ids || []); renderSeeds(); renderTeamSelect(); }
+
     $('btn-add-team').addEventListener('click', () => {
       const id = $('team-add').value;
       const t = allTeams.find(x => x.id === id);
       if (!t) return;
       seeds.push({ id: t.id, name: t.name, color: t.color });
-      renderSeeds(); renderTeamSelect();
+      renderSeeds(); renderTeamSelect(); pushPool();
     });
 
     $('seed-list').addEventListener('click', (e) => {
@@ -270,14 +279,19 @@
         return;
       }
       const up = e.target.closest('[data-up]');
-      if (up) { const i = +up.dataset.up; [seeds[i - 1], seeds[i]] = [seeds[i], seeds[i - 1]]; renderSeeds(); return; }
+      if (up) { const i = +up.dataset.up; [seeds[i - 1], seeds[i]] = [seeds[i], seeds[i - 1]]; renderSeeds(); pushPool(); return; }
       const down = e.target.closest('[data-down]');
-      if (down) { const i = +down.dataset.down; [seeds[i], seeds[i + 1]] = [seeds[i + 1], seeds[i]]; renderSeeds(); return; }
+      if (down) { const i = +down.dataset.down; [seeds[i], seeds[i + 1]] = [seeds[i + 1], seeds[i]]; renderSeeds(); pushPool(); return; }
       const rm = e.target.closest('[data-remove]');
-      if (rm) { seeds = seeds.filter(t => t.id !== rm.dataset.remove); delete groupOf[rm.dataset.remove]; renderSeeds(); renderTeamSelect(); }
+      if (rm) { seeds = seeds.filter(t => t.id !== rm.dataset.remove); delete groupOf[rm.dataset.remove]; renderSeeds(); renderTeamSelect(); pushPool(); }
     });
 
-    fetch('/api/teams').then(r => r.json()).then(t => { allTeams = t || []; renderTeamSelect(); });
+    // Chargement : équipes + pool d'abord, puis le tournoi (qui ne remplit le pool que s'il est vide).
+    const boot = Promise.all([fetch('/api/teams').then(r => r.json()), fetch('/api/team-pool').then(r => r.json())])
+      .then(([t, ids]) => { allTeams = t || []; applyPool(ids); }).catch(() => {});
+    const sockB = io();
+    sockB.on('teamsUpdate', (t) => { allTeams = t || []; applyPool(seeds.map(x => x.id)); });
+    sockB.on('teamPoolUpdate', applyPool);
 
     function updateThirdPlaceRow() {
       $('third-place-row').style.display = format === 'groups' ? 'none' : 'flex';
@@ -536,8 +550,8 @@
         fetch('/api/bracket/tokens').then(r => r.json()),
       ]).then(([s, t]) => { lastTokens = t || {}; renderBracket(s); }).catch(() => {});
     }
-    loadAll();
-    io().on('bracketUpdate', loadAll);
+    boot.then(loadAll);
+    sockB.on('bracketUpdate', loadAll);
     window.addEventListener('resize', () => $('bracket-view').querySelectorAll('.bracket-wrap').forEach(drawConnectors));
   </script>
 </body>
