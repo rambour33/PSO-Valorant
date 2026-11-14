@@ -235,6 +235,9 @@ body {
 .sp-row .sp-mv { flex: 0 0 34px; padding: 8px 0; border: 1px solid var(--border); background: var(--surface2); color: var(--text); border-radius: 6px; cursor: pointer; }
 .sp-row .sp-mv:disabled { opacity: .3; cursor: default; }
 .sp-add { margin-top: 12px; }
+.sp-row .sp-zoom { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.sp-row .sp-zoom input { width: 90px; accent-color: #e33bae; }
+.sp-row .sp-zoom b { min-width: 38px; color: var(--text); font-size: 12px; text-align: right; }
 .sp-file { width: auto; margin: 0; padding: 9px 14px; cursor: pointer; white-space: nowrap; font-size: 13px; }
 .sp-file.ok { border-color: var(--red); }
 @media (max-width: 760px) { .sp-grid { grid-template-columns: 1fr; } }

@@ -704,6 +704,7 @@ function sponsorRow(it, i, n) {
     spToggle(it.enabled ? 'Affiché' : 'Masqué', it.enabled, 'enabled', it.id) +
     spToggle('Large', it.wide, 'wide', it.id) +
     spToggle('Blanc', it.white, 'white', it.id) +
+    '<label class="sp-zoom" title="Taille du logo dans le cadre">Taille <input type="range" data-zoom="' + it.id + '" min="0.3" max="3" step="0.05" value="' + (it.zoom || 1) + '" /><b>' + Math.round((it.zoom || 1) * 100) + '%</b></label>' +
     '<button class="sp-mv" data-act="up" data-id="' + it.id + '"' + (i === 0 ? ' disabled' : '') + ' title="Monter">↑</button>' +
     '<button class="sp-mv" data-act="down" data-id="' + it.id + '"' + (i === n - 1 ? ' disabled' : '') + ' title="Descendre">↓</button>' +
     '<button class="ca-del" data-act="del" data-id="' + it.id + '" title="Supprimer">🗑</button></div>';
@@ -714,8 +715,11 @@ function renderSponsors(s) {
   sp.visible.textContent = s.visible === false ? 'Afficher' : 'Masquer';
   if (document.activeElement !== sp.every) { sp.every.value = s.every; sp.everyVal.textContent = s.every + ' s'; }
   sp.bar.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.b === s.bar));
-  const sig = JSON.stringify(s.items);
-  if (!(sp.list.contains(document.activeElement) && sig === spPrevIds)) {
+  // Pendant une saisie (nom, curseur de taille) sur la même liste, on ne redessine pas :
+  // ça couperait le glissé du curseur ou la frappe.
+  const sig = s.items.map((x) => x.id).join(',');
+  const typing = sp.list.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
+  if (!(typing && sig === spPrevIds)) {
     sp.list.innerHTML = s.items.length ? s.items.map((it, i) => sponsorRow(it, i, s.items.length)).join('') : '<div class="empty">Aucun sponsor. Ajoute-en un ci-dessous.</div>';
   }
   spPrevIds = sig;
@@ -724,6 +728,14 @@ if (sp.list) {
   sp.list.addEventListener('input', (e) => {
     const row = e.target.closest('.sp-row');
     if (!row) return;
+    if (e.target.dataset.zoom) {
+      // Taille : envoi en direct (léger délai) pour voir l'effet dans l'aperçu pendant le glissé.
+      const z = parseFloat(e.target.value);
+      e.target.nextElementSibling.textContent = Math.round(z * 100) + '%';
+      clearTimeout(spDeb);
+      spDeb = setTimeout(() => spSave({ items: spItems().map((x) => x.id === row.dataset.id ? Object.assign(x, { zoom: z }) : x) }), 120);
+      return;
+    }
     clearTimeout(spDeb);
     spDeb = setTimeout(() => spSave({ items: spItems().map((x) => x.id === row.dataset.id ? Object.assign(x, { name: e.target.value }) : x) }), 300);
   });

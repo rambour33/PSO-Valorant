@@ -15,11 +15,11 @@
     .sponsor-box .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: #e33bae; }
     .sponsor-box .sp { position: absolute; left: 8px; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .7s ease; }
     .sponsor-box .sp.on { opacity: 1; }
-    .sponsor-box .sp img { max-width: 236px; max-height: 44px; width: auto; height: auto; filter: brightness(0) invert(1); }
-    .sponsor-box .sp img.wide { max-width: 262px; }
+    .sponsor-box .sp img { --z: 1; max-width: calc(236px * var(--z)); max-height: calc(44px * var(--z)); width: auto; height: auto; filter: brightness(0) invert(1); }
+    .sponsor-box .sp img.wide { max-width: calc(262px * var(--z)); }
     .sponsor-box .sp img.color { filter: none; }
     .sponsor-box { transition: opacity .45s ease; }
-    .sponsor-box .sp .txt { font-weight: 700; font-size: 56px; letter-spacing: .08em; color: #fff; }
+    .sponsor-box .sp .txt { --z: 1; font-weight: 700; font-size: calc(56px * var(--z)); letter-spacing: .08em; color: #fff; }
     .sponsor-box.right-bar .bar { left: auto; right: 0; }
     .sponsor-box.right-bar .sp { left: 0; right: 8px; }
   </style>
@@ -46,9 +46,9 @@
       sig = nsig;
       box.innerHTML = '<i class="bar"></i>' + items.map((it, i) =>
         '<div class="sp' + (i === 0 ? ' on' : '') + '">' +
-          (it.src ? '<img class="' + (it.wide ? 'wide' : '') + (it.white ? '' : ' color') + '" src="' + esc(it.src) + '" alt="' + esc(it.name) + '">' : '<span class="txt">' + esc(it.name) + '</span>') +
+          (it.src ? '<img class="' + (it.wide ? 'wide' : '') + (it.white ? '' : ' color') + '" style="--z:' + (it.zoom || 1) + '" src="' + esc(it.src) + '" alt="' + esc(it.name) + '">' : '<span class="txt" style="--z:' + (it.zoom || 1) + '">' + esc(it.name) + '</span>') +
         '</div>').join('');
-      box.querySelectorAll('img').forEach((img) => { img.onerror = () => { img.outerHTML = '<span class="txt">' + esc(img.alt) + '</span>'; }; });
+      box.querySelectorAll('img').forEach((img) => { img.onerror = () => { img.outerHTML = '<span class="txt" style="' + esc(img.getAttribute('style')) + '">' + esc(img.alt) + '</span>'; }; });
       clearInterval(timer);
       const els = box.querySelectorAll('.sp');
       let k = 0;
