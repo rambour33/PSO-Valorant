@@ -137,11 +137,23 @@
       $('ctitle').textContent = S.chatTitle;
       $('chat').style.display = S.chatTitle ? '' : 'none';
       $('chatwin').style.display = S.chatEmbed ? 'block' : 'none';
+      layout();
       if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?flow=down';
       $('fr1').style.display = $('fr2').style.display = S.frame ? '' : 'none';
       $('sp').style.display = S.sponsors ? '' : 'none';
       FX.set(S);
       tick();
+    }
+    // Colonne de droite : le cadre matchs prend la hauteur de ses lignes (1 match = cadre court),
+    // le titre « Chat » et la fenêtre chat remontent pour combler l'espace jusqu'en bas (896 px).
+    function layout() {
+      const rows = S.matchSource === 'off' ? 0 : S.matchSource === 'manual' ? 2 : 1;
+      let y = 176;
+      if (rows) { const h = rows === 1 ? 112 : 214; $('mc').style.height = h + 'px'; y += h + 6; }
+      if (S.chatTitle) { $('chat').style.top = y + 'px'; y += 40; }
+      const cw = $('chatwin'); cw.style.top = y + 'px'; cw.style.height = (896 - y) + 'px';
+      document.querySelector('.bg').style.clipPath = "path(evenodd, 'M0 0H1920V1080H0Z M64 176H1344V896H64Z M1396 " + y + "H1856V896H1396Z')";
+      document.body.dataset.chat = 'x 1396, y ' + y + ', 460×' + (896 - y);
     }
     function tick() {
       if (!S) return;
