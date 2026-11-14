@@ -1,0 +1,1429 @@
+{
+  "name": "PSO Stack 03",
+  "current_scene": "PSO · Start",
+  "current_program_scene": "PSO · Start",
+  "scene_order": [
+    {
+      "name": "PSO · Start"
+    },
+    {
+      "name": "PSO · Équipes versus"
+    },
+    {
+      "name": "PSO · In game"
+    },
+    {
+      "name": "PSO · Caméra station 01"
+    },
+    {
+      "name": "PSO · Caméra station 02"
+    },
+    {
+      "name": "PSO · Timeout caster"
+    },
+    {
+      "name": "PSO · Map veto"
+    },
+    {
+      "name": "PSO · Bracket"
+    },
+    {
+      "name": "PSO · Prochain match"
+    },
+    {
+      "name": "PSO · Lineup équipe 1"
+    },
+    {
+      "name": "PSO · Lineup équipe 2"
+    },
+    {
+      "name": "PSO · Casters"
+    },
+    {
+      "name": "PSO · Chat"
+    },
+    {
+      "name": "PSO · Timer"
+    },
+    {
+      "name": "PSO · Sponsors"
+    },
+    {
+      "name": "PSO · Stinger"
+    }
+  ],
+  "sources": [
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Start",
+      "uuid": "8e61324c-6384-4b9d-983b-af5d232cc17b",
+      "settings": {
+        "url": "http://localhost:3004/start-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Start",
+      "uuid": "9695fe89-c8cf-44c6-936a-c49e2eaee3df",
+      "settings": {
+        "items": [
+          {
+            "name": "Start",
+            "source_uuid": "8e61324c-6384-4b9d-983b-af5d232cc17b",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Équipes versus",
+      "uuid": "35c81424-684a-4b92-b955-e163ad68f68e",
+      "settings": {
+        "url": "http://localhost:3004/versus-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Équipes versus",
+      "uuid": "c35f56c2-1a64-4ea6-92ec-356b7ea1d149",
+      "settings": {
+        "items": [
+          {
+            "name": "Équipes versus",
+            "source_uuid": "35c81424-684a-4b92-b955-e163ad68f68e",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Scoreboard in game",
+      "uuid": "dfe535a4-0036-45bd-a8bc-e87ce42e96d1",
+      "settings": {
+        "url": "http://localhost:3004/scoreboard-stack-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · In game",
+      "uuid": "fc42c556-ead3-47e7-8455-9bedaeefe31f",
+      "settings": {
+        "items": [
+          {
+            "name": "Scoreboard in game",
+            "source_uuid": "dfe535a4-0036-45bd-a8bc-e87ce42e96d1",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Caméra station 01",
+      "uuid": "3748922b-7419-4cc0-8ac1-6498fdad8cfc",
+      "settings": {
+        "url": "http://localhost:3004/cam-overlay?station=1",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Caméra station 01",
+      "uuid": "5c83a346-9cf1-4f19-9c8f-cba5c246455a",
+      "settings": {
+        "items": [
+          {
+            "name": "Caméra station 01",
+            "source_uuid": "3748922b-7419-4cc0-8ac1-6498fdad8cfc",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Caméra station 02",
+      "uuid": "6f8f8007-05a4-41f6-8840-77e3d4e86c40",
+      "settings": {
+        "url": "http://localhost:3004/cam-overlay?station=2",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Caméra station 02",
+      "uuid": "3123944c-75f1-4c41-b37a-9cb3270d0007",
+      "settings": {
+        "items": [
+          {
+            "name": "Caméra station 02",
+            "source_uuid": "6f8f8007-05a4-41f6-8840-77e3d4e86c40",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Timeout caster",
+      "uuid": "816e519a-88ef-496c-b499-aa98f53eafad",
+      "settings": {
+        "url": "http://localhost:3004/timeout-caster-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Timeout caster",
+      "uuid": "a4d3a543-9b7d-4826-b1de-c27c77826e0c",
+      "settings": {
+        "items": [
+          {
+            "name": "Timeout caster",
+            "source_uuid": "816e519a-88ef-496c-b499-aa98f53eafad",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Map veto",
+      "uuid": "c57df51a-bf7d-4ad2-b286-08db5569f10e",
+      "settings": {
+        "url": "http://localhost:3004/veto-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Map veto",
+      "uuid": "f512af3e-47a4-4a1e-9c2e-313fad823977",
+      "settings": {
+        "items": [
+          {
+            "name": "Map veto",
+            "source_uuid": "c57df51a-bf7d-4ad2-b286-08db5569f10e",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Bracket",
+      "uuid": "ab39d2f2-3148-4b99-bf65-9560f82ef310",
+      "settings": {
+        "url": "http://localhost:3004/bracket-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Bracket",
+      "uuid": "f59a29a0-a482-4375-8b16-6be6ab8ae38c",
+      "settings": {
+        "items": [
+          {
+            "name": "Bracket",
+            "source_uuid": "ab39d2f2-3148-4b99-bf65-9560f82ef310",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Prochain match",
+      "uuid": "33c60f3c-a642-4438-9173-668b15e8b1c3",
+      "settings": {
+        "url": "http://localhost:3004/scoreboard-overlay?part=match",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Prochain match",
+      "uuid": "0f3e3ac7-74f9-48c7-85ee-4c254403fcae",
+      "settings": {
+        "items": [
+          {
+            "name": "Prochain match",
+            "source_uuid": "33c60f3c-a642-4438-9173-668b15e8b1c3",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Lineup équipe 1",
+      "uuid": "5798803c-d39d-4692-a061-3d29253cced4",
+      "settings": {
+        "url": "http://localhost:3004/lineup-overlay?team=1",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Lineup équipe 1",
+      "uuid": "167cc835-0df6-4a22-a8c5-bd155dcac4f3",
+      "settings": {
+        "items": [
+          {
+            "name": "Lineup équipe 1",
+            "source_uuid": "5798803c-d39d-4692-a061-3d29253cced4",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Lineup équipe 2",
+      "uuid": "c4f9cfcf-71d0-4b01-aa74-d23c3039f55b",
+      "settings": {
+        "url": "http://localhost:3004/lineup-overlay?team=2",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Lineup équipe 2",
+      "uuid": "68747516-bff2-4d07-995c-05d9df7ea53a",
+      "settings": {
+        "items": [
+          {
+            "name": "Lineup équipe 2",
+            "source_uuid": "c4f9cfcf-71d0-4b01-aa74-d23c3039f55b",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Casters",
+      "uuid": "b64eb00d-a764-4d85-a462-b2893d99d551",
+      "settings": {
+        "url": "http://localhost:3004/casters-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Casters",
+      "uuid": "eecf368b-1656-4af9-9003-6cfee94827ee",
+      "settings": {
+        "items": [
+          {
+            "name": "Casters",
+            "source_uuid": "b64eb00d-a764-4d85-a462-b2893d99d551",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Chat",
+      "uuid": "3626a361-8adb-4def-9833-3d26c31a0a41",
+      "settings": {
+        "url": "http://localhost:3004/chat-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Chat",
+      "uuid": "96e9c908-9a06-454a-9a0f-06e957eef5ea",
+      "settings": {
+        "items": [
+          {
+            "name": "Chat",
+            "source_uuid": "3626a361-8adb-4def-9833-3d26c31a0a41",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Timer",
+      "uuid": "17260166-eee6-4824-9c86-12996d3dc720",
+      "settings": {
+        "url": "http://localhost:3004/timer-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Timer",
+      "uuid": "83b96571-3358-4ef5-8a25-db6479d0ad4f",
+      "settings": {
+        "items": [
+          {
+            "name": "Timer",
+            "source_uuid": "17260166-eee6-4824-9c86-12996d3dc720",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Sponsors",
+      "uuid": "b4c7290e-c9ea-4ab7-a078-909b3574120a",
+      "settings": {
+        "url": "http://localhost:3004/sponsors-overlay",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Sponsors",
+      "uuid": "c8d0ffe4-ad4b-4814-82bd-16577148b7d4",
+      "settings": {
+        "items": [
+          {
+            "name": "Sponsors",
+            "source_uuid": "b4c7290e-c9ea-4ab7-a078-909b3574120a",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "browser_source",
+      "versioned_id": "browser_source",
+      "name": "Stinger",
+      "uuid": "962821f3-98e9-46ca-8088-543c9f89ddae",
+      "settings": {
+        "url": "http://localhost:3004/stinger",
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "css": "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }",
+        "reroute_audio": false,
+        "shutdown": false,
+        "restart_when_active": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "balance": 0.5,
+      "mixers": 255,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    },
+    {
+      "id": "scene",
+      "versioned_id": "scene",
+      "name": "PSO · Stinger",
+      "uuid": "f8b9164f-600a-47ec-9123-0fa7ccbae126",
+      "settings": {
+        "items": [
+          {
+            "name": "Stinger",
+            "source_uuid": "962821f3-98e9-46ca-8088-543c9f89ddae",
+            "visible": true,
+            "locked": false,
+            "rot": 0.0,
+            "pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0
+            },
+            "alignment": 5,
+            "bounds_type": 0,
+            "bounds_alignment": 0,
+            "bounds": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "crop_left": 0,
+            "crop_top": 0,
+            "crop_right": 0,
+            "crop_bottom": 0,
+            "id": 1,
+            "group_item_backup": false,
+            "scale_filter": "disable",
+            "blend_method": "default",
+            "blend_type": "normal",
+            "show_transition": {
+              "duration": 0
+            },
+            "hide_transition": {
+              "duration": 0
+            },
+            "private_settings": {}
+          }
+        ],
+        "id_counter": 1,
+        "custom_size": false
+      },
+      "enabled": true,
+      "flags": 0,
+      "volume": 1.0,
+      "mixers": 0,
+      "sync": 0,
+      "muted": false,
+      "hotkeys": {},
+      "private_settings": {},
+      "filters": []
+    }
+  ],
+  "groups": [],
+  "quick_transitions": [],
+  "transitions": [],
+  "current_transition": "Fade",
+  "transition_duration": 300,
+  "saved_projectors": [],
+  "preview_locked": false,
+  "scaling_enabled": false,
+  "scaling_level": 0,
+  "scaling_off_x": 0.0,
+  "scaling_off_y": 0.0,
+  "modules": {}
+}
