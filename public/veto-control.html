@@ -53,6 +53,12 @@
     <div>
       <div class="card">
         <h2>Configuration</h2>
+        <div id="bk-live" style="display:none;margin-bottom:12px;padding:10px 12px;border:1px solid var(--red, #FF4655);border-radius:8px">
+          <div style="font-size:12px;margin-bottom:6px">Match en cours du bracket : <b id="bk-live-name"></b></div>
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;cursor:pointer;margin:0">
+            <input type="checkbox" id="bk-link" style="width:auto" checked /> Lier ce veto au match en cours (les équipes l'ouvrent depuis leur page bracket)
+          </label>
+        </div>
         <div class="row">
           <div><label>Équipe 1</label><input id="t1-name" value="TEAM A" maxlength="30" /></div>
           <div style="flex:0 0 56px"><label>Coul.</label><input type="color" id="t1-color" value="#FF4655" /></div>
@@ -194,6 +200,23 @@
     fetch('/api/rulesets').then(r => r.json()).then(renderRulesets).catch(() => {});
     io().on('rulesetsUpdate', renderRulesets);
 
+    // Match en cours du bracket : pré-remplit les équipes et lie le veto à leurs pages bracket.
+    let bkLive = null;
+    function applyBkLive() {
+      const on = bkLive && $('bk-link').checked;
+      $('bk-live').style.display = bkLive ? '' : 'none';
+      if (!bkLive) return;
+      $('bk-live-name').textContent = bkLive.teamA.name + ' vs ' + bkLive.teamB.name + ' (' + bkLive.bo + ')';
+      if (!on) return;
+      $('t1-name').value = bkLive.teamA.name; if (bkLive.teamA.color) $('t1-color').value = bkLive.teamA.color;
+      $('t2-name').value = bkLive.teamB.name; if (bkLive.teamB.color) $('t2-color').value = bkLive.teamB.color;
+      const fb = $('fmt').querySelector('[data-f="' + bkLive.bo + '"]'); if (fb) fb.click();
+    }
+    function loadBkLive() { fetch('/api/bracket/live').then(r => r.json()).then(d => { bkLive = d.match; applyBkLive(); }).catch(() => {}); }
+    $('bk-link').addEventListener('change', applyBkLive);
+    loadBkLive();
+    io().on('bracketUpdate', loadBkLive);
+
     // Lancer
     $('btn-start').addEventListener('click', () => {
       $('cfg-msg').textContent = '';
@@ -203,6 +226,7 @@
         teams: { 1: { name: $('t1-name').value, color: $('t1-color').value }, 2: { name: $('t2-name').value, color: $('t2-color').value } },
         pool: [...selected],
       };
+      if (bkLive && $('bk-link').checked) body.bracketMatchId = bkLive.id;
       fetch('/api/veto/setup', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
         .then(r => r.json()).then(d => {
           if (d.error) throw new Error(d.error);

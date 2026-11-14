@@ -12,11 +12,16 @@ const veto = require('./lib/veto');
 const theme = require('./lib/theme');
 const scoreboard = require('./lib/scoreboard');
 const teams = require('./lib/teams');
+const teamPool = require('./lib/teampool');
 const casters = require('./lib/casters');
 const timer = require('./lib/timer');
 const chat = require('./lib/chat');
 const rulesets = require('./lib/rulesets');
 const bracket = require('./lib/bracket');
+const sponsors = require('./lib/sponsors');
+const startScreen = require('./lib/start');
+const timeoutCaster = require('./lib/timeoutcaster');
+const cams = require('./lib/cams');
 const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
@@ -84,9 +89,9 @@ app.post('/api/stinger/play', (req, res) => { io.emit('stingerPlay'); res.json({
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 app.post('/api/upload', (req, res) => {
   try {
-    const m = /^data:image\/(png|jpe?g|gif|webp);base64,(.+)$/i.exec((req.body || {}).dataUrl || '');
+    const m = /^data:image\/(png|jpe?g|gif|webp|svg\+xml);base64,(.+)$/i.exec((req.body || {}).dataUrl || '');
     if (!m) return res.status(400).json({ error: 'Image invalide' });
-    const ext = m[1].toLowerCase() === 'jpeg' ? 'jpg' : m[1].toLowerCase();
+    const ext = { jpeg: 'jpg', 'svg+xml': 'svg' }[m[1].toLowerCase()] || m[1].toLowerCase();
     const buf = Buffer.from(m[2], 'base64');
     if (buf.length > 8 * 1024 * 1024) return res.status(413).json({ error: 'Image trop lourde (8 Mo max)' });
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -113,6 +118,30 @@ function emitScore() { io.emit('scoreboardUpdate', scorePayload()); }
 
 app.get('/scoreboard-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-overlay.html')));
 app.get('/sponsors-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'sponsors-overlay.html')));
+app.get('/api/sponsors', (req, res) => res.json(sponsors.get()));
+app.get('/start-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'start-overlay.html')));
+app.get('/api/start', (req, res) => res.json({ ...startScreen.get(), now: Date.now() }));
+app.post('/api/start', (req, res) => { const s = startScreen.set(req.body || {}); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
+app.post('/api/start/reset', (req, res) => { const s = startScreen.reset(); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
+// Caméras des stations
+app.get('/scoreboard-stack-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'scoreboard-stack-overlay.html')));
+app.get('/versus-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'versus-overlay.html')));
+app.get('/cam-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'cam-overlay.html')));
+app.get('/api/cams', (req, res) => res.json(cams.get()));
+app.post('/api/cams', (req, res) => { const s = cams.set(req.body || {}); io.emit('camsUpdate', s); res.json(s); });
+app.post('/api/cams/reset', (req, res) => { const s = cams.reset(); io.emit('camsUpdate', s); res.json(s); });
+
+// Écran Timeout caster
+const toPayload = (s) => ({ ...s, now: Date.now() });
+const toSend = (res, s) => { io.emit('timeoutCasterUpdate', toPayload(s)); res.json(toPayload(s)); };
+app.get('/timeout-caster-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'timeout-caster-overlay.html')));
+app.get('/api/timeout-caster', (req, res) => res.json(toPayload(timeoutCaster.get())));
+app.post('/api/timeout-caster', (req, res) => toSend(res, timeoutCaster.set(req.body || {})));
+app.post('/api/timeout-caster/reset', (req, res) => toSend(res, timeoutCaster.reset()));
+app.post('/api/timeout-caster/start', (req, res) => toSend(res, timeoutCaster.start(parseInt((req.body || {}).sec, 10) || 0)));
+app.post('/api/timeout-caster/add', (req, res) => toSend(res, timeoutCaster.add(parseInt((req.body || {}).sec, 10) || 30)));
+app.post('/api/timeout-caster/stop', (req, res) => toSend(res, timeoutCaster.stop()));
+app.post('/api/sponsors', (req, res) => { const s = sponsors.set(req.body || {}); io.emit('sponsorsUpdate', s); res.json(s); });
 app.get('/lineup-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lineup-overlay.html')));
 
 function scorePayload() { return { ...scoreboard.get(), formats: scoreboard.FORMATS, maxWins: scoreboard.maxWins(), mapsCount: scoreboard.mapsCount() }; }
@@ -154,16 +183,30 @@ app.get('/api/teams', (req, res) => res.json(teams.list()));
 
 app.post('/api/teams', (req, res) => {
   try {
+    const before = new Set(teams.list().map((x) => x.id));
     const t = teams.saveTeam(req.body || {});
+    const isNew = !before.has(t.id);
     emitTeams();
+    // Nouvelle équipe sauvegardée (scoreboard) → elle entre dans le pool du bracket builder.
+    if (isNew) { teamPool.add(t.id); io.emit('teamPoolUpdate', teamPool.get()); }
     res.json(t);
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
 });
+// Premier démarrage du pool : il reprend les équipes du tournoi existant, et celles-ci sont remises
+// dans la bibliothèque d'équipes si elles n'y sont plus (sinon le builder ne pourrait pas les afficher).
+if (teamPool.initFrom((bracket.get().teams || []).map((t) => t.id))) {
+  (bracket.get().teams || []).forEach((t) => { if (!teams.list().some((x) => x.id === t.id)) teams.saveTeam({ id: t.id, name: t.name, color: t.color }); });
+}
+// Et à chaque démarrage : un id du pool sans équipe dans la bibliothèque est repris du tournoi s'il y figure.
+(bracket.get().teams || []).forEach((t) => { if (teamPool.get().includes(t.id) && !teams.list().some((x) => x.id === t.id)) teams.saveTeam({ id: t.id, name: t.name, color: t.color }); });
+app.get('/api/team-pool', (req, res) => res.json(teamPool.get()));
+app.post('/api/team-pool', (req, res) => { const ids = teamPool.set((req.body || {}).ids); io.emit('teamPoolUpdate', ids); res.json(ids); });
 
 app.delete('/api/teams/:id', (req, res) => {
   teams.remove(req.params.id);
+  teamPool.remove(req.params.id); io.emit('teamPoolUpdate', teamPool.get());
   emitTeams();
   res.json({ ok: true });
 });
@@ -259,7 +302,7 @@ app.post('/api/rulesets', (req, res) => {
 });
 app.delete('/api/rulesets/:id', (req, res) => { rulesets.remove(req.params.id); emitRulesets(); res.json({ ok: true }); });
 
-function emitVeto() { io.emit('vetoUpdate', veto.publicState()); }
+function emitVeto() { io.emit('vetoUpdate', veto.publicState()); io.emit('bracketVetoUpdate'); }
 
 app.get('/api/veto', (req, res) => res.json(veto.publicState()));
 
@@ -271,7 +314,15 @@ app.get('/api/veto/whoami', (req, res) => {
 
 app.post('/api/veto/setup', (req, res) => {
   try {
-    veto.setup(req.body || {}, assets.getMaps());
+    const body = Object.assign({}, req.body || {});
+    // Veto lié au match en cours du bracket : équipes reprises du bracket (A = équipe 1, B = équipe 2).
+    if (body.bracketMatchId) {
+      const lm = bracket.liveMatch();
+      if (!lm || lm.id !== body.bracketMatchId) throw new Error("Ce match n'est plus le match en cours du bracket");
+      body.teams = { 1: { name: lm.teamA.name, color: lm.teamA.color }, 2: { name: lm.teamB.name, color: lm.teamB.color } };
+      body.link = { matchId: lm.id };
+    }
+    veto.setup(body, assets.getMaps());
     const t = veto.getTokens();
     emitVeto();
     res.json({ ok: true, tokens: t, state: veto.publicState() });
@@ -340,6 +391,39 @@ app.post('/api/bracket/confirm/:matchId', (req, res) => {
 app.post('/api/bracket/reject/:matchId', (req, res) => {
   try { bracket.reject(req.params.matchId); emitBracket(); res.json({ ok: true }); }
   catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+// Match en cours du bracket (régie) et accès pick & ban pour les équipes de ce match uniquement.
+app.post('/api/bracket/live', (req, res) => {
+  try {
+    const before = bracket.get().liveMatchId;
+    bracket.setLive((req.body || {}).matchId || null);
+    const m = bracket.liveMatch();
+    // Nouveau match en cours → le scoreboard prend ses deux équipes (nom, couleur, joueurs), son format, scores à 0.
+    if (m && m.id !== before) {
+      const lib = teams.list();
+      const full = (t) => { const x = lib.find((y) => y.id === t.id) || {}; return { name: t.name, color: t.color || x.color, players: x.players || [] }; };
+      scoreboard.set({ team1: full(m.teamA), team2: full(m.teamB), format: scoreboard.FORMATS.includes(m.bo) ? m.bo : undefined });
+      scoreboard.resetScore();
+      emitScore();
+    }
+    emitBracket(); io.emit('bracketVetoUpdate'); res.json({ ok: true, liveMatchId: bracket.get().liveMatchId });
+  }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.get('/api/bracket/live', (req, res) => {
+  const m = bracket.liveMatch();
+  res.json({ match: m ? { id: m.id, bo: m.bo, teamA: m.teamA, teamB: m.teamB } : null });
+});
+app.get('/api/bracket/veto', (req, res) => {
+  const teamId = bracket.teamOfToken(req.query.token);
+  if (!teamId) return res.status(404).json({ error: 'Token invalide' });
+  const m = bracket.liveMatch();
+  const side = m ? (m.teamA && m.teamA.id === teamId ? 1 : m.teamB && m.teamB.id === teamId ? 2 : 0) : 0;
+  if (!side) return res.json({ active: false, live: false, matchId: m ? m.id : null });
+  const link = veto.getLink();
+  if (!link || link.matchId !== m.id || veto.status() === 'idle') return res.json({ active: false, live: true, matchId: m.id, msg: "Le pick & ban n'a pas encore été lancé par la régie." });
+  res.json({ active: true, live: true, matchId: m.id, done: veto.status() === 'done', url: '/veto/team/' + veto.getTokens()[side] });
 });
 
 app.get('/api/bracket/whoami', (req, res) => {

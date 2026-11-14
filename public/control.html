@@ -35,6 +35,10 @@
       <button class="tab-btn" data-tab="casters">Casters</button>
       <button class="tab-btn" data-tab="timer">Timer</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="sponsors">Sponsors</button>
+      <button class="tab-btn" data-tab="start">Start</button>
+      <button class="tab-btn" data-tab="tcaster">Timeout caster</button>
+      <button class="tab-btn" data-tab="cams">Caméras</button>
       <button class="tab-btn" data-tab="visuals">Visuels</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
       <button class="tab-btn" data-tab="stack03">Stack 03</button>
@@ -116,7 +120,7 @@
             <h2 class="section-title">Liens overlay</h2>
             <select id="sb-base-select"></select>
           </div>
-          <p class="section-hint">3 sources distinctes à ajouter dans OBS (navigateur).</p>
+          <p class="section-hint">Tous les overlays à ajouter dans OBS (sources navigateur 1920×1080).</p>
           <div class="sb-links" id="sb-links"></div>
         </div>
 
@@ -125,9 +129,8 @@
           <h2 class="section-title">Aperçu overlay</h2>
           <p class="section-hint">Prévisualise l'overlay tel qu'il apparaît dans OBS.</p>
           <div class="sb-fmt" id="sb-preview-tabs">
-            <button data-preview="team1" class="active">Team 1</button>
-            <button data-preview="team2">Team 2</button>
-            <button data-preview="score">Score</button>
+            <!-- Team 1 / Team 2 / Score : anciens overlays masqués (plus utilisés, routes conservées) -->
+            <button data-preview="ingame" class="active">Scoreboard</button>
             <button data-preview="match">Prochain match</button>
             <button data-preview="lineup1">Lineup équipe 1</button>
             <button data-preview="lineup2">Lineup équipe 2</button>
@@ -235,6 +238,359 @@
         <div class="sb-links-card">
           <h2 class="section-title">Lien overlay</h2>
           <div class="sb-links" id="chat-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-sponsors">
+        <div class="ca-head">
+          <h2 class="section-title">Sponsors</h2>
+          <button class="sb-action" id="sp-visible">Masquer</button>
+        </div>
+        <p class="section-hint">Cadre sponsors du pack Stack 03 : les logos cochés tournent en boucle, dans l'ordre de la liste. Logos blancs conseillés (PNG ou SVG sur fond transparent). « Taille » règle la taille de chaque logo dans le cadre.</p>
+        <div class="sp-grid">
+          <div class="sb-card">
+            <label class="fld">Durée par logo <span id="sp-every-val" style="color:var(--text)">10 s</span></label>
+            <input type="range" id="sp-every" min="2" max="60" step="1" value="10" style="width:100%;margin-bottom:16px;accent-color:#e33bae" />
+            <label class="fld">Barre rose</label>
+            <div class="sb-fmt" id="sp-bar">
+              <button data-b="left" class="active">À gauche</button>
+              <button data-b="right">À droite</button>
+            </div>
+          </div>
+          <div class="sb-card sp-prev">
+            <label class="fld">Aperçu</label>
+            <iframe id="sp-preview" title="Aperçu sponsors"></iframe>
+          </div>
+        </div>
+        <div class="ca-list" id="sp-list"></div>
+        <div class="ca-add sp-add">
+          <input id="sp-name" placeholder="Nom du sponsor" maxlength="40" />
+          <label class="sb-action sp-file">🖼️ Choisir un logo<input type="file" id="sp-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden /></label>
+          <button class="sb-action primary" id="sp-add">Ajouter</button>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="sp-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-start">
+        <div class="ca-head">
+          <h2 class="section-title">Écran Start</h2>
+          <div style="display:flex;gap:8px"><button class="sb-action" id="st-reset">Réglages d'origine</button><button class="sb-action" id="st-visible">Masquer</button></div>
+        </div>
+        <p class="section-hint">Écran d'attente avant le live (design Stack 03). Tout s'applique en direct.</p>
+        <div class="st-prev sb-card"><div class="st-frame"><iframe id="st-preview" title="Aperçu Start" scrolling="no"></iframe></div></div>
+        <div class="st-grid">
+          <div class="sb-card">
+            <h3 class="st-h">Textes</h3>
+            <label class="fld">En haut à gauche<input data-st="topLeft" maxlength="60" /></label>
+            <label class="fld">En haut à droite<input data-st="topRight" maxlength="60" /></label>
+            <label class="fld">Titre <span class="st-tip">— entoure un mot d'astérisques pour le mettre en rose : *03*</span><input data-st="title" maxlength="120" /></label>
+            <label class="fld">Sous-titre<input data-st="subtitle" maxlength="120" /></label>
+            <label class="fld">Message sous le compte à rebours<input data-st="label" maxlength="80" /></label>
+            <label class="fld">Texte sans compte à rebours<input data-st="waitText" maxlength="40" /></label>
+            <label class="fld">Texte à la fin du compte à rebours<input data-st="endText" maxlength="40" /></label>
+          </div>
+          <div>
+            <div class="sb-card">
+              <h3 class="st-h">Compte à rebours</h3>
+              <div class="st-cd" id="st-cd">—</div>
+              <div class="st-row">
+                <input type="time" id="st-time" />
+                <button class="sb-action primary" id="st-at">Démarrer à cette heure</button>
+              </div>
+              <div class="st-row">
+                <button class="sb-action" data-in="5">Dans 5 min</button>
+                <button class="sb-action" data-in="10">Dans 10 min</button>
+                <button class="sb-action" data-in="15">Dans 15 min</button>
+                <button class="sb-action" id="st-stop">Arrêter</button>
+              </div>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Logo</h3>
+              <div class="st-row">
+                <div class="st-logo" id="st-logo"></div>
+                <label class="sb-action sp-file">🖼️ Changer le logo<input type="file" id="st-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden /></label>
+                <button class="sb-action" id="st-logo-def">Logo Stack</button>
+                <button class="sb-action" id="st-logo-none">Sans logo</button>
+              </div>
+              <label class="fld">Taille <b class="st-v" data-v="logoSize"></b><input type="range" data-st="logoSize" data-t="n" min="60" max="800" step="5" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Halo et fond</h3>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-st="halo.on" data-t="b" /> Halo</label>
+                <label class="st-chk"><input type="checkbox" data-st="grid" data-t="b" /> Grille</label>
+                <label class="st-chk"><input type="checkbox" data-st="sponsors" data-t="b" /> Cadre sponsors</label>
+                <label class="st-chk">Couleur <input type="color" data-st="halo.color" /></label>
+              </div>
+              <label class="fld">Intensité <b class="st-v" data-v="halo.intensity" data-pct="1"></b><input type="range" data-st="halo.intensity" data-t="n" min="0" max="0.6" step="0.01" /></label>
+              <label class="fld">Taille <b class="st-v" data-v="halo.size" data-unit="%"></b><input type="range" data-st="halo.size" data-t="n" min="10" max="150" step="1" /></label>
+              <label class="fld">Position horizontale <b class="st-v" data-v="halo.x" data-unit="%"></b><input type="range" data-st="halo.x" data-t="n" min="0" max="100" step="1" /></label>
+              <label class="fld">Position verticale <b class="st-v" data-v="halo.y" data-unit="%"></b><input type="range" data-st="halo.y" data-t="n" min="0" max="100" step="1" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Effets animés</h3>
+              <label class="fld">Effet du halo
+                <select data-st="halo.fx">
+                  <option value="none">Aucun (fixe)</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="breathe">Respiration (taille)</option>
+                  <option value="heartbeat">Battement de cœur</option>
+                  <option value="flicker">Scintillement néon</option>
+                  <option value="drift">Dérive lente</option>
+                  <option value="orbit">Orbite</option>
+                  <option value="colors">Alternance 2 couleurs</option>
+                  <option value="rainbow">Arc-en-ciel</option>
+                </select>
+              </label>
+              <div class="st-row"><label class="st-chk">2ᵉ couleur (alternance) <input type="color" data-st="halo.color2" /></label></div>
+              <label class="fld">Vitesse du halo <b class="st-v" data-v="halo.speed" data-unit="×"></b><input type="range" data-st="halo.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force de l'effet <b class="st-v" data-v="halo.amount" data-pct="1"></b><input type="range" data-st="halo.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+              <label class="fld">Animation de la grille
+                <select data-st="bg.grid">
+                  <option value="static">Fixe</option>
+                  <option value="scroll">Défilement</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="wave">Vague lumineuse</option>
+                  <option value="floor">Sol en perspective</option>
+                </select>
+              </label>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-st="bg.particles" data-t="b" /> Particules</label>
+                <label class="st-chk"><input type="checkbox" data-st="bg.scan" data-t="b" /> Balayage</label>
+                <label class="st-chk"><input type="checkbox" data-st="bg.grain" data-t="b" /> Grain</label>
+              </div>
+              <label class="fld">Vitesse du fond <b class="st-v" data-v="bg.speed" data-unit="×"></b><input type="range" data-st="bg.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force du fond <b class="st-v" data-v="bg.amount" data-pct="1"></b><input type="range" data-st="bg.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="st-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-tcaster">
+        <div class="ca-head">
+          <h2 class="section-title">Timeout caster</h2>
+          <div style="display:flex;gap:8px"><button class="sb-action" id="tc-reset">Réglages d'origine</button><button class="sb-action" id="tc-visible">Masquer</button></div>
+        </div>
+        <p class="section-hint">Écran de pause des casters (design Stack 03). Dans OBS, place la caméra des casters dessous à x 64, y 176 (1280×720). Le chat PSO est intégré à droite (sinon, place ta source chat dans la fenêtre de droite : avec un seul match, x 1396, y 334, 460×562). Tout s'applique en direct.</p>
+        <div class="st-prev sb-card"><div class="st-frame tc-frame"><iframe id="tc-preview" title="Aperçu Timeout caster" scrolling="no"></iframe></div></div>
+        <div class="st-grid">
+          <div>
+            <div class="sb-card">
+              <h3 class="st-h">Chrono</h3>
+              <div class="st-cd" id="tc-cd">—</div>
+              <div class="st-row">
+                <button class="sb-action primary" data-go="30">30 s</button>
+                <button class="sb-action primary" data-go="60">1 min</button>
+                <button class="sb-action primary" data-go="90">1 min 30</button>
+                <button class="sb-action primary" data-go="120">2 min</button>
+                <button class="sb-action primary" data-go="300">5 min</button>
+              </div>
+              <div class="st-row">
+                <button class="sb-action" id="tc-add">+30 s</button>
+                <button class="sb-action" id="tc-stop">Arrêter</button>
+                <label class="st-chk">Durée affichée à l'arrêt <input type="number" class="tc-num" data-tc="duration" data-t="n" min="5" max="3600" /> s</label>
+              </div>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Textes</h3>
+              <label class="fld">Titre <span class="st-tip">— *mot* = en rose</span><input data-tc="title" maxlength="80" /></label>
+              <label class="fld">Étiquette du chrono<input data-tc="chipLabel" maxlength="30" /></label>
+              <label class="fld">Qui a demandé la pause<input data-tc="who" maxlength="40" /></label>
+              <div class="st-row" id="tc-who"></div>
+              <label class="fld">Texte à la fin du chrono<input data-tc="endText" maxlength="20" /></label>
+              <label class="fld">Titre de la fenêtre chat <span class="st-tip">— vide = masqué</span><input data-tc="chatTitle" maxlength="30" /></label>
+              <div class="st-row"><label class="st-chk"><input type="checkbox" data-tc="chatEmbed" data-t="b" /> Intégrer le chat PSO dans la fenêtre (chaîne et taille réglées dans l'onglet Chat)</label></div>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Casters</h3>
+              <label class="fld">Source
+                <select data-tc="casterSource">
+                  <option value="pso">Casters « en direct » de l'onglet Casters</option>
+                  <option value="manual">Saisie ci-dessous</option>
+                </select>
+              </label>
+              <div class="st-row"><label class="st-chk"><input type="checkbox" data-tc="namesOnAir" data-t="b" /> Afficher aussi à l'antenne</label></div>
+              <p class="section-hint" style="margin:0 0 10px">Par défaut, les casters n'apparaissent que dans l'aperçu ci-dessus, pour savoir qui est devant l'écran. OBS ne les montre pas.</p>
+              <label class="fld">Étiquette<input data-tc="casterLabel" maxlength="20" /></label>
+              <label class="fld">Caster 1<input data-tc="c1" maxlength="40" /></label>
+              <label class="fld">Caster 2<input data-tc="c2" maxlength="40" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Matchs en cours</h3>
+              <label class="fld">Source
+                <select data-tc="matchSource">
+                  <option value="pso">Match du scoreboard</option>
+                  <option value="manual">Saisie ci-dessous (2 matchs)</option>
+                  <option value="off">Masquer le cadre</option>
+                </select>
+              </label>
+              <label class="fld">Titre du cadre<input data-tc="matchTitle" maxlength="40" /></label>
+              <div class="tc-m">
+                <input data-tc="matches.0.label" maxlength="40" placeholder="Étiquette" class="tc-lab" />
+                <input type="color" data-tc="matches.0.color" />
+                <input data-tc="matches.0.a" maxlength="24" placeholder="Équipe A" />
+                <input type="number" data-tc="matches.0.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-tc="matches.0.sb" data-t="n" min="0" max="99" />
+                <input data-tc="matches.0.b" maxlength="24" placeholder="Équipe B" />
+              </div>
+              <div class="tc-m">
+                <input data-tc="matches.1.label" maxlength="40" placeholder="Étiquette" class="tc-lab" />
+                <input type="color" data-tc="matches.1.color" />
+                <input data-tc="matches.1.a" maxlength="24" placeholder="Équipe A" />
+                <input type="number" data-tc="matches.1.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-tc="matches.1.sb" data-t="n" min="0" max="99" />
+                <input data-tc="matches.1.b" maxlength="24" placeholder="Équipe B" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="sb-card">
+              <h3 class="st-h">Logo</h3>
+              <div class="st-row">
+                <div class="st-logo" id="tc-logo"></div>
+                <label class="sb-action sp-file">🖼️ Changer le logo<input type="file" id="tc-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden /></label>
+                <button class="sb-action" id="tc-logo-def">Logo Stack</button>
+                <button class="sb-action" id="tc-logo-none">Sans logo</button>
+              </div>
+              <label class="fld">Taille <b class="st-v" data-v="logoSize"></b><input type="range" data-tc="logoSize" data-t="n" min="30" max="200" step="1" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Halo et fond</h3>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-tc="halo.on" data-t="b" /> Halo</label>
+                <label class="st-chk"><input type="checkbox" data-tc="grid" data-t="b" /> Grille</label>
+                <label class="st-chk"><input type="checkbox" data-tc="sponsors" data-t="b" /> Cadre sponsors</label>
+                <label class="st-chk"><input type="checkbox" data-tc="frame" data-t="b" /> Liserés roses</label>
+                <label class="st-chk">Couleur <input type="color" data-tc="halo.color" /></label>
+              </div>
+              <label class="fld">Intensité <b class="st-v" data-v="halo.intensity" data-pct="1"></b><input type="range" data-tc="halo.intensity" data-t="n" min="0" max="0.6" step="0.01" /></label>
+              <label class="fld">Taille <b class="st-v" data-v="halo.size" data-unit="%"></b><input type="range" data-tc="halo.size" data-t="n" min="10" max="150" step="1" /></label>
+              <label class="fld">Position horizontale <b class="st-v" data-v="halo.x" data-unit="%"></b><input type="range" data-tc="halo.x" data-t="n" min="0" max="100" step="1" /></label>
+              <label class="fld">Position verticale <b class="st-v" data-v="halo.y" data-unit="%"></b><input type="range" data-tc="halo.y" data-t="n" min="0" max="100" step="1" /></label>
+            </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Effets animés</h3>
+              <label class="fld">Effet du halo
+                <select data-tc="halo.fx">
+                  <option value="none">Aucun (fixe)</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="breathe">Respiration (taille)</option>
+                  <option value="heartbeat">Battement de cœur</option>
+                  <option value="flicker">Scintillement néon</option>
+                  <option value="drift">Dérive lente</option>
+                  <option value="orbit">Orbite</option>
+                  <option value="colors">Alternance 2 couleurs</option>
+                  <option value="rainbow">Arc-en-ciel</option>
+                </select>
+              </label>
+              <div class="st-row"><label class="st-chk">2ᵉ couleur (alternance) <input type="color" data-tc="halo.color2" /></label></div>
+              <label class="fld">Vitesse du halo <b class="st-v" data-v="halo.speed" data-unit="×"></b><input type="range" data-tc="halo.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force de l'effet <b class="st-v" data-v="halo.amount" data-pct="1"></b><input type="range" data-tc="halo.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+              <label class="fld">Animation de la grille
+                <select data-tc="bg.grid">
+                  <option value="static">Fixe</option>
+                  <option value="scroll">Défilement</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="wave">Vague lumineuse</option>
+                  <option value="floor">Sol en perspective</option>
+                </select>
+              </label>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-tc="bg.particles" data-t="b" /> Particules</label>
+                <label class="st-chk"><input type="checkbox" data-tc="bg.scan" data-t="b" /> Balayage</label>
+                <label class="st-chk"><input type="checkbox" data-tc="bg.grain" data-t="b" /> Grain</label>
+              </div>
+              <label class="fld">Vitesse du fond <b class="st-v" data-v="bg.speed" data-unit="×"></b><input type="range" data-tc="bg.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force du fond <b class="st-v" data-v="bg.amount" data-pct="1"></b><input type="range" data-tc="bg.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Lien overlay</h2>
+          <div class="sb-links" id="tc-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-cams">
+        <div class="ca-head">
+          <h2 class="section-title">Caméras des stations</h2>
+          <div style="display:flex;gap:8px"><button class="sb-action" id="cm-reset">Réglages d'origine</button></div>
+        </div>
+        <p class="section-hint">Habillage des caméras (design Stack 03). Dans OBS : une source navigateur 1920×1080 par station, au-dessus de la caméra. Par défaut, les équipes et le score suivent le match en cours.</p>
+        <div class="st-grid">
+          <div class="sb-card">
+            <div class="ca-head" style="margin-bottom:8px"><h3 class="st-h" style="margin:0">Station 01</h3><button class="sb-action" data-cam-vis="1">Masquer</button></div>
+            <div class="st-frame cam-frame"><iframe data-cam-prev="1" title="Aperçu station 1" scrolling="no"></iframe></div>
+            <label class="fld">Titre<input data-cm="1.title" maxlength="30" /></label>
+            <label class="fld">Sous-titre <span class="st-tip">— vide = masqué</span><input data-cm="1.label" maxlength="40" /></label>
+            <div class="st-row">
+              <label class="st-chk"><input type="checkbox" data-cm="1.showTag" data-t="b" /> Étiquette</label>
+              <label class="st-chk"><input type="checkbox" data-cm="1.showLower" data-t="b" /> Bandeau score</label>
+              <label class="st-chk"><input type="checkbox" data-cm="1.showSponsors" data-t="b" /> Sponsors</label>
+            </div>
+            <label class="fld">Équipes et score
+              <select data-cm="1.source">
+                <option value="scoreboard">Match en cours (scoreboard)</option>
+                <option value="manual">Saisie ci-dessous</option>
+              </select>
+            </label>
+            <div class="cam-man" data-cam-man="1">
+              <div class="tc-m">
+                <input data-cm="1.manual.a" maxlength="30" placeholder="Équipe A" />
+                <input type="color" data-cm="1.manual.colorA" />
+                <input type="number" data-cm="1.manual.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-cm="1.manual.sb" data-t="n" min="0" max="99" />
+                <input type="color" data-cm="1.manual.colorB" />
+                <input data-cm="1.manual.b" maxlength="30" placeholder="Équipe B" />
+              </div>
+              <div class="st-row">
+                <label class="st-chk">Format <select data-cm="1.manual.bo" class="tc-num"><option>BO1</option><option>BO3</option><option>BO5</option></select></label>
+                <label class="st-chk">Map n° <input type="number" class="tc-num" data-cm="1.manual.map" data-t="n" min="1" max="5" /></label>
+              </div>
+            </div>
+          </div>
+          <div class="sb-card">
+            <div class="ca-head" style="margin-bottom:8px"><h3 class="st-h" style="margin:0">Station 02</h3><button class="sb-action" data-cam-vis="2">Masquer</button></div>
+            <div class="st-frame cam-frame"><iframe data-cam-prev="2" title="Aperçu station 2" scrolling="no"></iframe></div>
+            <label class="fld">Titre<input data-cm="2.title" maxlength="30" /></label>
+            <label class="fld">Sous-titre <span class="st-tip">— vide = masqué</span><input data-cm="2.label" maxlength="40" /></label>
+            <div class="st-row">
+              <label class="st-chk"><input type="checkbox" data-cm="2.showTag" data-t="b" /> Étiquette</label>
+              <label class="st-chk"><input type="checkbox" data-cm="2.showLower" data-t="b" /> Bandeau score</label>
+              <label class="st-chk"><input type="checkbox" data-cm="2.showSponsors" data-t="b" /> Sponsors</label>
+            </div>
+            <label class="fld">Équipes et score
+              <select data-cm="2.source">
+                <option value="scoreboard">Match en cours (scoreboard)</option>
+                <option value="manual">Saisie ci-dessous</option>
+              </select>
+            </label>
+            <div class="cam-man" data-cam-man="2">
+              <div class="tc-m">
+                <input data-cm="2.manual.a" maxlength="30" placeholder="Équipe A" />
+                <input type="color" data-cm="2.manual.colorA" />
+                <input type="number" data-cm="2.manual.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-cm="2.manual.sb" data-t="n" min="0" max="99" />
+                <input type="color" data-cm="2.manual.colorB" />
+                <input data-cm="2.manual.b" maxlength="30" placeholder="Équipe B" />
+              </div>
+              <div class="st-row">
+                <label class="st-chk">Format <select data-cm="2.manual.bo" class="tc-num"><option>BO1</option><option>BO3</option><option>BO5</option></select></label>
+                <label class="st-chk">Map n° <input type="number" class="tc-num" data-cm="2.manual.map" data-t="n" min="1" max="5" /></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Liens overlay</h2>
+          <div class="sb-links" id="cm-links"></div>
         </div>
       </div>
       <div class="tab-content" id="tab-visuals">

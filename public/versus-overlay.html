@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Équipes versus</title>
+  <!-- Scène plein écran 1920×1080 (fond opaque) : lineup équipe 1 (45 % de la hauteur), lineup équipe 2 (45 %),
+       bandeau « Prochain match » sur les 10 % du bas. Suit le match en cours (onglet Scoreboard). -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; }
+    body { position: relative; background: #0c0a0a; }
+    #grid { position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(227,59,174,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(227,59,174,.045) 1px, transparent 1px);
+      background-size: 48px 48px; }
+    .band { position: absolute; left: 0; width: 1920px; overflow: hidden; }
+    .band iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; background: transparent; transform-origin: 0 0; opacity: 0; transition: opacity .3s; }
+    .band iframe.ready { opacity: 1; }
+    #b1 { top: 0; height: 486px; }        /* 45 % */
+    #b2 { top: 486px; height: 486px; }    /* 45 % */
+    #b3 { top: 972px; height: 108px; }    /* 10 % */
+    .sep { position: absolute; left: 64px; right: 64px; height: 2px; background: linear-gradient(90deg, transparent, rgba(227,59,174,.5), transparent); }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div class="band" id="b1"><iframe src="/lineup-overlay?team=1" title="Lineup équipe 1" scrolling="no"></iframe></div>
+  <div class="sep" style="top:485px"></div>
+  <div class="band" id="b2"><iframe src="/lineup-overlay?team=2" title="Lineup équipe 2" scrolling="no"></iframe></div>
+  <div class="sep" style="top:971px"></div>
+  <div class="band" id="b3"><iframe src="/scoreboard-overlay?part=match" title="Prochain match" scrolling="no"></iframe></div>
+  <script>
+    // Chaque overlay est mis à l'échelle et centré dans sa bande d'après la zone réellement occupée.
+    function bbox(doc) {
+      let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+      doc.body.querySelectorAll('*').forEach((el) => {
+        if (el.tagName === 'SCRIPT') return;
+        const r = el.getBoundingClientRect(), cs = doc.defaultView.getComputedStyle(el);
+        if (!r.width || !r.height || cs.visibility === 'hidden' || +cs.opacity === 0) return;
+        if (r.width >= 1900 && r.height >= 1000) return;   // conteneurs plein écran
+        x1 = Math.min(x1, r.left); y1 = Math.min(y1, r.top); x2 = Math.max(x2, r.right); y2 = Math.max(y2, r.bottom);
+      });
+      return isFinite(x1) ? { x: x1, y: y1, w: x2 - x1, h: y2 - y1 } : null;
+    }
+    function fit(band) {
+      const f = band.querySelector('iframe'), H = band.clientHeight, pad = Math.round(H * 0.06);
+      try {
+        const b = bbox(f.contentDocument); if (!b) return;
+        const s = Math.min((H - 2 * pad) / b.h, (1920 - 128) / b.w);
+        const tx = (1920 - b.w * s) / 2 - b.x * s, ty = (H - b.h * s) / 2 - b.y * s;
+        f.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
+        f.classList.add('ready');
+      } catch (e) {}
+    }
+    const bands = [...document.querySelectorAll('.band')];
+    setInterval(() => bands.forEach(fit), 500);
+  </script>
+</body>
+</html>

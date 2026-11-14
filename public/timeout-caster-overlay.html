@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Timeout caster</title>
+  <!-- Repris de stack03/timeout-caster.html. OBS : source navigateur 1920×1080 AU-DESSUS de :
+       • la caméra des casters dans la fenêtre de gauche (1280×720 : x 64, y 176)
+       • le chat : intégré (chat PSO de l'onglet Chat) ou, si désactivé, une source chat à x 1396, y 436 (460×460)
+       Réglages : onglet « Timeout caster » de la régie. -->
+  <link rel="stylesheet" href="/stack03/css/fonts.css" />
+  <link rel="stylesheet" href="/fx-bg.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+    body { position: relative; color: #f0e6d3; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+      --pink: #e33bae; --muted: #9a8a94; --line: #2a1c24; }
+    #root { position: absolute; inset: 0; transition: opacity .45s ease; }
+    #root.hidden { opacity: 0; }
+    /* Fond opaque percé des deux fenêtres (caméra et chat) */
+    .bg { position: absolute; inset: 0; overflow: hidden; background: #0c0a0a;
+      clip-path: path(evenodd, 'M0 0H1920V1080H0Z M64 176H1344V896H64Z M1396 436H1856V896H1396Z'); }
+    .fr { position: absolute; border-bottom: 4px solid var(--pink); pointer-events: none; }
+    .top { position: absolute; left: 64px; top: 36px; right: 64px; height: 110px; display: flex; align-items: center; gap: 30px; }
+    .top img { height: 92px; max-width: 600px; object-fit: contain; }
+    .top .t { font-weight: 700; font-size: 76px; letter-spacing: .08em; line-height: 1; text-transform: uppercase; }
+    .top .t em { color: var(--pink); font-style: normal; }
+    .chip { margin-left: auto; display: flex; align-items: center; gap: 18px; background: #0a0709; border-left: 6px solid var(--pink); padding: 10px 26px; }
+    .chip .k { font-size: 16px; letter-spacing: .24em; color: var(--muted); text-transform: uppercase; line-height: 1.2; }
+    .chip .w { font-size: 30px; font-weight: 700; letter-spacing: .06em; color: var(--pink); line-height: 1.1; text-transform: uppercase; }
+    .chip .c { font-size: 60px; font-weight: 700; line-height: 1; letter-spacing: .03em; min-width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
+    .chip .c.end { color: var(--pink); }
+    /* Casters : design de l'onglet Casters (habillage Stack). Masqués à l'antenne par défaut,
+       visibles dans l'aperçu de la régie (?backend=1) pour savoir qui est devant l'écran. */
+    /* Même ligne que le cadre sponsors : haut 934 px, hauteur 112 px, marges extérieures 64 px */
+    .names { position: absolute; left: 64px; top: 934px; height: 112px; display: flex; align-items: stretch; gap: 2px; }
+    .names.off { display: none; }
+    .names .label { display: flex; align-items: center; gap: 10px; padding: 0 22px; background: #0a0709; border-left: 6px solid var(--pink);
+      color: var(--muted); font-size: 15px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; }
+    .names .label .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pink); animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    .names .person { display: flex; flex-direction: column; justify-content: center; gap: 3px; background: #0a0709; border-left: 6px solid var(--pink); padding: 10px 26px; }
+    .names .label + .person { border-left: 0; }          /* pas de barre entre l'étiquette et le 1er caster */
+    /* entre deux casters : barre moitié moins épaisse et moitié moins haute, centrée */
+    .names .person + .person { position: relative; border-left: 0; padding-left: 32px; }
+    .names .person + .person::before { content: ''; position: absolute; left: 0; top: 25%; height: 50%; width: 3px; background: var(--pink); }
+    .names .nm { font-size: 32px; font-weight: 700; letter-spacing: .08em; color: #f0e6d3; line-height: 1; white-space: nowrap; text-transform: uppercase; }
+    .names .sub { font-size: 15px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+    .names .sub .role { color: var(--pink); font-weight: 700; }
+    .names .sub .sep { opacity: .5; margin: 0 6px; }
+    .names .regie { position: absolute; left: 0; top: -26px; font-size: 13px; letter-spacing: .2em; color: #0c0a0a; background: #facc15; padding: 2px 10px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+    .card { position: absolute; left: 1396px; width: 460px; background: #0a0709; }
+    .card h3 { font-size: 16px; letter-spacing: .26em; color: var(--muted); font-weight: 700; text-transform: uppercase; padding: 12px 22px 4px; }
+    #mc { top: 176px; height: 214px; padding: 0 0 6px; }
+    .mt { display: flex; align-items: center; justify-content: space-between; padding: 7px 22px; border-top: 1px solid var(--line); }
+    .mt .l { display: flex; align-items: center; gap: 12px; font-size: 36px; font-weight: 700; letter-spacing: .05em; line-height: 1; text-transform: uppercase; }
+    .mt .l small { display: block; font-size: 13px; letter-spacing: .2em; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+    .mt .sq { width: 12px; height: 34px; display: block; flex: none; }
+    .mt .sc { font-size: 40px; font-weight: 700; color: var(--pink); letter-spacing: .08em; white-space: nowrap; }
+    .vs { color: var(--muted); font-size: 20px; }
+    #chat { top: 396px; height: 36px; }
+    #chat h3 { padding-top: 10px; }
+    /* Chat PSO intégré dans la fenêtre de droite (460×460) */
+    #chatwin { position: absolute; left: 1396px; top: 436px; width: 460px; height: 460px; background: #0a0709; overflow: hidden; display: none; }
+    #chatwin iframe { width: 100%; height: 100%; border: 0; background: transparent; }
+    #sp { position: absolute; left: 1492px; top: 910px; width: 364px; height: 136px; border: 0; background: transparent; }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="bg"><div id="bgfx" style="position:absolute;inset:0"></div></div>
+    <div class="fr" id="fr1" style="left:64px;top:896px;width:1280px;height:0"></div>
+    <div class="fr" id="fr2" style="left:1396px;top:896px;width:460px;height:0"></div>
+    <div class="top">
+      <img id="logo" alt="" />
+      <div class="t" id="title"></div>
+      <div class="chip"><div><div class="k" id="tl"></div><div class="w" id="who"></div></div><div class="c" id="cnt">1:00</div></div>
+    </div>
+    <div class="names off" id="names"></div>
+    <div class="card" id="mc"><h3 id="mtitle"></h3><div id="ms"></div></div>
+    <div id="chatwin"><iframe id="chatframe" title="Chat" scrolling="no"></iframe></div>
+    <div class="card" id="chat"><h3 id="ctitle"></h3></div>
+    <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/fx-bg.js"></script>
+  <script>
+    const $ = (i) => document.getElementById(i);
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const rich = (t) => esc(t).replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    const okColor = (c) => (/^#[0-9a-f]{3,8}$/i.test(String(c)) ? c : '#e33bae');
+    function fmt(ms) { const t = Math.ceil(Math.max(0, ms) / 1000), m = Math.floor(t / 60), x = t % 60; return m + ':' + (x < 10 ? '0' : '') + x; }
+
+    const FX = PSOFx($('bgfx'));
+    let S = null, skew = 0, SB = null, CA = null;
+
+    function row(m) {
+      return '<div class="mt"><div class="l"><i class="sq" style="background:' + okColor(m.color) + '"></i><div><small>' + esc(m.label) + '</small>'
+        + esc(m.a) + ' <span class="vs">VS</span> ' + esc(m.b) + '</div></div><div class="sc">' + esc(m.sa) + ' – ' + esc(m.sb) + '</div></div>';
+    }
+    function matches() {
+      if (S.matchSource === 'manual') return S.matches.map(row).join('');
+      if (!SB || !SB.team1) return '';
+      return row({ label: 'MATCH · ' + (SB.format || ''), a: SB.team1.name, b: SB.team2.name, sa: SB.team1.score || 0, sb: SB.team2.score || 0, color: SB.team1.color });
+    }
+    const BACKEND = new URLSearchParams(location.search).has('backend');
+    function names() {
+      let list = [S.c1, S.c2].filter((n) => n && String(n).trim()).map((name) => ({ name }));
+      if (S.casterSource === 'pso' && CA && Array.isArray(CA.casters)) {
+        const live = CA.casters.filter((c) => c.live);
+        if (live.length) list = live;
+      }
+      if (!list.length) return '';
+      const people = list.map((c) => {
+        const bits = [];
+        if (c.role) bits.push('<span class="role">' + esc(c.role) + '</span>');
+        if (c.handle) bits.push('<span>' + esc(c.handle) + '</span>');
+        return '<div class="person"><span class="nm">' + esc(c.name) + '</span>' + (bits.length ? '<span class="sub">' + bits.join('<span class="sep">·</span>') + '</span>' : '') + '</div>';
+      }).join('');
+      const tag = BACKEND && !S.namesOnAir ? '<span class="regie">Visible seulement dans la régie</span>' : '';
+      return tag + (S.casterLabel ? '<div class="label"><span class="dot"></span>' + esc(S.casterLabel) + '</div>' : '') + people;
+    }
+    function render() {
+      if (!S) return;
+      $('root').classList.toggle('hidden', S.visible === false);
+      const logo = $('logo');
+      if (S.logo) { if (logo.getAttribute('src') !== S.logo) logo.src = S.logo; logo.style.display = ''; logo.style.height = S.logoSize + 'px'; }
+      else logo.style.display = 'none';
+      $('title').innerHTML = rich(S.title);
+      $('tl').textContent = S.chipLabel;
+      $('who').textContent = S.who;
+      $('names').innerHTML = names();
+      $('names').classList.toggle('off', !(BACKEND || S.namesOnAir));
+      $('mc').style.display = S.matchSource === 'off' ? 'none' : '';
+      $('mtitle').textContent = S.matchTitle;
+      $('ms').innerHTML = S.matchSource === 'off' ? '' : matches();
+      $('ctitle').textContent = S.chatTitle;
+      $('chat').style.display = S.chatTitle ? '' : 'none';
+      $('chatwin').style.display = S.chatEmbed ? 'block' : 'none';
+      layout();
+      if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?flow=down';
+      $('fr1').style.display = $('fr2').style.display = S.frame ? '' : 'none';
+      $('sp').style.display = S.sponsors ? '' : 'none';
+      FX.set(S);
+      tick();
+    }
+    // Colonne de droite : le cadre matchs prend la hauteur de ses lignes (1 match = cadre court),
+    // le titre « Chat » et la fenêtre chat remontent pour combler l'espace jusqu'en bas (896 px).
+    function layout() {
+      const rows = S.matchSource === 'off' ? 0 : S.matchSource === 'manual' ? 2 : 1;
+      let y = 176;
+      if (rows) { const h = rows === 1 ? 112 : 214; $('mc').style.height = h + 'px'; y += h + 6; }
+      if (S.chatTitle) { $('chat').style.top = y + 'px'; y += 40; }
+      const cw = $('chatwin'); cw.style.top = y + 'px'; cw.style.height = (896 - y) + 'px';
+      document.querySelector('.bg').style.clipPath = "path(evenodd, 'M0 0H1920V1080H0Z M64 176H1344V896H64Z M1396 " + y + "H1856V896H1396Z')";
+      document.body.dataset.chat = 'x 1396, y ' + y + ', 460×' + (896 - y);
+    }
+    function tick() {
+      if (!S) return;
+      const el = $('cnt'), rem = S.endsAt - (Date.now() + skew);
+      if (S.endsAt && rem > 0) { el.textContent = fmt(rem); el.className = 'c'; }
+      else { el.textContent = S.endsAt ? S.endText : fmt(S.duration * 1000); el.className = 'c' + (S.endsAt ? ' end' : ''); }
+    }
+    function onState(s) { if (!s) return; S = s; if (s.now) skew = s.now - Date.now(); render(); }
+    const j = (u) => fetch(u).then((r) => r.json());
+    Promise.all([j('/api/scoreboard').catch(() => null), j('/api/casters').catch(() => null)]).then(([a, b]) => { SB = a; CA = b; return j('/api/timeout-caster'); }).then(onState).catch(() => {});
+    const sock = io();
+    sock.on('timeoutCasterUpdate', onState);
+    sock.on('scoreboardUpdate', (s) => { SB = s; render(); });
+    sock.on('castersUpdate', (c) => { CA = c; render(); });
+    setInterval(tick, 200);
+  </script>
+</body>
+</html>

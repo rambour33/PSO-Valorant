@@ -465,14 +465,25 @@ function sbCurrentBase() {
 function sbRenderLinks() {
   if (!sbLinks) return;
   const base = sbCurrentBase();
+  // Tous les overlays OBS au même endroit
   const rows = [
-    ['Team 1', base + '/scoreboard-overlay?part=team1'],
-    ['Team 2', base + '/scoreboard-overlay?part=team2'],
-    ['Score',  base + '/scoreboard-overlay?part=score'],
+    ['Scoreboard (in game)', base + '/scoreboard-stack-overlay'],
+    ['Équipes versus', base + '/versus-overlay'],
+    // Team 1 / Team 2 / Score (scoreboard-overlay?part=…) : masqués, plus utilisés
     ['Prochain match', base + '/scoreboard-overlay?part=match'],
     ['Lineup équipe 1', base + '/lineup-overlay?team=1'],
     ['Lineup équipe 2', base + '/lineup-overlay?team=2'],
     ['Sponsors', base + '/sponsors-overlay'],
+    ['Start', base + '/start-overlay'],
+    ['Timeout caster', base + '/timeout-caster-overlay'],
+    ['Caméra station 01', base + '/cam-overlay?station=1'],
+    ['Caméra station 02', base + '/cam-overlay?station=2'],
+    ['Casters', base + '/casters-overlay'],
+    ['Chat', base + '/chat-overlay'],
+    ['Timer', base + '/timer-overlay'],
+    ['Map veto', base + '/veto-overlay'],
+    ['Bracket', base + '/bracket-overlay'],
+    ['Stinger', base + '/stinger'],
   ];
   const rowHtml = ([label, url]) =>
     '<div class="sb-linkrow"><span class="lbl">' + label + '</span>' +
@@ -486,6 +497,14 @@ function sbRenderLinks() {
   if (caLinks) caLinks.innerHTML = rowHtml(['Casters', base + '/casters-overlay']);
   const tmLinks = document.getElementById('tm-links');
   if (tmLinks) tmLinks.innerHTML = rowHtml(['Timer', base + '/timer-overlay']);
+  const spLinks = document.getElementById('sp-links');
+  if (spLinks) spLinks.innerHTML = rowHtml(['Sponsors', base + '/sponsors-overlay']);
+  const stLinks = document.getElementById('st-links');
+  if (stLinks) stLinks.innerHTML = rowHtml(['Start', base + '/start-overlay']);
+  const cmLinks = document.getElementById('cm-links');
+  if (cmLinks) cmLinks.innerHTML = rowHtml(['Station 01', base + '/cam-overlay?station=1']) + rowHtml(['Station 02', base + '/cam-overlay?station=2']);
+  const tcLinks = document.getElementById('tc-links');
+  if (tcLinks) tcLinks.innerHTML = rowHtml(['Timeout caster', base + '/timeout-caster-overlay']);
   const chatLinks = document.getElementById('chat-links');
   if (chatLinks) chatLinks.innerHTML = rowHtml(['Chat', base + '/chat-overlay']);
 }
@@ -494,9 +513,7 @@ function sbRenderLinks() {
 const sbPreviewFrame = document.getElementById('sb-preview-frame');
 const sbPreviewTabs = document.getElementById('sb-preview-tabs');
 const SB_PREVIEW_URLS = {
-  team1: '/scoreboard-overlay?part=team1',
-  team2: '/scoreboard-overlay?part=team2',
-  score: '/scoreboard-overlay?part=score',
+  ingame: '/scoreboard-stack-overlay',
   match: '/scoreboard-overlay?part=match',
   lineup1: '/lineup-overlay?team=1',
   lineup2: '/lineup-overlay?team=2',
@@ -559,7 +576,7 @@ if (pfRecropBtn) pfRecropBtn.addEventListener('click', () => {
   });
 });
 
-sbSetPreview('team1');
+sbSetPreview('ingame');
 
 const stingerPlayBtn = document.getElementById('stinger-play');
 if (stingerPlayBtn) stingerPlayBtn.addEventListener('click', () => {
@@ -674,6 +691,338 @@ if (caVisible) caVisible.addEventListener('click', () => {
 
 fetch('/api/casters').then((r) => r.json()).then(renderCasters).catch(() => {});
 socket.on('castersUpdate', renderCasters);
+
+// ── Onglet Sponsors ───────────────────────────────────────────────────────────
+const sp = {
+  list: document.getElementById('sp-list'), visible: document.getElementById('sp-visible'),
+  every: document.getElementById('sp-every'), everyVal: document.getElementById('sp-every-val'),
+  bar: document.getElementById('sp-bar'), name: document.getElementById('sp-name'),
+  file: document.getElementById('sp-file'), add: document.getElementById('sp-add'),
+  preview: document.getElementById('sp-preview'),
+};
+let spState = null, spPrevIds = '', spUpload = '', spDeb = null;
+
+function spSave(patch) {
+  spState = Object.assign({}, spState, patch);
+  return fetch('/api/sponsors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(spState) })
+    .then((r) => r.json()).then(renderSponsors).catch(() => {});
+}
+function spItems() { return (spState && spState.items || []).map((x) => Object.assign({}, x)); }
+function spToggle(label, on, act, id) {
+  return '<button class="ca-live' + (on ? ' on' : '') + '" data-act="' + act + '" data-id="' + id + '">' + label + '</button>';
+}
+function sponsorRow(it, i, n) {
+  const thumb = it.src ? '<img src="' + esc(it.src) + '" class="' + (it.white ? 'white' : '') + '" alt="" />' : '<span>' + esc(it.name) + '</span>';
+  return '<div class="ca-row sp-row" data-id="' + it.id + '">' +
+    '<div class="sp-thumb">' + thumb + '</div>' +
+    '<input class="ca-f" data-f="name" value="' + esc(it.name) + '" placeholder="Nom" maxlength="40" />' +
+    spToggle(it.enabled ? 'Affiché' : 'Masqué', it.enabled, 'enabled', it.id) +
+    spToggle('Large', it.wide, 'wide', it.id) +
+    spToggle('Blanc', it.white, 'white', it.id) +
+    '<label class="sp-zoom" title="Taille du logo dans le cadre">Taille <input type="range" data-zoom="' + it.id + '" min="0.3" max="3" step="0.05" value="' + (it.zoom || 1) + '" /><b>' + Math.round((it.zoom || 1) * 100) + '%</b></label>' +
+    '<button class="sp-mv" data-act="up" data-id="' + it.id + '"' + (i === 0 ? ' disabled' : '') + ' title="Monter">↑</button>' +
+    '<button class="sp-mv" data-act="down" data-id="' + it.id + '"' + (i === n - 1 ? ' disabled' : '') + ' title="Descendre">↓</button>' +
+    '<button class="ca-del" data-act="del" data-id="' + it.id + '" title="Supprimer">🗑</button></div>';
+}
+function renderSponsors(s) {
+  if (!s || !sp.list) return;
+  spState = s;
+  sp.visible.textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  if (document.activeElement !== sp.every) { sp.every.value = s.every; sp.everyVal.textContent = s.every + ' s'; }
+  sp.bar.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.b === s.bar));
+  // Pendant une saisie (nom, curseur de taille) sur la même liste, on ne redessine pas :
+  // ça couperait le glissé du curseur ou la frappe.
+  const sig = s.items.map((x) => x.id).join(',');
+  const typing = sp.list.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
+  if (!(typing && sig === spPrevIds)) {
+    sp.list.innerHTML = s.items.length ? s.items.map((it, i) => sponsorRow(it, i, s.items.length)).join('') : '<div class="empty">Aucun sponsor. Ajoute-en un ci-dessous.</div>';
+  }
+  spPrevIds = sig;
+}
+if (sp.list) {
+  sp.list.addEventListener('input', (e) => {
+    const row = e.target.closest('.sp-row');
+    if (!row) return;
+    if (e.target.dataset.zoom) {
+      // Taille : envoi en direct (léger délai) pour voir l'effet dans l'aperçu pendant le glissé.
+      const z = parseFloat(e.target.value);
+      e.target.nextElementSibling.textContent = Math.round(z * 100) + '%';
+      clearTimeout(spDeb);
+      spDeb = setTimeout(() => spSave({ items: spItems().map((x) => x.id === row.dataset.id ? Object.assign(x, { zoom: z }) : x) }), 120);
+      return;
+    }
+    clearTimeout(spDeb);
+    spDeb = setTimeout(() => spSave({ items: spItems().map((x) => x.id === row.dataset.id ? Object.assign(x, { name: e.target.value }) : x) }), 300);
+  });
+  sp.list.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const items = spItems(), i = items.findIndex((x) => x.id === b.dataset.id);
+    if (i < 0) return;
+    const a = b.dataset.act;
+    if (a === 'del') { if (!confirm('Supprimer « ' + items[i].name + ' » ?')) return; items.splice(i, 1); }
+    else if (a === 'up' && i > 0) items.splice(i - 1, 0, items.splice(i, 1)[0]);
+    else if (a === 'down' && i < items.length - 1) items.splice(i + 1, 0, items.splice(i, 1)[0]);
+    else if (a === 'enabled' || a === 'wide' || a === 'white') items[i][a] = !items[i][a];
+    spSave({ items });
+  });
+  sp.visible.addEventListener('click', () => spSave({ visible: spState && spState.visible === false }));
+  sp.every.addEventListener('input', () => { sp.everyVal.textContent = sp.every.value + ' s'; });
+  sp.every.addEventListener('change', () => spSave({ every: parseInt(sp.every.value, 10) }));
+  sp.bar.addEventListener('click', (e) => { const b = e.target.closest('[data-b]'); if (b) spSave({ bar: b.dataset.b }); });
+  sp.file.addEventListener('change', () => {
+    const f = sp.file.files[0];
+    if (!f) return;
+    const label = sp.file.closest('label');
+    const rd = new FileReader();
+    rd.onload = () => {
+      fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+        .then((r) => r.json()).then((d) => {
+          if (d.error) { alert(d.error); return; }
+          spUpload = d.url; label.classList.add('ok'); label.firstChild.textContent = '✓ ' + f.name.slice(0, 24);
+          if (!sp.name.value) sp.name.value = f.name.replace(/\.[^.]+$/, '');
+        }).catch(() => alert('Envoi du logo impossible'));
+    };
+    rd.readAsDataURL(f);
+  });
+  sp.add.addEventListener('click', () => {
+    const name = sp.name.value.trim() || 'Sponsor';
+    spSave({ items: spItems().concat([{ name, src: spUpload, wide: false, white: true, enabled: true }]) }).then(() => {
+      sp.name.value = ''; spUpload = ''; sp.file.value = '';
+      const label = sp.file.closest('label'); label.classList.remove('ok'); label.firstChild.textContent = '🖼️ Choisir un logo';
+    });
+  });
+  document.querySelector('.tab-btn[data-tab="sponsors"]')?.addEventListener('click', () => {
+    if (sp.preview && !sp.preview.src) sp.preview.src = '/sponsors-overlay';
+  });
+  fetch('/api/sponsors').then((r) => r.json()).then(renderSponsors).catch(() => {});
+  socket.on('sponsorsUpdate', renderSponsors);
+}
+
+// ── Onglet Start ──────────────────────────────────────────────────────────────
+const stTab = document.getElementById('tab-start');
+let stState = null, stSkew = 0, stDeb = null, stPending = {};
+const stGet = (o, k) => k.split('.').reduce((a, x) => (a == null ? a : a[x]), o);
+function stPatch(k, v) {   // 'halo.color' → { halo: { color } }
+  const parts = k.split('.'), out = {};
+  let cur = out;
+  parts.forEach((p, i) => { if (i === parts.length - 1) cur[p] = v; else cur = cur[p] = {}; });
+  return out;
+}
+function stSave(patch) {
+  return fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
+    .then((r) => r.json()).then(renderStart).catch(() => {});
+}
+function stLabel(el, v) {
+  if (el.dataset.pct) el.textContent = Math.round(v * 100) + '%';
+  else el.textContent = v + (el.dataset.unit || (el.dataset.v === 'logoSize' ? ' px' : ''));
+}
+function renderStart(s) {
+  if (!s || !stTab) return;
+  stState = s; if (s.now) stSkew = s.now - Date.now();
+  document.getElementById('st-visible').textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  stTab.querySelectorAll('[data-st]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.st);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  stTab.querySelectorAll('.st-v').forEach((el) => stLabel(el, stGet(s, el.dataset.v)));
+  document.getElementById('st-logo').innerHTML = s.logo ? '<img src="' + esc(s.logo) + '" alt="" />' : 'Sans logo';
+}
+function stTick() {
+  const el = document.getElementById('st-cd');
+  if (!el || !stState) return;
+  if (!stState.at) { el.textContent = 'Pas de compte à rebours'; return; }
+  const rem = stState.at - (Date.now() + stSkew);
+  if (rem <= 0) { el.textContent = 'Terminé'; return; }
+  const t = Math.ceil(rem / 1000), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), x = t % 60, p = (n) => String(n).padStart(2, '0');
+  el.textContent = (h ? h + ':' + p(m) : p(m)) + ':' + p(x) + '  (début à ' + new Date(stState.at - stSkew).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ')';
+}
+function stFitPreview() {
+  const f = document.getElementById('st-preview');
+  if (f && f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')';
+}
+if (stTab) {
+  stTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.st) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') v = parseFloat(v);
+    const lab = stTab.querySelector('.st-v[data-v="' + el.dataset.st + '"]'); if (lab) stLabel(lab, v);
+    // Les modifications s'accumulent jusqu'à l'envoi (aucune n'est perdue si on enchaîne les champs).
+    const p = stPatch(el.dataset.st, v);
+    ['halo', 'bg'].forEach((k) => { if (p[k]) p[k] = Object.assign({}, stPending[k], p[k]); });
+    Object.assign(stPending, p);
+    clearTimeout(stDeb);
+    stDeb = setTimeout(() => { const send = stPending; stPending = {}; stSave(send); }, el.type === 'range' ? 80 : 300);
+  });
+  document.getElementById('st-visible').addEventListener('click', () => stSave({ visible: stState && stState.visible === false }));
+  document.getElementById('st-reset').addEventListener('click', () => {
+    if (confirm('Remettre l\'écran Start comme dans le pack d\'origine ?')) fetch('/api/start/reset', { method: 'POST' }).then((r) => r.json()).then(renderStart);
+  });
+  stTab.querySelectorAll('[data-in]').forEach((b) => b.addEventListener('click', () => stSave({ at: Date.now() + stSkew + parseInt(b.dataset.in, 10) * 60000 })));
+  document.getElementById('st-stop').addEventListener('click', () => stSave({ at: 0 }));
+  document.getElementById('st-at').addEventListener('click', () => {
+    const v = document.getElementById('st-time').value; if (!v) return;
+    const [h, m] = v.split(':').map(Number), d = new Date(); d.setHours(h, m, 0, 0);
+    if (d.getTime() < Date.now() - 60000) d.setDate(d.getDate() + 1);   // heure passée → demain
+    stSave({ at: d.getTime() + stSkew });
+  });
+  document.getElementById('st-logo-def').addEventListener('click', () => stSave({ logo: '/stack03/assets/logo-stack.svg' }));
+  document.getElementById('st-logo-none').addEventListener('click', () => stSave({ logo: '' }));
+  document.getElementById('st-file').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+      .then((r) => r.json()).then((d) => { if (d.error) return alert(d.error); stSave({ logo: d.url }); e.target.value = ''; })
+      .catch(() => alert('Envoi du logo impossible'));
+    rd.readAsDataURL(f);
+  });
+  document.querySelector('.tab-btn[data-tab="start"]')?.addEventListener('click', () => {
+    const f = document.getElementById('st-preview');
+    if (f && !f.src) f.src = '/start-overlay';
+    setTimeout(stFitPreview, 30);
+  });
+  window.addEventListener('resize', stFitPreview);
+  setInterval(stTick, 500);
+  fetch('/api/start').then((r) => r.json()).then(renderStart).catch(() => {});
+  socket.on('startUpdate', renderStart);
+}
+
+// ── Onglet Timeout caster ─────────────────────────────────────────────────────
+const tcTab = document.getElementById('tab-tcaster');
+let tcState = null, tcSkew = 0, tcDeb = null, tcPending = {}, tcTeams = [];
+function tcMerge(a, b) {   // fusion profonde des modifications en attente
+  const out = Object.assign({}, a);
+  Object.keys(b).forEach((k) => { out[k] = b[k] && typeof b[k] === 'object' && a[k] && typeof a[k] === 'object' ? tcMerge(a[k], b[k]) : b[k]; });
+  return out;
+}
+function tcPost(url, body) {
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) })
+    .then((r) => r.json()).then(renderTc).catch(() => {});
+}
+const tcSave = (patch) => tcPost('/api/timeout-caster', patch);
+function renderTc(s) {
+  if (!s || !tcTab) return;
+  tcState = s; if (s.now) tcSkew = s.now - Date.now();
+  document.getElementById('tc-visible').textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  tcTab.querySelectorAll('[data-tc]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.tc);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  tcTab.querySelectorAll('.st-v').forEach((el) => stLabel(el, stGet(s, el.dataset.v)));
+  document.getElementById('tc-logo').innerHTML = s.logo ? '<img src="' + esc(s.logo) + '" alt="" />' : 'Sans logo';
+  tcTick();
+}
+function tcRenderWho() {
+  const box = document.getElementById('tc-who'); if (!box) return;
+  const opts = tcTeams.concat(['Pause', 'Pause technique']).filter((x, i, a) => x && a.indexOf(x) === i);
+  box.innerHTML = opts.map((n) => '<button class="sb-action" data-who="' + esc(n) + '">' + esc(n) + '</button>').join('');
+}
+function tcTick() {
+  const el = document.getElementById('tc-cd');
+  if (!el || !tcState) return;
+  const rem = tcState.endsAt - (Date.now() + tcSkew);
+  if (tcState.endsAt && rem > 0) { const t = Math.ceil(rem / 1000); el.textContent = Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); }
+  else el.textContent = tcState.endsAt ? 'Terminé' : 'À l\'arrêt';
+}
+function tcFitPreview() {
+  const f = document.getElementById('tc-preview');
+  if (f && f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')';
+}
+if (tcTab) {
+  tcTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.tc) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') { v = parseFloat(v); if (!isFinite(v)) return; }
+    const lab = tcTab.querySelector('.st-v[data-v="' + el.dataset.tc + '"]'); if (lab) stLabel(lab, v);
+    tcPending = tcMerge(tcPending, stPatch(el.dataset.tc, v));
+    clearTimeout(tcDeb);
+    tcDeb = setTimeout(() => { const send = tcPending; tcPending = {}; tcSave(send); }, el.type === 'range' ? 80 : 300);
+  });
+  tcTab.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]'); if (go) return tcPost('/api/timeout-caster/start', { sec: parseInt(go.dataset.go, 10) });
+    const who = e.target.closest('[data-who]'); if (who) return tcSave({ who: who.dataset.who });
+  });
+  document.getElementById('tc-add').addEventListener('click', () => tcPost('/api/timeout-caster/add', { sec: 30 }));
+  document.getElementById('tc-stop').addEventListener('click', () => tcPost('/api/timeout-caster/stop'));
+  document.getElementById('tc-visible').addEventListener('click', () => tcSave({ visible: tcState && tcState.visible === false }));
+  document.getElementById('tc-reset').addEventListener('click', () => {
+    if (confirm('Remettre le Timeout caster comme dans le pack d\'origine ?')) tcPost('/api/timeout-caster/reset');
+  });
+  document.getElementById('tc-logo-def').addEventListener('click', () => tcSave({ logo: '/stack03/assets/logo-stack.svg' }));
+  document.getElementById('tc-logo-none').addEventListener('click', () => tcSave({ logo: '' }));
+  document.getElementById('tc-file').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+      .then((r) => r.json()).then((d) => { if (d.error) return alert(d.error); tcSave({ logo: d.url }); e.target.value = ''; })
+      .catch(() => alert('Envoi du logo impossible'));
+    rd.readAsDataURL(f);
+  });
+  document.querySelector('.tab-btn[data-tab="tcaster"]')?.addEventListener('click', () => {
+    const f = document.getElementById('tc-preview');
+    if (f && !f.src) f.src = '/timeout-caster-overlay?backend=1';   // aperçu régie : casters visibles
+    setTimeout(tcFitPreview, 30);
+  });
+  window.addEventListener('resize', tcFitPreview);
+  setInterval(tcTick, 300);
+  const tcScore = (sb) => { if (sb && sb.team1) { tcTeams = [sb.team1.name, sb.team2.name]; tcRenderWho(); } };
+  fetch('/api/scoreboard').then((r) => r.json()).then(tcScore).catch(() => {});
+  socket.on('scoreboardUpdate', tcScore);
+  tcRenderWho();
+  fetch('/api/timeout-caster').then((r) => r.json()).then(renderTc).catch(() => {});
+  socket.on('timeoutCasterUpdate', renderTc);
+}
+
+// ── Onglet Caméras ────────────────────────────────────────────────────────────
+const cmTab = document.getElementById('tab-cams');
+let cmState = null, cmDeb = null, cmPending = {};
+function renderCams(s) {
+  if (!s || !cmTab) return;
+  cmState = s;
+  cmTab.querySelectorAll('[data-cm]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.cm);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  [1, 2].forEach((n) => {
+    cmTab.querySelector('[data-cam-man="' + n + '"]').classList.toggle('off', s[n].source !== 'manual');
+    cmTab.querySelector('[data-cam-vis="' + n + '"]').textContent = s[n].visible === false ? 'Afficher' : 'Masquer';
+  });
+}
+function cmSave(patch) {
+  return fetch('/api/cams', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
+    .then((r) => r.json()).then(renderCams).catch(() => {});
+}
+function cmFit() {
+  cmTab && cmTab.querySelectorAll('[data-cam-prev]').forEach((f) => { if (f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')'; });
+}
+if (cmTab) {
+  cmTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.cm) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') { v = parseFloat(v); if (!isFinite(v)) return; }
+    cmPending = tcMerge(cmPending, stPatch(el.dataset.cm, v));
+    if (el.dataset.cm.endsWith('.source')) cmTab.querySelector('[data-cam-man="' + el.dataset.cm[0] + '"]').classList.toggle('off', v !== 'manual');
+    clearTimeout(cmDeb);
+    cmDeb = setTimeout(() => { const send = cmPending; cmPending = {}; cmSave(send); }, 300);
+  });
+  cmTab.addEventListener('click', (e) => {
+    const vis = e.target.closest('[data-cam-vis]');
+    if (vis && cmState) { const n = vis.dataset.camVis; cmSave({ [n]: { visible: cmState[n].visible === false } }); }
+  });
+  document.getElementById('cm-reset').addEventListener('click', () => {
+    if (confirm('Remettre les caméras comme dans le pack d\'origine ?')) fetch('/api/cams/reset', { method: 'POST' }).then((r) => r.json()).then(renderCams);
+  });
+  document.querySelector('.tab-btn[data-tab="cams"]')?.addEventListener('click', () => {
+    cmTab.querySelectorAll('[data-cam-prev]').forEach((f) => { if (!f.src) f.src = '/cam-overlay?station=' + f.dataset.camPrev; });
+    setTimeout(cmFit, 30);
+  });
+  window.addEventListener('resize', cmFit);
+  fetch('/api/cams').then((r) => r.json()).then(renderCams).catch(() => {});
+  socket.on('camsUpdate', renderCams);
+}
 
 // ── Onglet Timer ──────────────────────────────────────────────────────────────
 const tm = {

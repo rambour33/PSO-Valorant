@@ -52,6 +52,11 @@
     .sendrow { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
     .sendrow button { padding: 10px 18px; border: none; border-radius: 7px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; cursor: pointer; font-size: 13px; }
     .sendrow .send { background: var(--red); color: #fff; }
+    /* Pick & ban : actif seulement sur le match en cours */
+    .pb { margin-top: 12px; padding: 12px; border-radius: 8px; background: var(--surface2); border: 1px dashed var(--border); text-align: center; font-size: 13px; color: var(--muted); }
+    .pb.on { border: 1px solid var(--red); color: var(--text); }
+    .pb a { display: inline-block; margin-top: 8px; padding: 11px 20px; border-radius: 7px; background: var(--red); color: #fff; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; text-decoration: none; font-size: 14px; }
+    .livetag { background: var(--red); color: #fff; }
     .sendrow .undo { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
   </style>
 </head>
@@ -156,7 +161,22 @@
       } else {
         body += '<div class="hint">En attente du résultat des matchs précédents…</div>';
       }
+      body += pickBanHTML(m);
       return '<div class="card' + (m.status === 'ready' ? ' current' : '') + '">' + body + '</div>';
+    }
+
+    // Pick & ban : uniquement pour le match en cours choisi par la régie.
+    let pb = null;   // réponse de /api/bracket/veto
+    function pickBanHTML(m) {
+      if (m.status === 'done' || m.status === 'skipped' || !m.teamA || !m.teamB) return '';
+      if (!pb || pb.matchId !== m.id || !pb.live) return '<div class="pb">🗺️ Pick &amp; ban : il s’activera quand ce match sera le match en cours.</div>';
+      if (!pb.active) return '<div class="pb on"><span class="tag livetag">Match en cours</span><br>' + esc(pb.msg || 'Pick & ban bientôt disponible…') + '</div>';
+      return '<div class="pb on"><span class="tag livetag">Match en cours</span><br>' + (pb.done ? 'Pick &amp; ban terminé.' : 'Le pick &amp; ban est ouvert !') +
+        '<br><a href="' + esc(pb.url) + '" target="_blank">🗺️ ' + (pb.done ? 'Voir le résultat' : 'Ouvrir le pick &amp; ban') + '</a></div>';
+    }
+    function loadPb() {
+      return fetch('/api/bracket/veto?token=' + encodeURIComponent(token)).then(r => r.ok ? r.json() : null)
+        .then(d => { pb = d; if (myTeamId) renderList(); }).catch(() => {});
     }
 
     function renderList() {
@@ -217,7 +237,10 @@
     }
 
     load();
-    io().on('bracketUpdate', () => load());
+    loadPb();
+    const sock = io();
+    sock.on('bracketUpdate', () => { load(); loadPb(); });
+    sock.on('bracketVetoUpdate', loadPb);
   </script>
 </body>
 </html>

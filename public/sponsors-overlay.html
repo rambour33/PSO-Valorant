@@ -5,7 +5,7 @@
   <title>PSO Valorant — Overlay Sponsors</title>
   <!-- Cadre sponsors du pack Stack 03 : fond gris, logos blancs, barre rose, rotation en boucle.
        OBS : source navigateur (ex. 400×160), ancrée en haut à gauche.
-       Options : ?every=10 (secondes par logo), ?bar=right (barre rose à droite). -->
+       Réglages : onglet « Sponsors » de la régie. Options d'URL (prioritaires) : ?every=10, ?bar=right. -->
   <link rel="stylesheet" href="/stack03/css/fonts.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,28 +15,48 @@
     .sponsor-box .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: #e33bae; }
     .sponsor-box .sp { position: absolute; left: 8px; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .7s ease; }
     .sponsor-box .sp.on { opacity: 1; }
-    .sponsor-box .sp img { max-width: 236px; max-height: 44px; width: auto; height: auto; filter: brightness(0) invert(1); }
-    .sponsor-box .sp img.wide { max-width: 262px; }
-    .sponsor-box .sp .txt { font-weight: 700; font-size: 56px; letter-spacing: .08em; color: #fff; }
+    .sponsor-box .sp img { --z: 1; max-width: calc(236px * var(--z)); max-height: calc(44px * var(--z)); width: auto; height: auto; filter: brightness(0) invert(1); }
+    .sponsor-box .sp img.wide { max-width: calc(262px * var(--z)); }
+    .sponsor-box .sp img.color { filter: none; }
+    .sponsor-box { transition: opacity .45s ease; }
+    .sponsor-box .sp .txt { --z: 1; font-weight: 700; font-size: calc(56px * var(--z)); letter-spacing: .08em; color: #fff; }
     .sponsor-box.right-bar .bar { left: auto; right: 0; }
     .sponsor-box.right-bar .sp { left: 0; right: 8px; }
   </style>
 </head>
 <body>
-  <div class="sponsor-box" id="box">
-    <i class="bar"></i>
-    <div class="sp on"><img src="/stack03/assets/logo-lst-2023-white.svg" alt="LST" onerror="this.outerHTML='<span class=txt>LST</span>'"></div>
-    <div class="sp"><img src="/stack03/assets/credit-mutuel.svg" alt="Crédit Mutuel"></div>
-    <div class="sp"><img class="wide" src="/stack03/assets/logols4bv3.svg" alt="Team LS4B"></div>
-  </div>
+  <div class="sponsor-box" id="box"><i class="bar"></i></div>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
+    // Réglages dans la régie, onglet « Sponsors ». ?every= et ?bar= dans l'URL restent prioritaires.
     const q = new URLSearchParams(location.search);
     const box = document.getElementById('box');
-    if (q.get('bar') === 'right') box.classList.add('right-bar');
-    const every = Math.max(2, parseFloat(q.get('every')) || 10) * 1000;
-    const items = box.querySelectorAll('.sp');
-    let k = 0;
-    setInterval(() => { items[k].classList.remove('on'); k = (k + 1) % items.length; items[k].classList.add('on'); }, every);
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let timer = null, sig = '';
+
+    function render(s) {
+      if (!s) return;
+      const items = (s.items || []).filter((it) => it.enabled);
+      const every = Math.max(2, parseFloat(q.get('every')) || s.every || 10) * 1000;
+      const bar = q.get('bar') || s.bar;
+      box.classList.toggle('right-bar', bar === 'right');
+      box.style.opacity = s.visible === false || !items.length ? '0' : '1';
+      const nsig = JSON.stringify([items, every]);
+      if (nsig === sig) return;   // rien n'a changé : on ne relance pas la rotation
+      sig = nsig;
+      box.innerHTML = '<i class="bar"></i>' + items.map((it, i) =>
+        '<div class="sp' + (i === 0 ? ' on' : '') + '">' +
+          (it.src ? '<img class="' + (it.wide ? 'wide' : '') + (it.white ? '' : ' color') + '" style="--z:' + (it.zoom || 1) + '" src="' + esc(it.src) + '" alt="' + esc(it.name) + '">' : '<span class="txt" style="--z:' + (it.zoom || 1) + '">' + esc(it.name) + '</span>') +
+        '</div>').join('');
+      box.querySelectorAll('img').forEach((img) => { img.onerror = () => { img.outerHTML = '<span class="txt" style="' + esc(img.getAttribute('style')) + '">' + esc(img.alt) + '</span>'; }; });
+      clearInterval(timer);
+      const els = box.querySelectorAll('.sp');
+      let k = 0;
+      if (els.length > 1) timer = setInterval(() => { els[k].classList.remove('on'); k = (k + 1) % els.length; els[k].classList.add('on'); }, every);
+    }
+
+    fetch('/api/sponsors').then((r) => r.json()).then(render).catch(() => {});
+    io().on('sponsorsUpdate', render);
   </script>
 </body>
 </html>

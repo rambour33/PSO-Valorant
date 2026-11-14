@@ -13,6 +13,12 @@
 
     #chat { position: absolute; inset: 18px; display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; transition: opacity .3s ease; font-size: calc(18px * var(--chat-scale, 1)); }
     #chat.hidden { opacity: 0; }
+    /* ?flow=down (ex. intégré dans le Timeout caster) : le message le plus récent arrive en haut,
+       les anciens descendent et sortent par le bas en fondu */
+    .down #chat { flex-direction: column-reverse; justify-content: flex-end; overflow: hidden;
+      -webkit-mask-image: linear-gradient(to top, transparent, #000 48px); mask-image: linear-gradient(to top, transparent, #000 48px); }
+    .down .msg { animation-name: popdown; }
+    @keyframes popdown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
 
     .msg {
       background: color-mix(in srgb, var(--pso-surface, #161a22) 92%, transparent);
@@ -50,6 +56,7 @@
   </style>
 </head>
 <body>
+  <script>if (/[?&]flow=down/.test(location.search)) document.body.classList.add('down');</script>
   <div id="chat" class="hidden"></div>
 
   <script src="/socket.io/socket.io.js"></script>
