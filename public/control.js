@@ -468,9 +468,7 @@ function sbRenderLinks() {
   // Tous les overlays OBS au même endroit
   const rows = [
     ['Scoreboard (in game)', base + '/scoreboard-stack-overlay'],
-    ['Team 1', base + '/scoreboard-overlay?part=team1'],
-    ['Team 2', base + '/scoreboard-overlay?part=team2'],
-    ['Score',  base + '/scoreboard-overlay?part=score'],
+    // Team 1 / Team 2 / Score (scoreboard-overlay?part=…) : masqués, plus utilisés
     ['Prochain match', base + '/scoreboard-overlay?part=match'],
     ['Lineup équipe 1', base + '/lineup-overlay?team=1'],
     ['Lineup équipe 2', base + '/lineup-overlay?team=2'],
@@ -514,9 +512,7 @@ function sbRenderLinks() {
 const sbPreviewFrame = document.getElementById('sb-preview-frame');
 const sbPreviewTabs = document.getElementById('sb-preview-tabs');
 const SB_PREVIEW_URLS = {
-  team1: '/scoreboard-overlay?part=team1',
-  team2: '/scoreboard-overlay?part=team2',
-  score: '/scoreboard-overlay?part=score',
+  ingame: '/scoreboard-stack-overlay',
   match: '/scoreboard-overlay?part=match',
   lineup1: '/lineup-overlay?team=1',
   lineup2: '/lineup-overlay?team=2',
@@ -579,7 +575,7 @@ if (pfRecropBtn) pfRecropBtn.addEventListener('click', () => {
   });
 });
 
-sbSetPreview('team1');
+sbSetPreview('ingame');
 
 const stingerPlayBtn = document.getElementById('stinger-play');
 if (stingerPlayBtn) stingerPlayBtn.addEventListener('click', () => {
