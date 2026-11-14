@@ -371,7 +371,20 @@ app.post('/api/bracket/reject/:matchId', (req, res) => {
 
 // Match en cours du bracket (régie) et accès pick & ban pour les équipes de ce match uniquement.
 app.post('/api/bracket/live', (req, res) => {
-  try { bracket.setLive((req.body || {}).matchId || null); emitBracket(); io.emit('bracketVetoUpdate'); res.json({ ok: true, liveMatchId: bracket.get().liveMatchId }); }
+  try {
+    const before = bracket.get().liveMatchId;
+    bracket.setLive((req.body || {}).matchId || null);
+    const m = bracket.liveMatch();
+    // Nouveau match en cours → le scoreboard prend ses deux équipes (nom, couleur, joueurs), son format, scores à 0.
+    if (m && m.id !== before) {
+      const lib = teams.list();
+      const full = (t) => { const x = lib.find((y) => y.id === t.id) || {}; return { name: t.name, color: t.color || x.color, players: x.players || [] }; };
+      scoreboard.set({ team1: full(m.teamA), team2: full(m.teamB), format: scoreboard.FORMATS.includes(m.bo) ? m.bo : undefined });
+      scoreboard.resetScore();
+      emitScore();
+    }
+    emitBracket(); io.emit('bracketVetoUpdate'); res.json({ ok: true, liveMatchId: bracket.get().liveMatchId });
+  }
   catch (e) { res.status(400).json({ error: e.message }); }
 });
 app.get('/api/bracket/live', (req, res) => {
