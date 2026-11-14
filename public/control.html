@@ -327,6 +327,41 @@
               <label class="fld">Position horizontale <b class="st-v" data-v="halo.x" data-unit="%"></b><input type="range" data-st="halo.x" data-t="n" min="0" max="100" step="1" /></label>
               <label class="fld">Position verticale <b class="st-v" data-v="halo.y" data-unit="%"></b><input type="range" data-st="halo.y" data-t="n" min="0" max="100" step="1" /></label>
             </div>
+            <div class="sb-card" style="margin-top:14px">
+              <h3 class="st-h">Effets animés</h3>
+              <label class="fld">Effet du halo
+                <select data-st="halo.fx">
+                  <option value="none">Aucun (fixe)</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="breathe">Respiration (taille)</option>
+                  <option value="heartbeat">Battement de cœur</option>
+                  <option value="flicker">Scintillement néon</option>
+                  <option value="drift">Dérive lente</option>
+                  <option value="orbit">Orbite</option>
+                  <option value="colors">Alternance 2 couleurs</option>
+                  <option value="rainbow">Arc-en-ciel</option>
+                </select>
+              </label>
+              <div class="st-row"><label class="st-chk">2ᵉ couleur (alternance) <input type="color" data-st="halo.color2" /></label></div>
+              <label class="fld">Vitesse du halo <b class="st-v" data-v="halo.speed" data-unit="×"></b><input type="range" data-st="halo.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force de l'effet <b class="st-v" data-v="halo.amount" data-pct="1"></b><input type="range" data-st="halo.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+              <label class="fld">Animation de la grille
+                <select data-st="bg.grid">
+                  <option value="static">Fixe</option>
+                  <option value="scroll">Défilement</option>
+                  <option value="pulse">Pulsation</option>
+                  <option value="wave">Vague lumineuse</option>
+                  <option value="floor">Sol en perspective</option>
+                </select>
+              </label>
+              <div class="st-row">
+                <label class="st-chk"><input type="checkbox" data-st="bg.particles" data-t="b" /> Particules</label>
+                <label class="st-chk"><input type="checkbox" data-st="bg.scan" data-t="b" /> Balayage</label>
+                <label class="st-chk"><input type="checkbox" data-st="bg.grain" data-t="b" /> Grain</label>
+              </div>
+              <label class="fld">Vitesse du fond <b class="st-v" data-v="bg.speed" data-unit="×"></b><input type="range" data-st="bg.speed" data-t="n" min="0.1" max="4" step="0.1" /></label>
+              <label class="fld">Force du fond <b class="st-v" data-v="bg.amount" data-pct="1"></b><input type="range" data-st="bg.amount" data-t="n" min="0" max="1" step="0.05" /></label>
+            </div>
           </div>
         </div>
         <div class="sb-links-card">

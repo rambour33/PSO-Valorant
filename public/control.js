@@ -837,7 +837,7 @@ if (stTab) {
     const lab = stTab.querySelector('.st-v[data-v="' + el.dataset.st + '"]'); if (lab) stLabel(lab, v);
     // Les modifications s'accumulent jusqu'à l'envoi (aucune n'est perdue si on enchaîne les champs).
     const p = stPatch(el.dataset.st, v);
-    if (p.halo) p.halo = Object.assign({}, stPending.halo, p.halo);
+    ['halo', 'bg'].forEach((k) => { if (p[k]) p[k] = Object.assign({}, stPending[k], p[k]); });
     Object.assign(stPending, p);
     clearTimeout(stDeb);
     stDeb = setTimeout(() => { const send = stPending; stPending = {}; stSave(send); }, el.type === 'range' ? 80 : 300);
