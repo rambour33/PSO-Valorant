@@ -99,5 +99,6 @@
     fetch('/api/casters').then((r) => r.json()).then(render).catch(() => {});
     io().on('castersUpdate', render);
   </script>
+  <script src="/fit.js"></script>
 </body>
 </html>

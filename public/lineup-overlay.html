@@ -152,5 +152,6 @@
     fetch('/api/scoreboard').then((r) => r.json()).then(render).catch(() => {});
     io().on('scoreboardUpdate', render);
   </script>
+  <script src="/fit.js"></script>
 </body>
 </html>

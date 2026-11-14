@@ -155,7 +155,8 @@
       if (!s) return;
       visible = s.visible !== false;
       chatEl.classList.toggle('hidden', !visible);
-      chatEl.style.setProperty('--chat-scale', s.fontScale || 1);
+      // ?scale=2 (scène OBS dédiée) multiplie la taille réglée dans la régie
+      chatEl.style.setProperty('--chat-scale', (s.fontScale || 1) * (parseFloat(new URLSearchParams(location.search).get('scale')) || 1));
       chatEl.style.setProperty('--chat-line', s.lineLength || 40);
       if ((s.channel || '') !== channel) { channel = s.channel || ''; chatEl.innerHTML = ''; connect(); }
     }
