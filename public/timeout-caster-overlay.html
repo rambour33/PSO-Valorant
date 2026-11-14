@@ -29,9 +29,20 @@
     .chip .w { font-size: 30px; font-weight: 700; letter-spacing: .06em; color: var(--pink); line-height: 1.1; text-transform: uppercase; }
     .chip .c { font-size: 60px; font-weight: 700; line-height: 1; letter-spacing: .03em; min-width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
     .chip .c.end { color: var(--pink); }
-    .names { position: absolute; left: 64px; top: 944px; display: flex; gap: 2px; }
-    .names div { background: #0a0709; border-left: 6px solid var(--pink); padding: 8px 26px; font-size: 32px; font-weight: 700; letter-spacing: .08em; }
-    .names small { font-size: 15px; letter-spacing: .2em; color: var(--muted); margin-right: 12px; font-weight: 600; }
+    /* Casters : design de l'onglet Casters (habillage Stack). Masqués à l'antenne par défaut,
+       visibles dans l'aperçu de la régie (?backend=1) pour savoir qui est devant l'écran. */
+    .names { position: absolute; left: 64px; top: 932px; display: flex; align-items: stretch; gap: 2px; }
+    .names.off { display: none; }
+    .names .label { display: flex; align-items: center; gap: 10px; padding: 0 22px; background: #0a0709; border-left: 6px solid var(--pink);
+      color: var(--muted); font-size: 15px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; }
+    .names .label .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pink); animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    .names .person { display: flex; flex-direction: column; justify-content: center; gap: 3px; background: #0a0709; border-left: 6px solid var(--pink); padding: 10px 26px; }
+    .names .nm { font-size: 32px; font-weight: 700; letter-spacing: .08em; color: #f0e6d3; line-height: 1; white-space: nowrap; text-transform: uppercase; }
+    .names .sub { font-size: 15px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+    .names .sub .role { color: var(--pink); font-weight: 700; }
+    .names .sub .sep { opacity: .5; margin: 0 6px; }
+    .names .regie { position: absolute; left: 0; top: -26px; font-size: 13px; letter-spacing: .2em; color: #0c0a0a; background: #facc15; padding: 2px 10px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
     .card { position: absolute; left: 1396px; width: 460px; background: #0a0709; }
     .card h3 { font-size: 16px; letter-spacing: .26em; color: var(--muted); font-weight: 700; text-transform: uppercase; padding: 12px 22px 4px; }
     #mc { top: 176px; height: 214px; padding: 0 0 6px; }
@@ -56,7 +67,7 @@
       <div class="t" id="title"></div>
       <div class="chip"><div><div class="k" id="tl"></div><div class="w" id="who"></div></div><div class="c" id="cnt">1:00</div></div>
     </div>
-    <div class="names" id="names"></div>
+    <div class="names off" id="names"></div>
     <div class="card" id="mc"><h3 id="mtitle"></h3><div id="ms"></div></div>
     <div class="card" id="chat"><h3 id="ctitle"></h3></div>
     <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
@@ -83,14 +94,22 @@
       if (!SB || !SB.team1) return '';
       return row({ label: 'MATCH · ' + (SB.format || ''), a: SB.team1.name, b: SB.team2.name, sa: SB.team1.score || 0, sb: SB.team2.score || 0, color: SB.team1.color });
     }
+    const BACKEND = new URLSearchParams(location.search).has('backend');
     function names() {
-      let list = [S.c1, S.c2];
+      let list = [S.c1, S.c2].filter((n) => n && String(n).trim()).map((name) => ({ name }));
       if (S.casterSource === 'pso' && CA && Array.isArray(CA.casters)) {
-        const live = CA.casters.filter((c) => c.live).map((c) => c.name);
+        const live = CA.casters.filter((c) => c.live);
         if (live.length) list = live;
       }
-      list = list.filter((n) => n && String(n).trim());
-      return list.map((n, i) => '<div>' + (i === 0 && S.casterLabel ? '<small>' + esc(S.casterLabel) + '</small>' : '') + esc(n) + '</div>').join('');
+      if (!list.length) return '';
+      const people = list.map((c) => {
+        const bits = [];
+        if (c.role) bits.push('<span class="role">' + esc(c.role) + '</span>');
+        if (c.handle) bits.push('<span>' + esc(c.handle) + '</span>');
+        return '<div class="person"><span class="nm">' + esc(c.name) + '</span>' + (bits.length ? '<span class="sub">' + bits.join('<span class="sep">·</span>') + '</span>' : '') + '</div>';
+      }).join('');
+      const tag = BACKEND && !S.namesOnAir ? '<span class="regie">Visible seulement dans la régie</span>' : '';
+      return tag + (S.casterLabel ? '<div class="label"><span class="dot"></span>' + esc(S.casterLabel) + '</div>' : '') + people;
     }
     function render() {
       if (!S) return;
@@ -102,6 +121,7 @@
       $('tl').textContent = S.chipLabel;
       $('who').textContent = S.who;
       $('names').innerHTML = names();
+      $('names').classList.toggle('off', !(BACKEND || S.namesOnAir));
       $('mc').style.display = S.matchSource === 'off' ? 'none' : '';
       $('mtitle').textContent = S.matchTitle;
       $('ms').innerHTML = S.matchSource === 'off' ? '' : matches();

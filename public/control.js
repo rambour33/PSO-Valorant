@@ -951,7 +951,7 @@ if (tcTab) {
   });
   document.querySelector('.tab-btn[data-tab="tcaster"]')?.addEventListener('click', () => {
     const f = document.getElementById('tc-preview');
-    if (f && !f.src) f.src = '/timeout-caster-overlay';
+    if (f && !f.src) f.src = '/timeout-caster-overlay?backend=1';   // aperçu régie : casters visibles
     setTimeout(tcFitPreview, 30);
   });
   window.addEventListener('resize', tcFitPreview);
