@@ -375,7 +375,7 @@
           <h2 class="section-title">Timeout caster</h2>
           <div style="display:flex;gap:8px"><button class="sb-action" id="tc-reset">Réglages d'origine</button><button class="sb-action" id="tc-visible">Masquer</button></div>
         </div>
-        <p class="section-hint">Écran de pause des casters (design Stack 03). Dans OBS, place la caméra des casters dessous à x 64, y 176 (1280×720) et le chat à x 1396, y 436 (460×460). Tout s'applique en direct.</p>
+        <p class="section-hint">Écran de pause des casters (design Stack 03). Dans OBS, place la caméra des casters dessous à x 64, y 176 (1280×720). Le chat PSO est intégré à droite (sinon, place ta source chat à x 1396, y 436, 460×460). Tout s'applique en direct.</p>
         <div class="st-prev sb-card"><div class="st-frame tc-frame"><iframe id="tc-preview" title="Aperçu Timeout caster" scrolling="no"></iframe></div></div>
         <div class="st-grid">
           <div>
@@ -403,6 +403,7 @@
               <div class="st-row" id="tc-who"></div>
               <label class="fld">Texte à la fin du chrono<input data-tc="endText" maxlength="20" /></label>
               <label class="fld">Titre de la fenêtre chat <span class="st-tip">— vide = masqué</span><input data-tc="chatTitle" maxlength="30" /></label>
+              <div class="st-row"><label class="st-chk"><input type="checkbox" data-tc="chatEmbed" data-t="b" /> Intégrer le chat PSO dans la fenêtre (chaîne et taille réglées dans l'onglet Chat)</label></div>
             </div>
             <div class="sb-card" style="margin-top:14px">
               <h3 class="st-h">Casters</h3>

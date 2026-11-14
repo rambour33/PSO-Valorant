@@ -5,7 +5,7 @@
   <title>PSO Valorant — Timeout caster</title>
   <!-- Repris de stack03/timeout-caster.html. OBS : source navigateur 1920×1080 AU-DESSUS de :
        • la caméra des casters dans la fenêtre de gauche (1280×720 : x 64, y 176)
-       • le chat Twitch dans la fenêtre de droite (460×460 : x 1396, y 436)
+       • le chat : intégré (chat PSO de l'onglet Chat) ou, si désactivé, une source chat à x 1396, y 436 (460×460)
        Réglages : onglet « Timeout caster » de la régie. -->
   <link rel="stylesheet" href="/stack03/css/fonts.css" />
   <link rel="stylesheet" href="/fx-bg.css" />
@@ -59,6 +59,9 @@
     .vs { color: var(--muted); font-size: 20px; }
     #chat { top: 396px; height: 36px; }
     #chat h3 { padding-top: 10px; }
+    /* Chat PSO intégré dans la fenêtre de droite (460×460) */
+    #chatwin { position: absolute; left: 1396px; top: 436px; width: 460px; height: 460px; background: #0a0709; overflow: hidden; display: none; }
+    #chatwin iframe { width: 100%; height: 100%; border: 0; background: transparent; }
     #sp { position: absolute; left: 1492px; top: 910px; width: 364px; height: 136px; border: 0; background: transparent; }
   </style>
 </head>
@@ -74,6 +77,7 @@
     </div>
     <div class="names off" id="names"></div>
     <div class="card" id="mc"><h3 id="mtitle"></h3><div id="ms"></div></div>
+    <div id="chatwin"><iframe id="chatframe" title="Chat" scrolling="no"></iframe></div>
     <div class="card" id="chat"><h3 id="ctitle"></h3></div>
     <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
   </div>
@@ -132,6 +136,8 @@
       $('ms').innerHTML = S.matchSource === 'off' ? '' : matches();
       $('ctitle').textContent = S.chatTitle;
       $('chat').style.display = S.chatTitle ? '' : 'none';
+      $('chatwin').style.display = S.chatEmbed ? 'block' : 'none';
+      if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?bottom=1';
       $('fr1').style.display = $('fr2').style.display = S.frame ? '' : 'none';
       $('sp').style.display = S.sponsors ? '' : 'none';
       FX.set(S);
