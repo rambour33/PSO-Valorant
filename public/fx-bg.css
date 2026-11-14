@@ -1,0 +1,15 @@
+/* Calques de fond animés partagés (Start, Timeout caster…) : voir fx-bg.js */
+.fxl-grid { position: absolute; inset: 0; pointer-events: none; --gl: rgba(227,59,174,.045);
+  background-image: linear-gradient(var(--gl) 1px, transparent 1px), linear-gradient(90deg, var(--gl) 1px, transparent 1px);
+  background-size: 48px 48px; }
+.fxl-halo { position: absolute; inset: 0; pointer-events: none; }
+.fxl-floor { position: absolute; left: -50%; right: -50%; top: 52%; height: 120%; pointer-events: none; display: none;
+  transform-origin: 50% 0; transform: perspective(520px) rotateX(62deg);
+  background-image: linear-gradient(var(--gc) 2px, transparent 2px), linear-gradient(90deg, var(--gc) 2px, transparent 2px);
+  background-size: 96px 96px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%); mask-image: linear-gradient(to bottom, transparent, #000 35%); }
+.fxl-fx { position: absolute; inset: 0; pointer-events: none; }
+.fxl-scan { position: absolute; left: 0; right: 0; height: 260px; top: -260px; pointer-events: none; display: none;
+  background: linear-gradient(to bottom, transparent, var(--sc), transparent); }
+.fxl-lines { position: absolute; inset: 0; pointer-events: none; display: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,.18) 0 2px, transparent 2px 4px); }

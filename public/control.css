@@ -320,3 +320,10 @@ body {
 .theme-card .swatch .accent { position: absolute; right: 12px; bottom: 12px; width: 34px; height: 34px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,.5); }
 .theme-card .name { font-family: var(--font-head); font-size: 15px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
 .theme-card .name .badge { font-size: 10px; font-family: 'Inter', sans-serif; letter-spacing: 1px; color: var(--red); }
+
+/* Timeout caster */
+.tc-m { display: grid; grid-template-columns: 1.3fr 40px 1fr 52px 10px 52px 1fr; gap: 6px; align-items: center; margin-bottom: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.tc-m input { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 7px; font-size: 13px; min-width: 0; width: 100%; }
+.tc-m input[type=color] { height: 32px; padding: 2px; cursor: pointer; }
+.tc-m span { color: var(--muted); text-align: center; }
+.tc-num { width: 80px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px; }

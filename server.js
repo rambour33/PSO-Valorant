@@ -19,6 +19,7 @@ const rulesets = require('./lib/rulesets');
 const bracket = require('./lib/bracket');
 const sponsors = require('./lib/sponsors');
 const startScreen = require('./lib/start');
+const timeoutCaster = require('./lib/timeoutcaster');
 const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
@@ -120,6 +121,16 @@ app.get('/start-overlay', (req, res) => res.sendFile(path.join(__dirname, 'publi
 app.get('/api/start', (req, res) => res.json({ ...startScreen.get(), now: Date.now() }));
 app.post('/api/start', (req, res) => { const s = startScreen.set(req.body || {}); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
 app.post('/api/start/reset', (req, res) => { const s = startScreen.reset(); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
+// Écran Timeout caster
+const toPayload = (s) => ({ ...s, now: Date.now() });
+const toSend = (res, s) => { io.emit('timeoutCasterUpdate', toPayload(s)); res.json(toPayload(s)); };
+app.get('/timeout-caster-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'timeout-caster-overlay.html')));
+app.get('/api/timeout-caster', (req, res) => res.json(toPayload(timeoutCaster.get())));
+app.post('/api/timeout-caster', (req, res) => toSend(res, timeoutCaster.set(req.body || {})));
+app.post('/api/timeout-caster/reset', (req, res) => toSend(res, timeoutCaster.reset()));
+app.post('/api/timeout-caster/start', (req, res) => toSend(res, timeoutCaster.start(parseInt((req.body || {}).sec, 10) || 0)));
+app.post('/api/timeout-caster/add', (req, res) => toSend(res, timeoutCaster.add(parseInt((req.body || {}).sec, 10) || 30)));
+app.post('/api/timeout-caster/stop', (req, res) => toSend(res, timeoutCaster.stop()));
 app.post('/api/sponsors', (req, res) => { const s = sponsors.set(req.body || {}); io.emit('sponsorsUpdate', s); res.json(s); });
 app.get('/lineup-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'lineup-overlay.html')));
 

@@ -490,6 +490,8 @@ function sbRenderLinks() {
   if (spLinks) spLinks.innerHTML = rowHtml(['Sponsors', base + '/sponsors-overlay']);
   const stLinks = document.getElementById('st-links');
   if (stLinks) stLinks.innerHTML = rowHtml(['Start', base + '/start-overlay']);
+  const tcLinks = document.getElementById('tc-links');
+  if (tcLinks) tcLinks.innerHTML = rowHtml(['Timeout caster', base + '/timeout-caster-overlay']);
   const chatLinks = document.getElementById('chat-links');
   if (chatLinks) chatLinks.innerHTML = rowHtml(['Chat', base + '/chat-overlay']);
 }
@@ -873,6 +875,93 @@ if (stTab) {
   setInterval(stTick, 500);
   fetch('/api/start').then((r) => r.json()).then(renderStart).catch(() => {});
   socket.on('startUpdate', renderStart);
+}
+
+// ── Onglet Timeout caster ─────────────────────────────────────────────────────
+const tcTab = document.getElementById('tab-tcaster');
+let tcState = null, tcSkew = 0, tcDeb = null, tcPending = {}, tcTeams = [];
+function tcMerge(a, b) {   // fusion profonde des modifications en attente
+  const out = Object.assign({}, a);
+  Object.keys(b).forEach((k) => { out[k] = b[k] && typeof b[k] === 'object' && a[k] && typeof a[k] === 'object' ? tcMerge(a[k], b[k]) : b[k]; });
+  return out;
+}
+function tcPost(url, body) {
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) })
+    .then((r) => r.json()).then(renderTc).catch(() => {});
+}
+const tcSave = (patch) => tcPost('/api/timeout-caster', patch);
+function renderTc(s) {
+  if (!s || !tcTab) return;
+  tcState = s; if (s.now) tcSkew = s.now - Date.now();
+  document.getElementById('tc-visible').textContent = s.visible === false ? 'Afficher' : 'Masquer';
+  tcTab.querySelectorAll('[data-tc]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.tc);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  tcTab.querySelectorAll('.st-v').forEach((el) => stLabel(el, stGet(s, el.dataset.v)));
+  document.getElementById('tc-logo').innerHTML = s.logo ? '<img src="' + esc(s.logo) + '" alt="" />' : 'Sans logo';
+  tcTick();
+}
+function tcRenderWho() {
+  const box = document.getElementById('tc-who'); if (!box) return;
+  const opts = tcTeams.concat(['Pause', 'Pause technique']).filter((x, i, a) => x && a.indexOf(x) === i);
+  box.innerHTML = opts.map((n) => '<button class="sb-action" data-who="' + esc(n) + '">' + esc(n) + '</button>').join('');
+}
+function tcTick() {
+  const el = document.getElementById('tc-cd');
+  if (!el || !tcState) return;
+  const rem = tcState.endsAt - (Date.now() + tcSkew);
+  if (tcState.endsAt && rem > 0) { const t = Math.ceil(rem / 1000); el.textContent = Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); }
+  else el.textContent = tcState.endsAt ? 'Terminé' : 'À l\'arrêt';
+}
+function tcFitPreview() {
+  const f = document.getElementById('tc-preview');
+  if (f && f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')';
+}
+if (tcTab) {
+  tcTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.tc) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') { v = parseFloat(v); if (!isFinite(v)) return; }
+    const lab = tcTab.querySelector('.st-v[data-v="' + el.dataset.tc + '"]'); if (lab) stLabel(lab, v);
+    tcPending = tcMerge(tcPending, stPatch(el.dataset.tc, v));
+    clearTimeout(tcDeb);
+    tcDeb = setTimeout(() => { const send = tcPending; tcPending = {}; tcSave(send); }, el.type === 'range' ? 80 : 300);
+  });
+  tcTab.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]'); if (go) return tcPost('/api/timeout-caster/start', { sec: parseInt(go.dataset.go, 10) });
+    const who = e.target.closest('[data-who]'); if (who) return tcSave({ who: who.dataset.who });
+  });
+  document.getElementById('tc-add').addEventListener('click', () => tcPost('/api/timeout-caster/add', { sec: 30 }));
+  document.getElementById('tc-stop').addEventListener('click', () => tcPost('/api/timeout-caster/stop'));
+  document.getElementById('tc-visible').addEventListener('click', () => tcSave({ visible: tcState && tcState.visible === false }));
+  document.getElementById('tc-reset').addEventListener('click', () => {
+    if (confirm('Remettre le Timeout caster comme dans le pack d\'origine ?')) tcPost('/api/timeout-caster/reset');
+  });
+  document.getElementById('tc-logo-def').addEventListener('click', () => tcSave({ logo: '/stack03/assets/logo-stack.svg' }));
+  document.getElementById('tc-logo-none').addEventListener('click', () => tcSave({ logo: '' }));
+  document.getElementById('tc-file').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUrl: rd.result }) })
+      .then((r) => r.json()).then((d) => { if (d.error) return alert(d.error); tcSave({ logo: d.url }); e.target.value = ''; })
+      .catch(() => alert('Envoi du logo impossible'));
+    rd.readAsDataURL(f);
+  });
+  document.querySelector('.tab-btn[data-tab="tcaster"]')?.addEventListener('click', () => {
+    const f = document.getElementById('tc-preview');
+    if (f && !f.src) f.src = '/timeout-caster-overlay';
+    setTimeout(tcFitPreview, 30);
+  });
+  window.addEventListener('resize', tcFitPreview);
+  setInterval(tcTick, 300);
+  const tcScore = (sb) => { if (sb && sb.team1) { tcTeams = [sb.team1.name, sb.team2.name]; tcRenderWho(); } };
+  fetch('/api/scoreboard').then((r) => r.json()).then(tcScore).catch(() => {});
+  socket.on('scoreboardUpdate', tcScore);
+  tcRenderWho();
+  fetch('/api/timeout-caster').then((r) => r.json()).then(renderTc).catch(() => {});
+  socket.on('timeoutCasterUpdate', renderTc);
 }
 
 // ── Onglet Timer ──────────────────────────────────────────────────────────────
