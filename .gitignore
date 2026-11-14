@@ -5,3 +5,6 @@ public/uploads/
 
 # Stack 03 : état du tournoi et liens équipes (tokens, clé régie)
 stack03/data/
+
+# Données locales de la régie (générées au runtime)
+data/*.json
