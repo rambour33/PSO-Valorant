@@ -39,6 +39,8 @@
     .names .label .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pink); animation: blink 1.4s infinite; }
     @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
     .names .person { display: flex; flex-direction: column; justify-content: center; gap: 3px; background: #0a0709; border-left: 6px solid var(--pink); padding: 10px 26px; }
+    .names .label + .person { border-left: 0; }          /* pas de barre entre l'étiquette et le 1er caster */
+    .names .person + .person { border-left-width: 3px; } /* barre moitié moins épaisse entre deux casters */
     .names .nm { font-size: 32px; font-weight: 700; letter-spacing: .08em; color: #f0e6d3; line-height: 1; white-space: nowrap; text-transform: uppercase; }
     .names .sub { font-size: 15px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
     .names .sub .role { color: var(--pink); font-weight: 700; }
