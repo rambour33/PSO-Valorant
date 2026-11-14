@@ -192,7 +192,13 @@ app.post('/api/teams', (req, res) => {
     res.status(400).json({ error: e.message });
   }
 });
-teamPool.initFrom((bracket.get().teams || []).map((t) => t.id));
+// Premier démarrage du pool : il reprend les équipes du tournoi existant, et celles-ci sont remises
+// dans la bibliothèque d'équipes si elles n'y sont plus (sinon le builder ne pourrait pas les afficher).
+if (teamPool.initFrom((bracket.get().teams || []).map((t) => t.id))) {
+  (bracket.get().teams || []).forEach((t) => { if (!teams.list().some((x) => x.id === t.id)) teams.saveTeam({ id: t.id, name: t.name, color: t.color }); });
+}
+// Et à chaque démarrage : un id du pool sans équipe dans la bibliothèque est repris du tournoi s'il y figure.
+(bracket.get().teams || []).forEach((t) => { if (teamPool.get().includes(t.id) && !teams.list().some((x) => x.id === t.id)) teams.saveTeam({ id: t.id, name: t.name, color: t.color }); });
 app.get('/api/team-pool', (req, res) => res.json(teamPool.get()));
 app.post('/api/team-pool', (req, res) => { const ids = teamPool.set((req.body || {}).ids); io.emit('teamPoolUpdate', ids); res.json(ids); });
 
