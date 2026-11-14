@@ -15,7 +15,8 @@ if not exist "node_modules\" (
     echo Installation des dependances...
     npm install
 )
-start "" "http://localhost:3003/control"
+set PORT=3004
+start "" "http://localhost:%PORT%/control"
 :loop
 node server.js
 if %errorlevel% == 0 (
