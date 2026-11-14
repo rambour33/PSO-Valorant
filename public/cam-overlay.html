@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>PSO Valorant — Caméra station</title>
+  <!-- Repris de stack03/cam.html. OBS : source navigateur 1920×1080 AU-DESSUS de la caméra.
+       ?station=1 ou ?station=2. Réglages : onglet « Caméras » de la régie. -->
+  <link rel="stylesheet" href="/stack03/css/fonts.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+    body { color: #f0e6d3; font-family: 'Rajdhani', sans-serif; font-weight: 600; --pink: #e33bae; --muted: #9a8a94; }
+    #root { position: absolute; inset: 0; transition: opacity .45s ease, transform .45s ease; }
+    #root.hidden { opacity: 0; transform: translateY(-14px); }
+    .tag { position: absolute; left: 64px; top: 64px; display: flex; align-items: center; gap: 16px; background: rgba(7,5,8,.95); padding: 10px 26px 10px 0; border-left: 8px solid var(--pink); }
+    .tag .n { font-weight: 700; font-size: 46px; letter-spacing: .08em; padding-left: 22px; }
+    .tag .c { font-size: 17px; letter-spacing: .22em; color: var(--muted); text-transform: uppercase; }
+    .tag .c:empty { display: none; }
+    .rec { width: 14px; height: 14px; border-radius: 50%; background: var(--pink); animation: b 1.6s ease infinite; }
+    @keyframes b { 50% { opacity: .25; } }
+    .lower { position: absolute; left: 64px; bottom: 64px; display: flex; align-items: stretch; height: 84px; background: rgba(7,5,8,.96); border-left: 8px solid var(--pink); }
+    .lower .t { display: flex; align-items: center; gap: 14px; padding: 0 24px; font-weight: 700; font-size: 46px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .lower .s { display: flex; align-items: center; justify-content: center; width: 70px; background: #120c10; font-weight: 700; font-size: 54px; }
+    .lower .s.lead { background: var(--pink); color: #12060e; }
+    .lower .f { display: flex; flex-direction: column; justify-content: center; padding: 0 22px; font-size: 16px; letter-spacing: .18em; color: var(--muted); background: #0a0709; }
+    .lower .f b { font-weight: 700; font-size: 26px; color: var(--pink); letter-spacing: .14em; }
+    .sq { display: block; width: 16px; height: 46px; background: #e33bae; }
+    /* cadre sponsors (340×112 dans l'iframe, décalé de 24 px) aligné à 64 px des bords */
+    #sp { position: absolute; right: 64px; bottom: 64px; width: 364px; height: 136px; border: 0; background: transparent; }
+  </style>
+</head>
+<body>
+  <div id="root" class="hidden">
+    <div class="tag" id="tag"><span class="n" id="n"></span><span class="c" id="c"></span><span class="rec"></span></div>
+    <div class="lower" id="lower"><div class="t"><i class="sq" id="qa"></i><span id="ta"></span></div><div class="s" id="sa">0</div><div class="s" id="sb">0</div><div class="t"><span id="tb"></span><i class="sq" id="qb"></i></div><div class="f"><b id="fmt"></b><span id="mp"></span></div></div>
+    <iframe id="sp" src="/sponsors-overlay" title="Sponsors" scrolling="no"></iframe>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const $ = (i) => document.getElementById(i);
+    const N = new URLSearchParams(location.search).get('station') === '2' ? 2 : 1;
+    let C = null, SB = null;
+    function data() {
+      const st = C[N];
+      if (st.source === 'manual' || !SB || !SB.team1) {
+        const m = st.manual;
+        return { a: m.a, b: m.b, ca: m.colorA, cb: m.colorB, sa: m.sa, sb: m.sb, bo: m.bo, map: m.map };
+      }
+      const sa = SB.team1.score || 0, sb = SB.team2.score || 0, bo = SB.format || 'BO3';
+      const games = bo === 'BO5' ? 5 : bo === 'BO3' ? 3 : 1;
+      return { a: SB.team1.name, b: SB.team2.name, ca: SB.team1.color, cb: SB.team2.color, sa, sb, bo, map: Math.min(games, sa + sb + 1) };
+    }
+    function render() {
+      if (!C) return;
+      const st = C[N], d = data();
+      $('root').classList.toggle('hidden', st.visible === false);
+      $('tag').style.display = st.showTag ? '' : 'none';
+      $('lower').style.display = st.showLower ? '' : 'none';
+      $('sp').style.display = st.showSponsors ? '' : 'none';
+      $('n').textContent = st.title; $('c').textContent = st.label;
+      $('ta').textContent = d.a; $('tb').textContent = d.b;
+      $('qa').style.background = d.ca || '#e33bae'; $('qb').style.background = d.cb || '#e33bae';
+      $('sa').textContent = d.sa; $('sb').textContent = d.sb;
+      $('sa').className = 's' + (d.sa > d.sb ? ' lead' : ''); $('sb').className = 's' + (d.sb > d.sa ? ' lead' : '');
+      $('fmt').textContent = d.bo; $('mp').textContent = d.bo === 'BO1' ? 'MAP UNIQUE' : 'MAP ' + d.map;
+    }
+    const J = (u) => fetch(u).then((r) => r.json());
+    Promise.all([J('/api/scoreboard').catch(() => null), J('/api/cams')]).then(([s, c]) => { SB = s; C = c; render(); }).catch(() => {});
+    const sock = io();
+    sock.on('camsUpdate', (c) => { C = c; render(); });
+    sock.on('scoreboardUpdate', (s) => { SB = s; render(); });
+  </script>
+</body>
+</html>

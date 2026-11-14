@@ -327,3 +327,9 @@ body {
 .tc-m input[type=color] { height: 32px; padding: 2px; cursor: pointer; }
 .tc-m span { color: var(--muted); text-align: center; }
 .tc-num { width: 80px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px; }
+
+/* Caméras */
+.cam-frame { margin-bottom: 12px; }
+.cam-man.off { display: none; }
+select.tc-num { width: auto; color-scheme: dark; }
+.cam-man .tc-m { grid-template-columns: 1fr 40px 52px 10px 52px 40px 1fr; }

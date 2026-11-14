@@ -490,6 +490,8 @@ function sbRenderLinks() {
   if (spLinks) spLinks.innerHTML = rowHtml(['Sponsors', base + '/sponsors-overlay']);
   const stLinks = document.getElementById('st-links');
   if (stLinks) stLinks.innerHTML = rowHtml(['Start', base + '/start-overlay']);
+  const cmLinks = document.getElementById('cm-links');
+  if (cmLinks) cmLinks.innerHTML = rowHtml(['Station 01', base + '/cam-overlay?station=1']) + rowHtml(['Station 02', base + '/cam-overlay?station=2']);
   const tcLinks = document.getElementById('tc-links');
   if (tcLinks) tcLinks.innerHTML = rowHtml(['Timeout caster', base + '/timeout-caster-overlay']);
   const chatLinks = document.getElementById('chat-links');
@@ -962,6 +964,55 @@ if (tcTab) {
   tcRenderWho();
   fetch('/api/timeout-caster').then((r) => r.json()).then(renderTc).catch(() => {});
   socket.on('timeoutCasterUpdate', renderTc);
+}
+
+// ── Onglet Caméras ────────────────────────────────────────────────────────────
+const cmTab = document.getElementById('tab-cams');
+let cmState = null, cmDeb = null, cmPending = {};
+function renderCams(s) {
+  if (!s || !cmTab) return;
+  cmState = s;
+  cmTab.querySelectorAll('[data-cm]').forEach((el) => {
+    if (el === document.activeElement) return;
+    const v = stGet(s, el.dataset.cm);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  [1, 2].forEach((n) => {
+    cmTab.querySelector('[data-cam-man="' + n + '"]').classList.toggle('off', s[n].source !== 'manual');
+    cmTab.querySelector('[data-cam-vis="' + n + '"]').textContent = s[n].visible === false ? 'Afficher' : 'Masquer';
+  });
+}
+function cmSave(patch) {
+  return fetch('/api/cams', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) })
+    .then((r) => r.json()).then(renderCams).catch(() => {});
+}
+function cmFit() {
+  cmTab && cmTab.querySelectorAll('[data-cam-prev]').forEach((f) => { if (f.parentElement.clientWidth) f.style.transform = 'scale(' + (f.parentElement.clientWidth / 1920) + ')'; });
+}
+if (cmTab) {
+  cmTab.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset.cm) return;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.t === 'n') { v = parseFloat(v); if (!isFinite(v)) return; }
+    cmPending = tcMerge(cmPending, stPatch(el.dataset.cm, v));
+    if (el.dataset.cm.endsWith('.source')) cmTab.querySelector('[data-cam-man="' + el.dataset.cm[0] + '"]').classList.toggle('off', v !== 'manual');
+    clearTimeout(cmDeb);
+    cmDeb = setTimeout(() => { const send = cmPending; cmPending = {}; cmSave(send); }, 300);
+  });
+  cmTab.addEventListener('click', (e) => {
+    const vis = e.target.closest('[data-cam-vis]');
+    if (vis && cmState) { const n = vis.dataset.camVis; cmSave({ [n]: { visible: cmState[n].visible === false } }); }
+  });
+  document.getElementById('cm-reset').addEventListener('click', () => {
+    if (confirm('Remettre les caméras comme dans le pack d\'origine ?')) fetch('/api/cams/reset', { method: 'POST' }).then((r) => r.json()).then(renderCams);
+  });
+  document.querySelector('.tab-btn[data-tab="cams"]')?.addEventListener('click', () => {
+    cmTab.querySelectorAll('[data-cam-prev]').forEach((f) => { if (!f.src) f.src = '/cam-overlay?station=' + f.dataset.camPrev; });
+    setTimeout(cmFit, 30);
+  });
+  window.addEventListener('resize', cmFit);
+  fetch('/api/cams').then((r) => r.json()).then(renderCams).catch(() => {});
+  socket.on('camsUpdate', renderCams);
 }
 
 // ── Onglet Timer ──────────────────────────────────────────────────────────────

@@ -20,6 +20,7 @@ const bracket = require('./lib/bracket');
 const sponsors = require('./lib/sponsors');
 const startScreen = require('./lib/start');
 const timeoutCaster = require('./lib/timeoutcaster');
+const cams = require('./lib/cams');
 const stack03 = require('./stack03/server');
 
 const PORT = process.env.PORT || 3003;
@@ -121,6 +122,12 @@ app.get('/start-overlay', (req, res) => res.sendFile(path.join(__dirname, 'publi
 app.get('/api/start', (req, res) => res.json({ ...startScreen.get(), now: Date.now() }));
 app.post('/api/start', (req, res) => { const s = startScreen.set(req.body || {}); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
 app.post('/api/start/reset', (req, res) => { const s = startScreen.reset(); io.emit('startUpdate', { ...s, now: Date.now() }); res.json({ ...s, now: Date.now() }); });
+// Caméras des stations
+app.get('/cam-overlay', (req, res) => res.sendFile(path.join(__dirname, 'public', 'cam-overlay.html')));
+app.get('/api/cams', (req, res) => res.json(cams.get()));
+app.post('/api/cams', (req, res) => { const s = cams.set(req.body || {}); io.emit('camsUpdate', s); res.json(s); });
+app.post('/api/cams/reset', (req, res) => { const s = cams.reset(); io.emit('camsUpdate', s); res.json(s); });
+
 // Écran Timeout caster
 const toPayload = (s) => ({ ...s, now: Date.now() });
 const toSend = (res, s) => { io.emit('timeoutCasterUpdate', toPayload(s)); res.json(toPayload(s)); };

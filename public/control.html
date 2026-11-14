@@ -38,6 +38,7 @@
       <button class="tab-btn" data-tab="sponsors">Sponsors</button>
       <button class="tab-btn" data-tab="start">Start</button>
       <button class="tab-btn" data-tab="tcaster">Timeout caster</button>
+      <button class="tab-btn" data-tab="cams">Caméras</button>
       <button class="tab-btn" data-tab="visuals">Visuels</button>
       <button class="tab-btn" data-tab="theme">Theme</button>
       <button class="tab-btn" data-tab="stack03">Stack 03</button>
@@ -514,6 +515,83 @@
         <div class="sb-links-card">
           <h2 class="section-title">Lien overlay</h2>
           <div class="sb-links" id="tc-links"></div>
+        </div>
+      </div>
+      <div class="tab-content" id="tab-cams">
+        <div class="ca-head">
+          <h2 class="section-title">Caméras des stations</h2>
+          <div style="display:flex;gap:8px"><button class="sb-action" id="cm-reset">Réglages d'origine</button></div>
+        </div>
+        <p class="section-hint">Habillage des caméras (design Stack 03). Dans OBS : une source navigateur 1920×1080 par station, au-dessus de la caméra. Par défaut, les équipes et le score suivent le match en cours.</p>
+        <div class="st-grid">
+          <div class="sb-card">
+            <div class="ca-head" style="margin-bottom:8px"><h3 class="st-h" style="margin:0">Station 01</h3><button class="sb-action" data-cam-vis="1">Masquer</button></div>
+            <div class="st-frame cam-frame"><iframe data-cam-prev="1" title="Aperçu station 1" scrolling="no"></iframe></div>
+            <label class="fld">Titre<input data-cm="1.title" maxlength="30" /></label>
+            <label class="fld">Sous-titre <span class="st-tip">— vide = masqué</span><input data-cm="1.label" maxlength="40" /></label>
+            <div class="st-row">
+              <label class="st-chk"><input type="checkbox" data-cm="1.showTag" data-t="b" /> Étiquette</label>
+              <label class="st-chk"><input type="checkbox" data-cm="1.showLower" data-t="b" /> Bandeau score</label>
+              <label class="st-chk"><input type="checkbox" data-cm="1.showSponsors" data-t="b" /> Sponsors</label>
+            </div>
+            <label class="fld">Équipes et score
+              <select data-cm="1.source">
+                <option value="scoreboard">Match en cours (scoreboard)</option>
+                <option value="manual">Saisie ci-dessous</option>
+              </select>
+            </label>
+            <div class="cam-man" data-cam-man="1">
+              <div class="tc-m">
+                <input data-cm="1.manual.a" maxlength="30" placeholder="Équipe A" />
+                <input type="color" data-cm="1.manual.colorA" />
+                <input type="number" data-cm="1.manual.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-cm="1.manual.sb" data-t="n" min="0" max="99" />
+                <input type="color" data-cm="1.manual.colorB" />
+                <input data-cm="1.manual.b" maxlength="30" placeholder="Équipe B" />
+              </div>
+              <div class="st-row">
+                <label class="st-chk">Format <select data-cm="1.manual.bo" class="tc-num"><option>BO1</option><option>BO3</option><option>BO5</option></select></label>
+                <label class="st-chk">Map n° <input type="number" class="tc-num" data-cm="1.manual.map" data-t="n" min="1" max="5" /></label>
+              </div>
+            </div>
+          </div>
+          <div class="sb-card">
+            <div class="ca-head" style="margin-bottom:8px"><h3 class="st-h" style="margin:0">Station 02</h3><button class="sb-action" data-cam-vis="2">Masquer</button></div>
+            <div class="st-frame cam-frame"><iframe data-cam-prev="2" title="Aperçu station 2" scrolling="no"></iframe></div>
+            <label class="fld">Titre<input data-cm="2.title" maxlength="30" /></label>
+            <label class="fld">Sous-titre <span class="st-tip">— vide = masqué</span><input data-cm="2.label" maxlength="40" /></label>
+            <div class="st-row">
+              <label class="st-chk"><input type="checkbox" data-cm="2.showTag" data-t="b" /> Étiquette</label>
+              <label class="st-chk"><input type="checkbox" data-cm="2.showLower" data-t="b" /> Bandeau score</label>
+              <label class="st-chk"><input type="checkbox" data-cm="2.showSponsors" data-t="b" /> Sponsors</label>
+            </div>
+            <label class="fld">Équipes et score
+              <select data-cm="2.source">
+                <option value="scoreboard">Match en cours (scoreboard)</option>
+                <option value="manual">Saisie ci-dessous</option>
+              </select>
+            </label>
+            <div class="cam-man" data-cam-man="2">
+              <div class="tc-m">
+                <input data-cm="2.manual.a" maxlength="30" placeholder="Équipe A" />
+                <input type="color" data-cm="2.manual.colorA" />
+                <input type="number" data-cm="2.manual.sa" data-t="n" min="0" max="99" />
+                <span>–</span>
+                <input type="number" data-cm="2.manual.sb" data-t="n" min="0" max="99" />
+                <input type="color" data-cm="2.manual.colorB" />
+                <input data-cm="2.manual.b" maxlength="30" placeholder="Équipe B" />
+              </div>
+              <div class="st-row">
+                <label class="st-chk">Format <select data-cm="2.manual.bo" class="tc-num"><option>BO1</option><option>BO3</option><option>BO5</option></select></label>
+                <label class="st-chk">Map n° <input type="number" class="tc-num" data-cm="2.manual.map" data-t="n" min="1" max="5" /></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-links-card">
+          <h2 class="section-title">Liens overlay</h2>
+          <div class="sb-links" id="cm-links"></div>
         </div>
       </div>
       <div class="tab-content" id="tab-visuals">
