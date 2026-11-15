@@ -128,6 +128,7 @@
           <button data-f="single" class="active">Élim. simple</button>
           <button data-f="double">Élim. double</button>
           <button data-f="groups">Poules</button>
+          <button data-f="special3" title="PEEK/REED en BO1, le perdant contre la 3e équipe en BO3, grande finale en BO3">Spécial 3 équipes</button>
         </div>
         <div id="groups-config" style="display:none">
           <label>Nombre de poules</label>
@@ -186,7 +187,7 @@
       seedsInitialized = true;
       if (!s.format || !s.teams.length) return;
       if (!seeds.length) { seeds = s.teams.map(t => ({ id: t.id, name: t.name, color: t.color })); pushPool(); }
-      format = s.format;
+      format = s.special || s.format;
       $('fmt-format').querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.f === format));
       $('groups-config').style.display = format === 'groups' ? 'block' : 'none';
       if (format === 'groups' && s.groups.length) $('group-count').value = s.groups.length;
@@ -294,7 +295,7 @@
     sockB.on('teamPoolUpdate', applyPool);
 
     function updateThirdPlaceRow() {
-      $('third-place-row').style.display = format === 'groups' ? 'none' : 'flex';
+      $('third-place-row').style.display = format === 'groups' || format === 'special3' ? 'none' : 'flex';
       $('third-place-label').textContent = format === 'double'
         ? 'Ajouter une petite finale (match bonus, ne change pas le classement)'
         : 'Ajouter une petite finale (3e place)';

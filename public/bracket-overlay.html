@@ -28,8 +28,7 @@
       background: radial-gradient(ellipse at 50% 40%, var(--surface) 0%, var(--bg) 70%);
       transition: background .4s ease;
     }
-    /* Le contenu peut naturellement dépasser 1920x1080 (gros bracket) : on le réduit
-       (jamais agrandi) pour qu'il tienne toujours dans le canevas, toujours centré. */
+    /* Le contenu est mis à l'échelle (réduit ou agrandi) pour remplir le canevas 1920x1080, toujours centré. */
     #root { display: inline-flex; flex-direction: column; gap: 36px; transition: opacity .3s ease, transform .25s ease; transform-origin: center center; }
     #root.hidden { opacity: 0; }
 
@@ -135,7 +134,7 @@
       flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
       border-left: 5px solid var(--sc, transparent); min-width: 0;
     }
-    .gmatch .gside.right { flex-direction: row-reverse; border-left: none; border-right: 5px solid var(--sc, transparent); text-align: right; justify-content: flex-end; }
+    .gmatch .gside.right { flex-direction: row-reverse; border-left: none; border-right: 5px solid var(--sc, transparent); text-align: right; justify-content: flex-start; } /* row-reverse : flex-start = collé à droite, contre la couleur */
     .gmatch .gside.win { background: rgba(255,255,255,.06); }
     .gmatch .gside.win .nm { color: var(--gold); }
     .gmatch .gside .nm {
@@ -167,6 +166,7 @@
     [data-pso-theme="stack"] .section-title .n { font-size:16px; letter-spacing:.22em; color:#9a8a94; }
     [data-pso-theme="stack"] .round .rlabel { font-size:15px; letter-spacing:.22em; font-weight:600; }
     [data-pso-theme="stack"] .match, [data-pso-theme="stack"] .gmatch { background:#0e0a0d; border:0; border-top:4px solid #e33bae; box-shadow:none; }
+    [data-pso-theme="stack"] .gmatch { border-top:0; } /* poules : pas de barre rose entre les matchs */
     [data-pso-theme="stack"] .match .side .nm { font-size:24px; letter-spacing:.06em; max-width:200px; }
     [data-pso-theme="stack"] .match .side .sc { font-size:26px; }
     [data-pso-theme="stack"] .match .side + .side { border-top-color:#2a1c24; }
@@ -314,7 +314,7 @@
       svg.innerHTML = html;
     }
 
-    // Réduit #root (jamais agrandi) pour qu'il tienne toujours dans le canevas 1920x1080 de l'overlay,
+    // Met #root à l'échelle (réduit ou agrandi) pour qu'il remplisse toujours dans le canevas 1920x1080 de l'overlay,
     // quelle que soit la taille du bracket (nombre d'équipes, de rounds, de poules…).
     // Important : toujours repartir de transform:none AVANT de mesurer/dessiner les connecteurs,
     // sinon un facteur d'échelle précédent fausserait les mesures (et les lignes) du rendu suivant.
@@ -323,8 +323,9 @@
     function fitToCanvas() {
       const rect = root.getBoundingClientRect();
       const top = document.documentElement.getAttribute('data-pso-theme') === 'stack' ? 160 : CANVAS_PAD;   // place du bandeau Stack 03
-      const scale = Math.min(1, (CANVAS_W - CANVAS_PAD * 2) / rect.width, (CANVAS_H - top - CANVAS_PAD) / rect.height);
-      root.style.transform = scale < 1 ? 'scale(' + scale + ')' : 'none';
+      // Agrandi aussi (jusqu'à ×2,4) quand le bracket est petit, pour occuper l'écran en 1080p.
+      const scale = Math.min(2.4, (CANVAS_W - CANVAS_PAD * 4) / rect.width, (CANVAS_H - top - CANVAS_PAD * 2) / rect.height);
+      root.style.transform = Math.abs(scale - 1) > 0.01 ? 'scale(' + scale.toFixed(4) + ')' : 'none';
     }
 
     let LASTB = null;

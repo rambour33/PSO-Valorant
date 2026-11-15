@@ -58,5 +58,6 @@
     fetch('/api/sponsors').then((r) => r.json()).then(render).catch(() => {});
     io().on('sponsorsUpdate', render);
   </script>
+  <script src="/fit.js"></script>
 </body>
 </html>

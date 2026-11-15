@@ -73,7 +73,7 @@
     <div class="top">
       <img id="logo" alt="" />
       <div class="t" id="title"></div>
-      <div class="chip"><div><div class="k" id="tl"></div><div class="w" id="who"></div></div><div class="c" id="cnt">1:00</div></div>
+      <div class="chip" id="chip"><div><div class="k" id="tl"></div><div class="w" id="who"></div></div><div class="c" id="cnt">1:00</div></div>
     </div>
     <div class="names off" id="names"></div>
     <div class="card" id="mc"><h3 id="mtitle"></h3><div id="ms"></div></div>
@@ -139,6 +139,7 @@
       $('chatwin').style.display = S.chatEmbed ? 'block' : 'none';
       layout();
       if (S.chatEmbed && !$('chatframe').getAttribute('src')) $('chatframe').src = '/chat-overlay?flow=down';
+      $('chip').style.display = S.showClock === false ? 'none' : '';
       $('fr1').style.display = $('fr2').style.display = S.frame ? '' : 'none';
       $('sp').style.display = S.sponsors ? '' : 'none';
       FX.set(S);
